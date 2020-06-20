@@ -1,8 +1,29 @@
 module.exports = {
   title: 'Baolong Zhang', // Title for the site. This will be displayed in the navbar.
   theme: '@vuepress/theme-blog',
+  head: [
+    ['link', { rel: 'icon', href: '/logo.png' }]
+  ],
   themeConfig: {
     // Please keep looking down to see the available options.
+    nav: [
+      {
+        text: 'Blog',
+        link: '/post/',
+      },
+      {
+        text: 'Notes',
+        link: '/notes/',
+      },
+      {
+        text: 'Tags',
+        link: '/tag/',
+      },
+      {
+        text: 'Github',
+        link: 'https://github.com/zblcool',
+      },
+    ],
     footer: {
       contact: [
         {
@@ -27,12 +48,23 @@ module.exports = {
           text: 'Powered by VuePress | Ash © 1995-present',
           link: '',
         },
-      ],
-      DirectoryClassifier: [
-
-      ],
-      smoothScroll: true
+      ],      
     },
+    directories: [
+      {
+        id: 'post',
+        dirname: '_posts',
+        path: '/post/',
+        title: 'posts',
+    
+      },
+      {
+        id: 'notes',
+        dirname: '_notes',
+        path: '/notes/',
+      },
+    ],
+    smoothScroll: true,
   },
   plugins: [
     [
