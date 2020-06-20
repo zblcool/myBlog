@@ -1,0 +1,4 @@
+node_modules
+.DS_Store
+/blog/.vuepress/dist
+yarn-error.log*
