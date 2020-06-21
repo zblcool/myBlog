@@ -8,7 +8,6 @@ author: Ash
 location: Sydney  
 ---
 
-# Divide and Conquer 
 
 ## Intro
 - Why Study Algorithms

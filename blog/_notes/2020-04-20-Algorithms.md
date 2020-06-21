@@ -9,6 +9,7 @@ author: Ash
 location: Sydney  
 ---
 
+
 # Algorithms Notes
 
 - [Algorithms Notes](#algorithms-notes)

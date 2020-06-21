@@ -9,6 +9,8 @@ mathjax:
   presets: '\def\lr#1#2#3{\left#1#2\right#3}'
 location: Sydney  
 ---
+
+
 # Mathematics in CS
 
 - [Mathematics in CS](#mathematics-in-cs)
