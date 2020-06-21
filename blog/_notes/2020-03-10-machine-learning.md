@@ -4,7 +4,6 @@ date: 2020-03-10
 tags:
   - Machine Learning
   - Notes
-  - Computer Science
 author: Ash
 location: Sydney  
 ---

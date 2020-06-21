@@ -76,5 +76,13 @@ module.exports = {
         },
       },
     ],
+    [
+      "vuepress-plugin-live2d",
+      {
+        "modelName": ["hijiki","tororo"],
+        "mobileShow": true,
+        "position": "right"
+      }
+    ]
   ],
 }

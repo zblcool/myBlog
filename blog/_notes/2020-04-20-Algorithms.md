@@ -4,7 +4,6 @@ date: 2020-04-20
 tags:
   - Algorithms
   - Notes
-  - Computer Science
 author: Ash
 location: Sydney  
 ---

@@ -14,5 +14,9 @@
   "scripts": {
     "dev": "vuepress dev blog",
     "build": "vuepress build blog"
+  },
+  "dependencies": {
+    "vue-particles": "^1.0.9",
+    "vuepress-plugin-live2d": "^0.0.7"
   }
 }

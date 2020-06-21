@@ -7,12 +7,15 @@
 <style lang="stylus" scoped>
 .start
   margin 50px 0
+  position relative
+  z-index 2
   > a
     text-decoration none
+    box-shadow:rgba(0,0,0,0.4) 3px 3px 10px 0px
     font-size 1.2rem
     border 1px solid
     padding 0.8rem 1.6rem
-    border-radius 4px
+    border-radius 6px
     transition 0.1s ease
     box-sizing border-box
   @media (max-width: $MQMobile)
