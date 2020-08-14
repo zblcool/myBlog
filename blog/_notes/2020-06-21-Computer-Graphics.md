@@ -24,4 +24,16 @@ location: Sydney
     
 like the `double` is for geometric computation  and `floats` for color computation
 
+
+# linear Algrebra
+
+## dot production
+outcome is a number
+## cross production
+outcome is another value
+
+
+# Transform 
+
+## View/Camera Transformation
    
