@@ -1,5 +1,5 @@
 ---
-title: Computer Graphics
+title: Computer Graphics Notes
 date: 2020-06-21
 tags:
   - Computer Graphics
