@@ -10,6 +10,7 @@ title: About
 He is a boy who love to share what he knows
 
 <GetStarted/>
+<!-- <Portfolio/> -->
 
 
 <style lang="stylus" scoped>
