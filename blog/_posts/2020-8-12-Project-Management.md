@@ -7,20 +7,20 @@ author: Ash
 location: Sydney  
 ---
 
-# Planning 
+# 1. Planning 
 
     Break the plan into piecies.
 
 Resources
 How many is avalibale When is it avalible . Who can do what things . How does team communicate and use what tools
 
-## Project Plan 
+## 1.1. Project Plan 
 - Directs people to do the job
 - Track the progression
 - Aids in correction
 - Communicate with stakeholders
 
-## Work Breakdown Structure (WBS)
+## 1.2. Work Breakdown Structure (WBS)
 
 Break the plan
 
@@ -36,7 +36,7 @@ Divide and split.
 Then create the work packages documents 
 
 
-## estimate time and cost
+## 1.3. estimate time and cost
 
 **Parametric Model**
 
@@ -46,7 +46,7 @@ Then create the work packages documents
 
     Dont choose avg and best choose 86% probabaility
 
-## Resource Management Plan
+## 1.4. Resource Management Plan
 
     Roles Skills responsibilities report to whom...
 
@@ -57,7 +57,7 @@ Then create the work packages documents
 - Consult before a decision
 - Accountable for decisions and delegations
 
-## Schedule
+## 1.5. Schedule
 
 1. Put tasks in sequential order
 2. Estimate the time each task will take
@@ -65,7 +65,7 @@ Then create the work packages documents
 4. Calculate task duration
 5. Account for deadlines
    
-## Project Budget
+## 1.6. Project Budget
 
 - Labor
 - Burdened Cost
@@ -80,11 +80,11 @@ Then create the work packages documents
   - Training
   - Fees
 
-## Identify Risk
+## 1.7. Identify Risk
 
 Known Unknowns
 
-## Risk management plan
+## 1.8. Risk management plan
 
 Two dimensions: Probability and Impact 
 
@@ -98,15 +98,15 @@ The criteria in the charter
 - responses
 - Probability and Impact 
 
-## Communication Plan
+## 1.9. Communication Plan
 
     Who : which role  
     What : The work they are in charge  
     How : The way they communicate
 
-## Quality Management Plan
+## 1.10. Quality Management Plan
 
-## Change Management Plan
+## 1.11. Change Management Plan
 
     WHat you want to control
 

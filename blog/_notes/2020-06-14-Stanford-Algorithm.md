@@ -9,7 +9,7 @@ location: Sydney
 ---
 
 
-## Intro
+## 1. Intro
 - Why Study Algorithms
     - technology innovation
     - provides the lens outside the computer science
@@ -24,7 +24,7 @@ location: Sydney
   - refine
   > optimise
 
-## Sorting
+## 2. Sorting
 
 - ### buble
   - compare every item with its neighbour A & B

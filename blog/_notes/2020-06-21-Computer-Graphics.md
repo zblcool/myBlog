@@ -11,29 +11,29 @@ location: Sydney
 
 >This notebook is aiming at tracking my learning for [《Fundatmantal of Computer Graphics》](https://books.google.com.au/books/about/Fundamentals_of_Computer_Graphics.html?id=hJPRgRrkXvUC&printsec=frontcover&source=kp_read_button&redir_esc=y#v=onepage&q&f=false) By Peter Shirley, Michael Ashikhmin, Steve Marschner
 
-# Intro
+# 1. Intro
 
-## *Classes*
+## 1.1. *Classes*
 
     create classes to store the elements of the CG(computer graphics) like vector2 vector3 RGB 
   
 
-## *Float or double*
+## 1.2. *Float or double*
 
     they have specified scenario to use different ways.
     
 like the `double` is for geometric computation  and `floats` for color computation
 
 
-# linear Algrebra
+# 2. linear Algrebra
 
-## dot production
+## 2.1. dot production
 outcome is a number
-## cross production
+## 2.2. cross production
 outcome is another value
 
 
-# Transform 
+# 3. Transform 
 
-## View/Camera Transformation
+## 3.1. View/Camera Transformation
    

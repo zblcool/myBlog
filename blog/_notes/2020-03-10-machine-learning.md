@@ -9,40 +9,40 @@ location: Sydney
 ---
 
 
-# Machine learning
+# 1. Machine learning
 
-- [Machine learning](#machine-learning)
-  - [Chapter](#chapter)
-    - [Weight](#weight)
-    - [Bias](#bias)
-    - [Cost](#cost)
-  - [Gradient](#gradient)
-    - [minimum of a f(x)](#minimum-of-a-fx)
-    - [Gradeint](#gradeint)
-    - [michele nilsen neural networks website](#michele-nilsen-neural-networks-website)
-    - [paper](#paper)
-    - [aim is to reduce the cost function](#aim-is-to-reduce-the-cost-function)
-  - [Backpropagation](#backpropagation)
-  - [MNIST DATABASE Training materials](#mnist-database-training-materials)
+- [1. Machine learning](#1-machine-learning)
+  - [1.1. Chapter](#11-chapter)
+    - [1.1.1. Weight](#111-weight)
+    - [1.1.2. Bias](#112-bias)
+    - [1.1.3. Cost](#113-cost)
+  - [1.2. Gradient](#12-gradient)
+    - [1.2.1. minimum of a f(x)](#121-minimum-of-a-fx)
+    - [1.2.2. Gradeint](#122-gradeint)
+    - [1.2.3. michele nilsen neural networks website](#123-michele-nilsen-neural-networks-website)
+    - [1.2.4. paper](#124-paper)
+    - [1.2.5. aim is to reduce the cost function](#125-aim-is-to-reduce-the-cost-function)
+  - [1.3. Backpropagation](#13-backpropagation)
+  - [1.4. MNIST DATABASE Training materials](#14-mnist-database-training-materials)
 
-## Chapter
+## 1.1. Chapter
 
 - different level have diff orintaion
 - split the character and number into many components .
 
 Base on databases wich have thounsansds of number and graph match which teach them .
 
-### Weight
+### 1.1.1. Weight
 
-### Bias
+### 1.1.2. Bias
 
-### Cost
+### 1.1.3. Cost
 
 How good is a network
 
-## Gradient
+## 1.2. Gradient
 
-### minimum of a f(x)
+### 1.2.1. minimum of a f(x)
 
 - local minumusm
   - caculter the 斜率  to the lower place . test again till the gradient become 0
@@ -51,7 +51,7 @@ How good is a network
   - drop several of balls to firgure out the minumum and compare them.
   - crazy hard
 
-### Gradeint  
+### 1.2.2. Gradeint  
 
  > "This solve my consider about how to find out the good weight"
 
@@ -60,18 +60,18 @@ How good is a network
     > "this is what need to add and reduce every times"
   - like W0 should increase 0.1 W2should decrese 0.2
 
-### michele nilsen neural networks website
+### 1.2.3. michele nilsen neural networks website
 
-### paper
+### 1.2.4. paper
 
 - understanding deep learning requires re-thinking generalization
 - A closer lokk at memorization in deep networks
 
-### aim is to reduce the cost function
+### 1.2.5. aim is to reduce the cost function
 
 - use -$\nabla$C(weithts and biases) to reduce  C()
 - The methods mentioned above is an old way of doing this
 
-## Backpropagation
+## 1.3. Backpropagation
 
-## MNIST DATABASE Training materials
+## 1.4. MNIST DATABASE Training materials
