@@ -22,6 +22,8 @@ p
   z-index: 1;
   width: 90%
   height: 80%
+.content-wrapper
+  width:100% !important
 
 .indexImg  
   transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1)

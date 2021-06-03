@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'Baolong Zhang', // Title for the site. This will be displayed in the navbar.
+  title: 'Ash Zhang', // Title for the site. This will be displayed in the navbar.
   theme: '@vuepress/theme-blog',
   head: [
     ['link', { rel: 'icon', href: '/logo.png' }]
@@ -18,6 +18,10 @@ module.exports = {
       {
         text: 'Tags',
         link: '/tag/',
+      },
+      {
+        text: 'Portfolio',
+        link: '/portfolio/',
       },
       {
         text: 'Github',
