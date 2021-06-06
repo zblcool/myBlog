@@ -1,27 +1,12 @@
 ---
 title: Portfolios
 ---
-<!-- <vue-particles color="#787f85" :particleOpacity="0.4" :particlesNumber="30" shapeType="triangle" linesColor="#787f85"  ></vue-particles> -->
 
+<Portfolio/>
+<PortfolioCard/>
 
-<!-- Portfolios
-  <div class="start">
-      <div class="imgContainer">
-          <img src="/pics/pac-man-new.gif" alt="!">
-          <br>
-          <video src="/videos/MOOCPlatform.mov" autoplay width="800"></video>
-      </div>
-      <div class="gifContainer">
-        <img src="/pics/portfolios/VM-1.gif" alt="1" width="400">
-        <img src="/pics/portfolios/VM-2.gif" alt="1" width="400">
-        <img src="/pics/portfolios/VM-3.gif" alt="1" width="400" >
-        <img src="/pics/portfolios/VM-4.gif" alt="1" width="400">
-      </div>
-  </div> -->
-  <Portfolio/>
+<!-- <GetStarted/> -->
 
-<GetStarted/>
-<!-- <Portfolio/> -->
 
 
 <style lang="stylus" scoped>

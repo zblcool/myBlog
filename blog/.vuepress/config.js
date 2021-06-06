@@ -69,6 +69,7 @@ module.exports = {
       },
     ],
     smoothScroll: true,
+    lastUpdated: 'Last Updated'
   },
   plugins: [
     [
