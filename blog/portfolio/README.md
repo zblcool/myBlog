@@ -3,7 +3,7 @@ title: Portfolios
 ---
 
 <Portfolio/>
-<PortfolioCard/>
+<!-- <PortfolioCard projectName="VM"/> -->
 
 <!-- <GetStarted/> -->
 

@@ -16,6 +16,7 @@
     "build": "vuepress build blog"
   },
   "dependencies": {
+    "three": "^0.129.0",
     "vue-particles": "^1.0.9",
     "vuepress-plugin-live2d": "^0.0.7"
   }
