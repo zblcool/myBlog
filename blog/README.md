@@ -9,7 +9,22 @@ title: Home
 
 <GetStarted/>
 <p class="description"> A web developer who focuses on Computer Graphics </p>
+<p style="font-size:40px">Side projects</p>
+<router-link to="/portfolio/">
+<img
+    class="posterimg"
+    src="/pics/portfolios/GalaxyConstructionCompany.png"
+    alt="poster"
+    width="400"
+  /></router-link>
+  <img
+    class="posterimg"
+    src="/pics/poster-sss.png"
+    alt="poster"
+    width="407"
+  />
 
+ 
 
 <script>
 //   window.onload = function (){
@@ -73,6 +88,7 @@ title: Home
 .description
   font-size 25px;
   color #818286
+  padding-bottom 150px;
 
 #particles-js
   position: absolute;
@@ -138,5 +154,17 @@ title: Home
     margin-top 10px !important
     width: 100% !important
     
-  
+.posterimg {
+  padding: 15px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  border-radius: 15px;
+  z-index: 2!important;
+  transition: all 0.5s ease-in-out;
+}
+
+.posterimg:hover {
+  z-index: 2!important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transform:scale(1.05,1.05)
+}
 </style>

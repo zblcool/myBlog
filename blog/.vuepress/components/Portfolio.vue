@@ -1,10 +1,9 @@
 <template>
   <div class="projectCard">
+    <img id="construction-sign" src="/pics/Under-Construction.jpeg" />
     <div class="imgContainer">
       <!-- <img src="/pics/pac-man-new.gif" alt="!" /> -->
-      <img id="construction-sign" src="/pics/Under-Construction.jpeg" />
-      <br />
-      <br />
+
       <img src="/pics/VM/VM-3.gif" alt="1" width="400" height="200" />
       <img src="/pics/VM/VM-4.gif" width="400" height="200" />
       <img src="/pics/VM/VM-1.gif" alt="1" width="400" height="200" />
@@ -14,11 +13,13 @@
       <img src="/pics/VM/VM-tool2.gif" width="400" height="200" />
     </div>
     <div class="gifContainer">
-      <img
+      <br>
+      <br>
+      <!-- <img
         src="/pics/portfolios/GalaxyConstructionCompany.png"
         alt="poster"
         width="400"
-      />
+      /> -->
       <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/fM_gqr0ZL3U" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
 
       <!-- <img src="/pics/portfolios/VM-2.gif" alt="1" width="400" height="200" />
@@ -44,19 +45,32 @@
 }
 </style>
 <style  scoped>
-#construction-sign{
+#construction-sign {
   float: left;
   position: relative;
-  left: 15%;
+  left: 30%;
   padding-bottom: 150px;
 }
 .imgContainer {
   /* background-color: #324e78; */
   /* width: 120px; */
-  margin: 0 auto;
+
+  /* margin: 0 auto; */
+  /* display: flexbox;
+  justify-content: center; */
+  position: relative;
+  float: left;
+  padding-bottom: 50px;
 }
 .imgContainer img {
   padding: 15px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  border-radius: 15px;
+  transition: box-shadow 0.5s ease-in-out;
+}
+
+.imgContainer img:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 .gifContainer {
   padding: 5%;
