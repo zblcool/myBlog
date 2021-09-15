@@ -26,6 +26,10 @@ module.exports = {
         link: "/cv/",
       },
       {
+        text: "Tools",
+        link: "/tool/",
+      },
+      {
         text: "Github",
         link: "https://github.com/zblcool",
       },
