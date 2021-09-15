@@ -1,7 +1,7 @@
 <template>
   <div class="cv-wrap">
     <div class="tool-title">
-      <h1>"Stand-ups" <br> "lottery"</h1>
+      <h1>Stand-ups <br> lottery</h1>
       <a href="https://ashzhang.xyz/LuckyBacon">External link</a>
     </div>
     <iframe
@@ -17,8 +17,8 @@
 .cv-wrap
     // height 800px
     display flex
-    tool-title
-        margin-right 10px
+    .tool-title
+        margin-right 20px
 </style>
 
 <style lang="stylus">
