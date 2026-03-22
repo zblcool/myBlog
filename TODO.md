@@ -9,7 +9,8 @@
 ### 1. Brand Upgrade
 - [x] Clarify the site's core positioning: personal brand site, technical blog, or both.
 - [x] Redesign the home page so it better introduces Ash, key strengths, and featured work.
-- [ ] Refresh the visual system so the blog, portfolio, CV, and tool pages feel unified.
+- [x] Refresh the visual system so the blog, portfolio, CV, and tool pages feel unified.
+  - Progress 2026-03-22: introduced a shared `PageMasthead` surface and fact-card system across archive, tag, portfolio, CV, and tool pages to align page headers, actions, and summary metrics.
 - [x] Rework the portfolio page into a clearer project showcase instead of a media dump.
 - [x] Improve the CV page so it works as both an embedded resume and a concise online profile.
 

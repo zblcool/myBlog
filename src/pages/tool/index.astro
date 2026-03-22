@@ -1,19 +1,37 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageMasthead from "@/components/PageMasthead.astro";
 import { toolLinks } from "@/data/site";
 
 const tool = toolLinks[0];
 ---
 
 <BaseLayout title="Tools | Ash Zhang" description="Tools and experiments">
-  <section class="panel page-intro">
-    <div class="eyebrow">Tools</div>
-    <h1 class="page-title">{tool.title}</h1>
-    <p class="lead">{tool.summary}</p>
-    <a class="button button--primary" href={tool.href} target="_blank" rel="noreferrer">
+  <PageMasthead
+    eyebrow="Tools"
+    title={tool.title}
+    lead={tool.summary}
+    detail="This section is for small product-like experiments that belong on the site, but should still feel distinct from essays and longer case studies."
+  >
+    <a slot="actions" class="button button--primary" href={tool.href} target="_blank" rel="noreferrer">
       {tool.externalLabel}
     </a>
-  </section>
+    <article slot="facts" class="page-fact-card">
+      <span>Format</span>
+      <strong>Standalone utility</strong>
+      <p>A small tool page rather than a writing entry.</p>
+    </article>
+    <article slot="facts" class="page-fact-card">
+      <span>Deployment</span>
+      <strong>Externally hosted</strong>
+      <p>The live utility stays separate, while this site provides the shell and context.</p>
+    </article>
+    <article slot="facts" class="page-fact-card">
+      <span>Role</span>
+      <strong>Product experiment</strong>
+      <p>A pattern for future mini-products that may become richer over time.</p>
+    </article>
+  </PageMasthead>
 
   <section class="section">
     <div class="embed-shell">

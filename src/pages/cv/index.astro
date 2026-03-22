@@ -1,18 +1,33 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageMasthead from "@/components/PageMasthead.astro";
 import { cvSnapshot, profile, socialLinks } from "@/data/site";
 import { withBase } from "@/lib/paths";
 ---
 
 <BaseLayout title="CV | Ash Zhang" description="Ash Zhang CV">
-  <section class="panel page-intro">
-    <div class="eyebrow">CV</div>
-    <h1 class="page-title">Resume and profile</h1>
-    <p class="lead">
-      The PDF remains the formal resume, but this page now also gives a quick
-      profile snapshot for people who need the context before opening it.
-    </p>
-  </section>
+  <PageMasthead
+    eyebrow="CV"
+    title="Resume and profile"
+    lead="The PDF remains the formal resume, but this page now also gives a quick profile snapshot."
+    detail="It should work for people who need context before opening the document, and for direct sharing when a faster online summary is more useful than a PDF first."
+  >
+    <a slot="actions" class="button button--primary" href={withBase("/document/Ash-Zhang-CV.pdf")}>
+      Open PDF
+    </a>
+    {socialLinks.map((link) => (
+      <a slot="actions" class="button" href={link.href} target="_blank" rel="noreferrer">
+        {link.label}
+      </a>
+    ))}
+
+    {cvSnapshot.highlights.map((item) => (
+      <article slot="facts" class="page-fact-card">
+        <span>{item.label}</span>
+        <strong>{item.value}</strong>
+      </article>
+    ))}
+  </PageMasthead>
 
   <section class="section">
     <div class="cv-layout">
@@ -21,15 +36,6 @@ import { withBase } from "@/lib/paths";
         <h2>{profile.title}</h2>
         <p class="lead cv-sidebar__lead">{cvSnapshot.summary}</p>
 
-        <div class="cv-highlight-list">
-          {cvSnapshot.highlights.map((item) => (
-            <article class="cv-highlight-card">
-              <span>{item.label}</span>
-              <strong>{item.value}</strong>
-            </article>
-          ))}
-        </div>
-
         <div class="cv-focus">
           <h3>Focus areas</h3>
           <ul>
@@ -37,17 +43,6 @@ import { withBase } from "@/lib/paths";
               <li>{item}</li>
             ))}
           </ul>
-        </div>
-
-        <div class="cv-actions">
-          <a class="button button--primary" href={withBase("/document/Ash-Zhang-CV.pdf")}>
-            Open PDF
-          </a>
-          {socialLinks.map((link) => (
-            <a class="button" href={link.href} target="_blank" rel="noreferrer">
-              {link.label}
-            </a>
-          ))}
         </div>
       </aside>
 

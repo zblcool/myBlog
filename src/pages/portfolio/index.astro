@@ -1,4 +1,5 @@
 ---
+import PageMasthead from "@/components/PageMasthead.astro";
 import ProjectCard from "@/components/ProjectCard.astro";
 import ProjectSpotlight from "@/components/ProjectSpotlight.astro";
 import { projects } from "@/data/projects";
@@ -10,15 +11,33 @@ const projectArchive = projects.slice(1);
 ---
 
 <BaseLayout title="Portfolio | Ash Zhang" description="Portfolio direction">
-  <section class="panel page-intro">
-    <div class="eyebrow">Portfolio</div>
-    <h1 class="page-title">Case studies with a clearer lead project</h1>
-    <p class="lead">
-      The old media wall is turning into a real portfolio. The goal is not only
-      to store project assets, but to show which work best represents the site
-      today and where future interactive work should go next.
-    </p>
-  </section>
+  <PageMasthead
+    eyebrow="Portfolio"
+    title="Case studies with a clearer lead project"
+    lead="The old media wall is turning into a real portfolio."
+    detail="The goal is not only to store project assets, but to show which work best represents the site today and where future interactive work should go next."
+  >
+    <a slot="actions" class="button button--primary" href={withBase(`/portfolio/${spotlightProject.slug}/`)}>
+      Open featured case study
+    </a>
+    <a slot="actions" class="button" href={withBase("/")}>Back home</a>
+
+    <article slot="facts" class="page-fact-card">
+      <span>Flagship</span>
+      <strong>{spotlightProject.title}</strong>
+      <p>The current lead case study anchoring the portfolio.</p>
+    </article>
+    <article slot="facts" class="page-fact-card">
+      <span>Portfolio mode</span>
+      <strong>{projects.length} structured projects</strong>
+      <p>Case studies, live tools, and archive pieces now share one data model.</p>
+    </article>
+    <article slot="facts" class="page-fact-card">
+      <span>Future lane</span>
+      <strong>Interactive work first</strong>
+      <p>Graphics-heavy and product-flavored experiments should lead the first impression.</p>
+    </article>
+  </PageMasthead>
 
   <section class="section">
     <div class="section-head">
@@ -30,9 +49,6 @@ const projectArchive = projects.slice(1);
           game-prototype depth.
         </p>
       </div>
-      <a class="button" href={withBase(`/portfolio/${spotlightProject.slug}/`)}>
-        Open featured case study
-      </a>
     </div>
 
     <ProjectSpotlight
@@ -52,7 +68,6 @@ const projectArchive = projects.slice(1);
           project instead of all fighting for the first impression.
         </p>
       </div>
-      <a class="button" href={withBase("/")}>Back home</a>
     </div>
 
     <div class="card-grid">

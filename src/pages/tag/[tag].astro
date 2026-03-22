@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import ContentCard from "@/components/ContentCard.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageMasthead from "@/components/PageMasthead.astro";
 import {
   collectTagCounts,
   slugifyTag,
@@ -49,43 +50,38 @@ const relatedTags = collectTagCounts(relatedEntries)
 ---
 
 <BaseLayout title={`${tag} | Ash Zhang`} description={`Entries tagged ${tag}`}>
-  <section class="panel page-intro">
-    <div class="eyebrow">Tag</div>
-    <h1 class="page-title">{tag}</h1>
-    <p class="lead">
-      This tag page is generated from source metadata, which keeps the indexing
-      logic separate from the page layout.
-    </p>
+  <PageMasthead
+    eyebrow="Tag"
+    title={tag}
+    lead="This page is generated from source metadata, which keeps the indexing logic separate from the page layout."
+    detail="It is one of the clearest examples of the rebuild rule: content metadata stays in Markdown frontmatter, while the browsing experience stays in reusable site components."
+  >
+    <a slot="actions" class="button button--primary" href={withBase("/tag/")}>All tags</a>
+    <a slot="actions" class="button" href={withBase("/")}>Back home</a>
 
-    <div class="stats-grid">
-      <article class="stat-card">
-        <span class="eyebrow">Total entries</span>
-        <strong>{relatedEntries.length}</strong>
-      </article>
-      <article class="stat-card">
-        <span class="eyebrow">Posts</span>
-        <strong>{relatedPosts.length}</strong>
-      </article>
-      <article class="stat-card">
-        <span class="eyebrow">Notes</span>
-        <strong>{relatedNotes.length}</strong>
-      </article>
-    </div>
-
+    <article slot="facts" class="page-fact-card">
+      <span>Total entries</span>
+      <strong>{relatedEntries.length}</strong>
+      <p>All content currently linked by this topic.</p>
+    </article>
+    <article slot="facts" class="page-fact-card">
+      <span>Posts / Notes</span>
+      <strong>{relatedPosts.length} / {relatedNotes.length}</strong>
+      <p>The split between polished writing and rougher study material.</p>
+    </article>
     {relatedTags.length > 0 && (
-      <div class="tag-list">
-        {relatedTags.map((item) => (
-          <a class="tag-link" href={withBase(`/tag/${item.slug}/`)}>
-            {item.tag}
-          </a>
-        ))}
-      </div>
+      <article slot="facts" class="page-fact-card">
+        <span>Related tags</span>
+        <div class="tag-list">
+          {relatedTags.map((item) => (
+            <a class="tag-link" href={withBase(`/tag/${item.slug}/`)}>
+              {item.tag}
+            </a>
+          ))}
+        </div>
+      </article>
     )}
-  </section>
-
-  <div class="page-actions">
-    <a class="button" href={withBase("/tag/")}>All tags</a>
-  </div>
+  </PageMasthead>
 
   {relatedPosts.length > 0 && (
     <section class="section">

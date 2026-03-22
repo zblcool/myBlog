@@ -203,6 +203,99 @@ video {
   margin: 0;
 }
 
+.page-masthead {
+  position: relative;
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.85rem;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top right, rgba(212, 138, 81, 0.16), transparent 34%),
+    linear-gradient(135deg, rgba(255, 252, 246, 0.82), rgba(255, 247, 235, 0.68));
+}
+
+.page-masthead::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.2), transparent 45%),
+    radial-gradient(circle at bottom left, rgba(178, 74, 47, 0.08), transparent 40%);
+  pointer-events: none;
+}
+
+.page-masthead--split {
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.9fr);
+}
+
+.page-masthead__content,
+.page-fact-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.page-masthead__content {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+}
+
+.page-masthead .page-title,
+.page-masthead .lead,
+.page-masthead__detail {
+  margin: 0;
+}
+
+.page-masthead__detail {
+  color: var(--muted);
+  max-width: 70ch;
+}
+
+.page-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.page-fact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.85rem;
+  align-content: start;
+}
+
+.page-fact-card {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1rem;
+  border-radius: calc(var(--radius) - 10px);
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(178, 74, 47, 0.14);
+  box-shadow: 0 16px 40px rgba(95, 58, 23, 0.06);
+}
+
+.page-fact-card span {
+  color: var(--accent);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-fact-card strong {
+  font-size: 1.08rem;
+  line-height: 1.25;
+}
+
+.page-fact-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.page-fact-card .tag-list {
+  margin-top: 0.1rem;
+}
+
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.9fr);
@@ -938,6 +1031,7 @@ video {
 
   .cv-layout,
   .project-spotlight,
+  .page-masthead--split,
   .project-hero {
     grid-template-columns: 1fr;
   }

@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import ArchiveYearGroup from "@/components/ArchiveYearGroup.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageMasthead from "@/components/PageMasthead.astro";
 import {
   collectTagCounts,
   groupEntriesByYear,
@@ -19,39 +20,36 @@ const yearSpan =
 ---
 
 <BaseLayout title="Notes | Ash Zhang" description="Migrated note archive">
-  <section class="panel page-intro">
-    <div class="eyebrow">Notes</div>
-    <h1 class="page-title">Learning notebook</h1>
-    <p class="lead">
-      Notes are still authored in Markdown, but now rendered through a newer,
-      more flexible site shell.
-    </p>
+  <PageMasthead
+    eyebrow="Notes"
+    title="Learning notebook"
+    lead="Notes are still authored in Markdown, but now rendered through a newer, more flexible site shell."
+    detail="This area stays intentionally rougher than Posts. It is where study trails, experiments, and partial thinking can stay useful without pretending to be polished essays."
+  >
+    <a slot="actions" class="button button--primary" href={withBase("/tag/notes/")}>Open Notes tag</a>
+    <a slot="actions" class="button" href={withBase("/")}>Back home</a>
 
-    <div class="stats-grid">
-      <article class="stat-card">
-        <span class="eyebrow">Total notes</span>
-        <strong>{notes.length}</strong>
-      </article>
-      <article class="stat-card">
-        <span class="eyebrow">Year span</span>
-        <strong>{yearSpan}</strong>
-      </article>
-      <article class="stat-card">
-        <span class="eyebrow">Top tags</span>
-        <div class="tag-list">
-          {topTags.map((tag) => (
-            <a class="tag-link" href={withBase(`/tag/${tag.slug}/`)}>
-              {tag.tag}
-            </a>
-          ))}
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <div class="page-actions">
-    <a class="button" href={withBase("/")}>Back home</a>
-  </div>
+    <article slot="facts" class="page-fact-card">
+      <span>Total notes</span>
+      <strong>{notes.length}</strong>
+      <p>Study entries that stay in source files and render through the new site layer.</p>
+    </article>
+    <article slot="facts" class="page-fact-card">
+      <span>Year span</span>
+      <strong>{yearSpan}</strong>
+      <p>A longer-running archive of classes, experiments, and research trails.</p>
+    </article>
+    <article slot="facts" class="page-fact-card">
+      <span>Top tags</span>
+      <div class="tag-list">
+        {topTags.map((tag) => (
+          <a class="tag-link" href={withBase(`/tag/${tag.slug}/`)}>
+            {tag.tag}
+          </a>
+        ))}
+      </div>
+    </article>
+  </PageMasthead>
 
   {archiveGroups.map((group) => <ArchiveYearGroup group={group} kind="notes" />)}
 </BaseLayout>

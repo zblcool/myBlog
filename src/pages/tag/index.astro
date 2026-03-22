@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageMasthead from "@/components/PageMasthead.astro";
 import { collectTagSummaries } from "@/lib/content";
 import { withBase } from "@/lib/paths";
 
@@ -10,29 +11,31 @@ const tags = collectTagSummaries(posts, notes);
 ---
 
 <BaseLayout title="Tags | Ash Zhang" description="Tag archive">
-  <section class="panel page-intro">
-    <div class="eyebrow">Tags</div>
-    <h1 class="page-title">Tag archive</h1>
-    <p class="lead">
-      Tags stay attached to the source Markdown and are indexed separately in the
-      new site layer.
-    </p>
+  <PageMasthead
+    eyebrow="Tags"
+    title="Tag archive"
+    lead="Tags stay attached to the source Markdown and are indexed separately in the new site layer."
+    detail="This page is the subject-first view of the site: useful when visitors care more about themes like graphics, JavaScript, or algorithms than about whether something is a post or a note."
+  >
+    <a slot="actions" class="button button--primary" href={withBase("/post/")}>Browse posts</a>
+    <a slot="actions" class="button" href={withBase("/")}>Back home</a>
 
-    <div class="stats-grid">
-      <article class="stat-card">
-        <span class="eyebrow">Unique tags</span>
-        <strong>{tags.length}</strong>
-      </article>
-      <article class="stat-card">
-        <span class="eyebrow">Tagged posts</span>
-        <strong>{posts.length}</strong>
-      </article>
-      <article class="stat-card">
-        <span class="eyebrow">Tagged notes</span>
-        <strong>{notes.length}</strong>
-      </article>
-    </div>
-  </section>
+    <article slot="facts" class="page-fact-card">
+      <span>Unique tags</span>
+      <strong>{tags.length}</strong>
+      <p>Topic buckets generated from the current writing archive.</p>
+    </article>
+    <article slot="facts" class="page-fact-card">
+      <span>Tagged posts</span>
+      <strong>{posts.length}</strong>
+      <p>Polished articles currently participating in tag browsing.</p>
+    </article>
+    <article slot="facts" class="page-fact-card">
+      <span>Tagged notes</span>
+      <strong>{notes.length}</strong>
+      <p>Rougher study material indexed with the same metadata system.</p>
+    </article>
+  </PageMasthead>
 
   <section class="section">
     <div class="card-grid">

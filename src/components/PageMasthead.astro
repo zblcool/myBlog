@@ -1,0 +1,32 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead: string;
+  detail?: string;
+}
+
+const { eyebrow, title, lead, detail } = Astro.props;
+const hasFacts = Astro.slots.has("facts");
+const hasActions = Astro.slots.has("actions");
+---
+
+<section class:list={["page-masthead", "panel", hasFacts && "page-masthead--split"]}>
+  <div class="page-masthead__content">
+    <div class="eyebrow">{eyebrow}</div>
+    <h1 class="page-title">{title}</h1>
+    <p class="lead">{lead}</p>
+    {detail && <p class="page-masthead__detail">{detail}</p>}
+    {hasActions && (
+      <div class="page-action-row">
+        <slot name="actions" />
+      </div>
+    )}
+  </div>
+
+  {hasFacts && (
+    <div class="page-fact-grid">
+      <slot name="facts" />
+    </div>
+  )}
+</section>
