@@ -403,6 +403,16 @@ video {
   margin-top: 1.5rem;
 }
 
+.article-cover {
+  width: 100%;
+  margin-top: 1.25rem;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: calc(var(--radius) - 6px);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.6);
+}
+
 .article-body :where(h2, h3, h4) {
   margin-top: 2rem;
   line-height: 1.2;

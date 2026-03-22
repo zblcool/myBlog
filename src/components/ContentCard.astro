@@ -2,9 +2,10 @@
 import type { WritingEntry, WritingKind } from "@/lib/content";
 import {
   formatDate,
+  getEntryCover,
+  getEntryCoverAlt,
   getEntryUrl,
-  getExcerpt,
-  getFirstImageSource,
+  getEntrySummary,
   getTagUrl,
 } from "@/lib/content";
 import { withBase } from "@/lib/paths";
@@ -15,7 +16,8 @@ interface Props {
 }
 
 const { entry, kind } = Astro.props;
-const thumbnail = getFirstImageSource(entry.body ?? "");
+const thumbnail = getEntryCover(entry);
+const summary = getEntrySummary(entry);
 ---
 
 <article class="content-card">
@@ -25,7 +27,7 @@ const thumbnail = getFirstImageSource(entry.body ?? "");
         <img
           class="content-card__thumbnail"
           src={thumbnail}
-          alt={`${entry.data.title} thumbnail`}
+          alt={getEntryCoverAlt(entry)}
           loading="lazy"
         />
       </a>
@@ -48,7 +50,7 @@ const thumbnail = getFirstImageSource(entry.body ?? "");
     <a href={withBase(getEntryUrl(kind, entry))}>{entry.data.title}</a>
   </h3>
 
-  <p class="content-card__excerpt">{getExcerpt(entry.body ?? "")}</p>
+  <p class="content-card__excerpt">{summary}</p>
 
   {entry.data.tags.length > 0 && (
     <div class="tag-list">

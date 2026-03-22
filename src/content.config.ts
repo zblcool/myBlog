@@ -9,6 +9,9 @@ const writingSchema = z.object({
   author: z.string().optional(),
   location: z.string().optional(),
   description: z.string().optional(),
+  summary: z.string().optional(),
+  cover: z.string().optional(),
+  coverAlt: z.string().optional(),
   mathjax: z.any().optional(),
 });
 

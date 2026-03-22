@@ -7,6 +7,8 @@ tags:
   - Front End
 author: Ash
 location: Runcorn, Brisbane  
+description: A quick reminder that async loops should use for...of instead of forEach when order and awaiting matter.
+summary: Why forEach and async-await often produce surprising behavior, and what to use instead.
 ---
 
 

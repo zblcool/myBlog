@@ -74,6 +74,33 @@ export function getFirstImageSource(markdown: string) {
   return undefined;
 }
 
+export function getEntrySummary(
+  entry: WritingEntry,
+  maxLength = 180,
+) {
+  if (entry.data.summary) {
+    return entry.data.summary;
+  }
+
+  if (entry.data.description) {
+    return entry.data.description;
+  }
+
+  return getExcerpt(entry.body ?? "", maxLength);
+}
+
+export function getEntryCover(entry: WritingEntry) {
+  if (entry.data.cover) {
+    return normalizeImageSource(entry.data.cover);
+  }
+
+  return getFirstImageSource(entry.body ?? "");
+}
+
+export function getEntryCoverAlt(entry: WritingEntry) {
+  return entry.data.coverAlt ?? `${entry.data.title} cover`;
+}
+
 export function getAdjacentEntries<T extends WritingEntry>(
   entries: T[],
   currentId: string,

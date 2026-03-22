@@ -7,6 +7,10 @@ tags:
   - Front End
 author: Ash
 location: Runcorn, Brisbane  
+description: Practical notes on React Three.js post-processing, including bloom, transparency, composer sizing, and render order pitfalls.
+summary: A working note on fixing common post-processing issues in React Three Fiber scenes.
+cover: /pics/blog/train.gif
+coverAlt: Animated train scene used as a React Three.js post-processing example.
 ---
 
 [Unreal Bloom and Renderer Transparency issue · Issue #14104 · mrdoob/three.js (github.com)](https://github.com/mrdoob/three.js/issues/14104#issuecomment-429664412)

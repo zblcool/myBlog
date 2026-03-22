@@ -5,6 +5,8 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import {
   formatDate,
   getAdjacentEntries,
+  getEntryCover,
+  getEntryCoverAlt,
   getTagUrl,
   sortEntriesByDateDesc,
 } from "@/lib/content";
@@ -23,6 +25,8 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const posts = sortEntriesByDateDesc(await getCollection("posts"));
 const { newer, older } = getAdjacentEntries(posts, entry.id);
+const cover = getEntryCover(entry);
+const intro = entry.data.description ?? entry.data.summary;
 ---
 
 <BaseLayout
@@ -47,6 +51,12 @@ const { newer, older } = getAdjacentEntries(posts, entry.id);
         </>
       )}
     </div>
+
+    {intro && <p class="article-intro">{intro}</p>}
+
+    {cover && (
+      <img class="article-cover" src={cover} alt={getEntryCoverAlt(entry)} loading="lazy" />
+    )}
 
     {entry.data.tags.length > 0 && (
       <div class="tag-list">
