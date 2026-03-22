@@ -44,6 +44,10 @@ Current default target:
 - the raw private key content
 - a base64-encoded copy of the private key content
 
+Optional:
+
+- `PAGES_DEPLOY_KEY_PASSPHRASE` if the private key is encrypted with a passphrase
+
 Do not store the public key in this secret. If GitHub Actions reports `error in libcrypto`, the secret content is usually malformed or newline-normalized incorrectly.
 
 ### Optional repository variables

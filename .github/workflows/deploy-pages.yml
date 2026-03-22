@@ -75,6 +75,7 @@ jobs:
       - name: Configure SSH for target repository
         env:
           PAGES_DEPLOY_KEY: ${{ secrets.PAGES_DEPLOY_KEY }}
+          PAGES_DEPLOY_KEY_PASSPHRASE: ${{ secrets.PAGES_DEPLOY_KEY_PASSPHRASE }}
         run: |
           set -eu
 
@@ -85,17 +86,33 @@ jobs:
 
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          if printf '%s' "$PAGES_DEPLOY_KEY" | grep -q "BEGIN OPENSSH PRIVATE KEY"; then
+          if printf '%s' "$PAGES_DEPLOY_KEY" | grep -Eq "BEGIN (OPENSSH|RSA|EC|DSA|PRIVATE) PRIVATE KEY"; then
             printf '%s' "$PAGES_DEPLOY_KEY" | tr -d '\r' > ~/.ssh/pages_deploy_key
           else
             printf '%s' "$PAGES_DEPLOY_KEY" | tr -d '\r' | base64 --decode > ~/.ssh/pages_deploy_key
           fi
           chmod 600 ~/.ssh/pages_deploy_key
 
-          if ! ssh-keygen -y -f ~/.ssh/pages_deploy_key >/dev/null 2>&1; then
-            echo "PAGES_DEPLOY_KEY is not a valid SSH private key." >&2
+          if ssh-keygen -y -f ~/.ssh/pages_deploy_key >/dev/null 2>&1; then
+            :
+          elif [ -n "${PAGES_DEPLOY_KEY_PASSPHRASE:-}" ]; then
+            eval "$(ssh-agent -s)" >/dev/null
+
+            cat <<'EOF' > ~/.ssh/pages_deploy_key_askpass
+          #!/usr/bin/env sh
+          printf '%s\n' "$PAGES_DEPLOY_KEY_PASSPHRASE"
+          EOF
+            chmod 700 ~/.ssh/pages_deploy_key_askpass
+
+            if ! DISPLAY=:0 SSH_ASKPASS=~/.ssh/pages_deploy_key_askpass SSH_ASKPASS_REQUIRE=force setsid ssh-add ~/.ssh/pages_deploy_key </dev/null >/dev/null 2>&1; then
+              echo "PAGES_DEPLOY_KEY could not be unlocked with PAGES_DEPLOY_KEY_PASSPHRASE." >&2
+              echo "If this key has a passphrase, store that passphrase in the PAGES_DEPLOY_KEY_PASSPHRASE secret." >&2
+              exit 1
+            fi
+          else
+            echo "PAGES_DEPLOY_KEY is not a valid SSH private key, or it is passphrase-protected." >&2
             echo "Store the raw private key or a base64-encoded copy of the private key in the secret." >&2
-            echo "Do not use the public key, and make sure the secret preserves the full key body." >&2
+            echo "Do not use the public key. If the private key has a passphrase, add PAGES_DEPLOY_KEY_PASSPHRASE as well." >&2
             exit 1
           fi
 
