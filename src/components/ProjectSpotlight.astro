@@ -7,6 +7,7 @@ interface Props {
   eyebrow?: string;
   title?: string;
   summary?: string;
+  compact?: boolean;
 }
 
 const {
@@ -14,12 +15,14 @@ const {
   eyebrow = "Current Spotlight",
   title = project.title,
   summary = project.summary,
+  compact = false,
 } = Astro.props;
 
-const gallery = project.gallery.slice(1, 4);
+const gallery = compact ? project.gallery.slice(1, 3) : project.gallery.slice(1, 4);
+const visibleTags = compact ? project.stack.slice(0, 4) : project.stack;
 ---
 
-<article class="project-spotlight">
+<article class:list={["project-spotlight", compact && "project-spotlight--compact"]}>
   <div class="project-spotlight__copy">
     <div class="eyebrow">{eyebrow}</div>
     <h2>{title}</h2>
@@ -33,7 +36,7 @@ const gallery = project.gallery.slice(1, 4);
     </div>
 
     <div class="tag-list">
-      {project.stack.map((item) => (
+      {visibleTags.map((item) => (
         <span class="tag-link">{item}</span>
       ))}
     </div>
@@ -54,16 +57,25 @@ const gallery = project.gallery.slice(1, 4);
       )}
     </div>
 
-    <div class="project-spotlight__facts">
-      <article class="project-spotlight__fact">
-        <span>Why it stands out</span>
-        <p>{project.challenge}</p>
-      </article>
-      <article class="project-spotlight__fact">
-        <span>Why it matters now</span>
-        <p>{project.outcome}</p>
-      </article>
-    </div>
+    {
+      compact ? (
+        <div class="project-spotlight__pill-row">
+          <span class="project-spotlight__pill">Flagship case study</span>
+          <span class="project-spotlight__pill">{project.role}</span>
+        </div>
+      ) : (
+        <div class="project-spotlight__facts">
+          <article class="project-spotlight__fact">
+            <span>Why it stands out</span>
+            <p>{project.challenge}</p>
+          </article>
+          <article class="project-spotlight__fact">
+            <span>Why it matters now</span>
+            <p>{project.outcome}</p>
+          </article>
+        </div>
+      )
+    }
   </div>
 
   <div class="project-spotlight__media">

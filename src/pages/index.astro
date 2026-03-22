@@ -6,16 +6,54 @@ import ProjectSpotlight from "@/components/ProjectSpotlight.astro";
 import HeroScene from "@/components/react/three/HeroScene";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { projects } from "@/data/projects";
-import { migrationPrinciples, profile, siteSections } from "@/data/site";
+import { profile, siteSections } from "@/data/site";
 import { sortEntriesByDateDesc } from "@/lib/content";
 import { withBase } from "@/lib/paths";
 
 const posts = sortEntriesByDateDesc(await getCollection("posts"));
 const notes = sortEntriesByDateDesc(await getCollection("notes"));
-const latestPosts = posts.slice(0, 3);
-const latestNotes = notes.slice(0, 3);
+const latestPosts = posts.slice(0, 2);
+const latestNotes = notes.slice(0, 2);
 const spotlightProject = projects[0];
 const featuredProjects = projects.slice(1, 4);
+const quickPaths = [
+  {
+    eyebrow: "Work",
+    title: "Portfolio",
+    href: "/portfolio/",
+    metric: `${projects.length} case studies`,
+    detail: "Interactive projects first",
+  },
+  {
+    eyebrow: "Writing",
+    title: "Posts",
+    href: "/post/",
+    metric: `${posts.length} published posts`,
+    detail: "Polished articles",
+  },
+  {
+    eyebrow: "Learning",
+    title: "Notes",
+    href: "/notes/",
+    metric: `${notes.length} active notes`,
+    detail: "Rough but useful",
+  },
+  {
+    eyebrow: "Profile",
+    title: "CV",
+    href: "/cv/",
+    metric: "Resume + snapshot",
+    detail: "Quick context",
+  },
+];
+const homeHighlights = [
+  "Interactive graphics",
+  "Technical writing",
+  "Playable systems",
+];
+const showcaseSections = siteSections.filter((section) =>
+  ["Portfolio", "Posts", "Notes", "Tools"].includes(section.title),
+);
 ---
 
 <BaseLayout>
@@ -24,25 +62,30 @@ const featuredProjects = projects.slice(1, 4);
       <div class="eyebrow">Ash Zhang</div>
       <h1>{profile.name}</h1>
       <p class="lead">{profile.tagline}</p>
-      <p class="lead">{profile.intro}</p>
+
+      <div class="hero-badge-list">
+        {homeHighlights.map((item) => (
+          <span class="hero-badge">{item}</span>
+        ))}
+      </div>
 
       <div class="hero-actions">
         <a class="button button--primary" href={withBase("/portfolio/")}>See selected work</a>
         <a class="button" href={withBase("/post/")}>Browse writing</a>
       </div>
 
-      <div class="stats-grid">
-        <div class="stat-card">
+      <div class="hero-metrics">
+        <div class="hero-metric-card">
           <strong>{posts.length + notes.length}</strong>
-          <span>Markdown entries already flowing through the new content layer</span>
+          <span>entries in the live content archive</span>
         </div>
-        <div class="stat-card">
-          <strong>Data-first</strong>
-          <span>Projects and site metadata now live outside page templates</span>
+        <div class="hero-metric-card">
+          <strong>{spotlightProject.title}</strong>
+          <span>current lead case study</span>
         </div>
-        <div class="stat-card">
-          <strong>3D-ready</strong>
-          <span>Interactive work can grow in isolated React and Three.js islands</span>
+        <div class="hero-metric-card">
+          <strong>{profile.title}</strong>
+          <span>graphics work and writing side by side</span>
         </div>
       </div>
     </div>
@@ -52,61 +95,43 @@ const featuredProjects = projects.slice(1, 4);
     </div>
   </section>
 
-  <section class="section">
-    <div class="section-head">
-      <div>
-        <h2>Explore the site</h2>
-        <p>
-          The rebuild now separates writing, learning notes, work, profile, and
-          tools more clearly so each section has a stronger role.
-        </p>
-      </div>
-    </div>
-
-    <div class="section-directory-grid">
-      {siteSections.map((section) => (
-        <article class="section-directory-card">
-          <span class="section-directory-card__eyebrow">{section.eyebrow}</span>
-          <h3>
-            <a href={withBase(section.href)}>{section.title}</a>
-          </h3>
-          <p>{section.summary}</p>
-          <span class="section-directory-card__detail">{section.detail}</span>
-        </article>
-      ))}
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-head">
-      <div>
-        <h2>Current spotlight</h2>
-        <p>
-          The rebuild should lead with the work that best represents the next
-          version of the site. Right now that is Hanzi Workshop: a bilingual game
-          prototype with real interface depth, a clearer visual direction, and a
-          genuine in-run capture.
-        </p>
-      </div>
-      <a class="button" href={withBase("/portfolio/")}>Open all case studies</a>
-    </div>
-
+  <section class="home-stage">
     <ProjectSpotlight
       project={spotlightProject}
       eyebrow="Featured Project"
-      title="Hanzi Workshop deserves to lead the portfolio"
-      summary="This is the strongest bridge between your current site direction and your future Three.js-friendly work: it is interactive, design-heavy, technically layered, and already has enough material to present like a proper case study."
+      title="Hanzi Workshop / 汉字工坊"
+      summary="A bilingual game prototype with enough depth, visual identity, and real in-run material to carry the first impression of the site."
+      compact
     />
+
+    <div class="home-stage__side">
+      <div class="home-quick-grid">
+        {quickPaths.map((item) => (
+          <a class="home-quick-card" href={withBase(item.href)}>
+            <span class="home-quick-card__eyebrow">{item.eyebrow}</span>
+            <strong>{item.title}</strong>
+            <span class="home-quick-card__metric">{item.metric}</span>
+            <span class="home-quick-card__detail">{item.detail}</span>
+          </a>
+        ))}
+      </div>
+
+      <div class="home-strip">
+        {showcaseSections.map((section) => (
+          <a class="home-strip__item" href={withBase(section.href)}>
+            <span>{section.eyebrow}</span>
+            <strong>{section.title}</strong>
+          </a>
+        ))}
+      </div>
+    </div>
   </section>
 
   <section class="section">
     <div class="section-head">
       <div>
         <h2>Selected work</h2>
-        <p>
-          The rest of the portfolio still matters, but it now sits behind a
-          clearer lead project instead of competing for attention on equal footing.
-        </p>
+        <p>More case studies and archive pieces behind the flagship project.</p>
       </div>
       <a class="button" href={withBase("/portfolio/")}>More case studies</a>
     </div>
@@ -119,52 +144,35 @@ const featuredProjects = projects.slice(1, 4);
   <section class="section">
     <div class="section-head">
       <div>
-        <h2>Rebuild rules</h2>
-        <p>
-          These are the constraints we are keeping during migration so future
-          framework changes stay realistic instead of painful.
-        </p>
+        <h2>Writing now</h2>
+        <p>The newest finished posts and active notes, without making the home page read like an archive index.</p>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href={withBase("/post/")}>All posts</a>
+        <a class="button" href={withBase("/notes/")}>All notes</a>
       </div>
     </div>
 
-    <div class="principle-grid">
-      {migrationPrinciples.map((item, index) => (
-        <article class="principle-card">
-          <span class="principle-card__index">0{index + 1}</span>
-          <p>{item}</p>
-        </article>
-      ))}
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-head">
-      <div>
-        <h2>Latest posts</h2>
-        <p>Writing that is already coming from the existing Markdown archive.</p>
+    <div class="home-writing-grid">
+      <div class="home-writing-column">
+        <div class="home-writing-column__head">
+          <span class="eyebrow">Posts</span>
+          <h3>Polished writing</h3>
+        </div>
+        <div class="card-grid">
+          {latestPosts.map((entry) => <ContentCard entry={entry} kind="post" />)}
+        </div>
       </div>
-      <a class="button" href={withBase("/post/")}>All posts</a>
-    </div>
 
-    <div class="card-grid">
-      {latestPosts.map((entry) => <ContentCard entry={entry} kind="post" />)}
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-head">
-      <div>
-        <h2>Latest notes</h2>
-        <p>
-          Notes stay editable as content files, while presentation moves into the
-          new site layer.
-        </p>
+      <div class="home-writing-column">
+        <div class="home-writing-column__head">
+          <span class="eyebrow">Notes</span>
+          <h3>Fresh notes</h3>
+        </div>
+        <div class="card-grid">
+          {latestNotes.map((entry) => <ContentCard entry={entry} kind="notes" />)}
+        </div>
       </div>
-      <a class="button" href={withBase("/notes/")}>All notes</a>
-    </div>
-
-    <div class="card-grid">
-      {latestNotes.map((entry) => <ContentCard entry={entry} kind="notes" />)}
     </div>
   </section>
 </BaseLayout>

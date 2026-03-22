@@ -378,6 +378,49 @@ video {
   border-color: transparent;
 }
 
+.hero-badge-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(178, 74, 47, 0.14);
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 0.35rem;
+}
+
+.hero-metric-card {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1rem;
+  border-radius: calc(var(--radius) - 10px);
+  background: rgba(255, 251, 244, 0.72);
+  border: 1px solid rgba(178, 74, 47, 0.14);
+}
+
+.hero-metric-card strong {
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.hero-metric-card span {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
 .hero-visual {
   min-height: 100%;
   display: grid;
@@ -437,6 +480,116 @@ video {
 
 .section {
   margin-top: 2rem;
+}
+
+.home-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.78fr);
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.home-stage__side {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.home-quick-grid {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.home-quick-card,
+.home-strip__item {
+  text-decoration: none;
+  color: inherit;
+}
+
+.home-quick-card {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1.1rem;
+  border-radius: calc(var(--radius) - 8px);
+  background: rgba(255, 248, 239, 0.74);
+  border: 1px solid rgba(178, 74, 47, 0.16);
+  box-shadow: var(--shadow);
+  transition: 180ms ease;
+}
+
+.home-quick-card:hover,
+.home-strip__item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(178, 74, 47, 0.26);
+}
+
+.home-quick-card__eyebrow {
+  color: var(--accent);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.home-quick-card strong {
+  font-size: 1.2rem;
+}
+
+.home-quick-card__metric {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.home-quick-card__detail {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.home-strip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.home-strip__item {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.95rem;
+  border-radius: calc(var(--radius) - 10px);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(178, 74, 47, 0.12);
+  transition: 180ms ease;
+}
+
+.home-strip__item span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.home-strip__item strong {
+  font-size: 1rem;
+}
+
+.home-writing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.home-writing-column {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.home-writing-column__head {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.home-writing-column__head h3 {
+  margin: 0;
+  font-size: 1.3rem;
 }
 
 .section-head {
@@ -884,6 +1037,40 @@ video {
   box-shadow: var(--shadow);
 }
 
+.project-spotlight--compact {
+  padding: 1.2rem;
+  gap: 1rem;
+}
+
+.project-spotlight--compact .project-spotlight__copy {
+  gap: 0.85rem;
+}
+
+.project-spotlight--compact .project-spotlight__copy h2 {
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+}
+
+.project-spotlight--compact .project-spotlight__gallery {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.project-spotlight__pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.project-spotlight__pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(178, 74, 47, 0.14);
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
 .project-spotlight__copy {
   display: grid;
   align-content: start;
@@ -1030,9 +1217,15 @@ video {
   }
 
   .cv-layout,
+  .home-stage,
+  .home-writing-grid,
   .project-spotlight,
   .page-masthead--split,
   .project-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-metrics {
     grid-template-columns: 1fr;
   }
 
