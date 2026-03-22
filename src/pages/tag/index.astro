@@ -1,12 +1,12 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { collectTagCounts } from "@/lib/content";
+import { collectTagSummaries } from "@/lib/content";
 import { withBase } from "@/lib/paths";
 
 const posts = await getCollection("posts");
 const notes = await getCollection("notes");
-const tags = collectTagCounts([...posts, ...notes]);
+const tags = collectTagSummaries(posts, notes);
 ---
 
 <BaseLayout title="Tags | Ash Zhang" description="Tag archive">
@@ -17,6 +17,21 @@ const tags = collectTagCounts([...posts, ...notes]);
       Tags stay attached to the source Markdown and are indexed separately in the
       new site layer.
     </p>
+
+    <div class="stats-grid">
+      <article class="stat-card">
+        <span class="eyebrow">Unique tags</span>
+        <strong>{tags.length}</strong>
+      </article>
+      <article class="stat-card">
+        <span class="eyebrow">Tagged posts</span>
+        <strong>{posts.length}</strong>
+      </article>
+      <article class="stat-card">
+        <span class="eyebrow">Tagged notes</span>
+        <strong>{notes.length}</strong>
+      </article>
+    </div>
   </section>
 
   <section class="section">
@@ -28,6 +43,10 @@ const tags = collectTagCounts([...posts, ...notes]);
               <a href={withBase(`/tag/${item.slug}/`)}>{item.tag}</a>
             </h3>
             <p class="muted">{item.count} linked entries</p>
+            <div class="tag-card__split">
+              <span>{item.postCount} posts</span>
+              <span>{item.noteCount} notes</span>
+            </div>
           </article>
         ))
       }

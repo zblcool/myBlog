@@ -2,7 +2,11 @@
 import { getCollection } from "astro:content";
 import ContentCard from "@/components/ContentCard.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { slugifyTag, sortEntriesByDateDesc } from "@/lib/content";
+import {
+  collectTagCounts,
+  slugifyTag,
+  sortEntriesByDateDesc,
+} from "@/lib/content";
 import { withBase } from "@/lib/paths";
 
 export async function getStaticPaths() {
@@ -38,6 +42,10 @@ const relatedPosts = sortEntriesByDateDesc(
 const relatedNotes = sortEntriesByDateDesc(
   notes.filter((entry) => entry.data.tags.includes(tag)),
 );
+const relatedEntries = [...relatedPosts, ...relatedNotes];
+const relatedTags = collectTagCounts(relatedEntries)
+  .filter((item) => item.tag !== tag)
+  .slice(0, 6);
 ---
 
 <BaseLayout title={`${tag} | Ash Zhang`} description={`Entries tagged ${tag}`}>
@@ -48,6 +56,31 @@ const relatedNotes = sortEntriesByDateDesc(
       This tag page is generated from source metadata, which keeps the indexing
       logic separate from the page layout.
     </p>
+
+    <div class="stats-grid">
+      <article class="stat-card">
+        <span class="eyebrow">Total entries</span>
+        <strong>{relatedEntries.length}</strong>
+      </article>
+      <article class="stat-card">
+        <span class="eyebrow">Posts</span>
+        <strong>{relatedPosts.length}</strong>
+      </article>
+      <article class="stat-card">
+        <span class="eyebrow">Notes</span>
+        <strong>{relatedNotes.length}</strong>
+      </article>
+    </div>
+
+    {relatedTags.length > 0 && (
+      <div class="tag-list">
+        {relatedTags.map((item) => (
+          <a class="tag-link" href={withBase(`/tag/${item.slug}/`)}>
+            {item.tag}
+          </a>
+        ))}
+      </div>
+    )}
   </section>
 
   <div class="section-head">

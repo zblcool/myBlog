@@ -16,7 +16,7 @@
 ### 2. Content Experience Upgrade
 - [ ] Review the current information architecture for Blog, Notes, Tags, Portfolio, CV, and Tools.
 - [x] Define a consistent writing template for posts and notes.
-- [ ] Improve archive, tag browsing, and reading flow.
+- [x] Improve archive, tag browsing, and reading flow.
 - [ ] Decide which older notes should stay as raw study notes and which should be polished into articles.
 - [ ] Create a content backlog for future featured posts and evergreen pages.
 

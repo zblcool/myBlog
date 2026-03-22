@@ -5,6 +5,10 @@ export type PostEntry = CollectionEntry<"posts">;
 export type NoteEntry = CollectionEntry<"notes">;
 export type WritingEntry = PostEntry | NoteEntry;
 export type WritingKind = "post" | "notes";
+export type ArchiveYearGroup<T extends WritingEntry = WritingEntry> = {
+  year: string;
+  entries: T[];
+};
 
 export function sortEntriesByDateDesc<T extends WritingEntry>(entries: T[]) {
   return [...entries].sort(
@@ -121,6 +125,26 @@ export function getAdjacentEntries<T extends WritingEntry>(
   };
 }
 
+export function groupEntriesByYear<T extends WritingEntry>(
+  entries: T[],
+): ArchiveYearGroup<T>[] {
+  const groups = new Map<string, T[]>();
+
+  for (const entry of entries) {
+    const year = String(entry.data.date.getFullYear());
+    const group = groups.get(year) ?? [];
+    group.push(entry);
+    groups.set(year, group);
+  }
+
+  return [...groups.entries()]
+    .map(([year, groupedEntries]) => ({
+      year,
+      entries: groupedEntries,
+    }))
+    .sort((left, right) => Number(right.year) - Number(left.year));
+}
+
 export function getEntryUrl(kind: WritingKind, entryOrId: WritingEntry | string) {
   const id = typeof entryOrId === "string" ? entryOrId : entryOrId.id;
   return `/${kind}/${id}/`;
@@ -155,6 +179,48 @@ export function collectTagCounts(entries: WritingEntry[]) {
       tag,
       count,
       slug: slugifyTag(tag),
+    }))
+    .sort((left, right) => {
+      if (right.count !== left.count) {
+        return right.count - left.count;
+      }
+
+      return left.tag.localeCompare(right.tag);
+    });
+}
+
+export function collectTagSummaries(posts: PostEntry[], notes: NoteEntry[]) {
+  const counts = new Map<
+    string,
+    {
+      postCount: number;
+      noteCount: number;
+    }
+  >();
+
+  for (const entry of posts) {
+    for (const tag of entry.data.tags) {
+      const current = counts.get(tag) ?? { postCount: 0, noteCount: 0 };
+      current.postCount += 1;
+      counts.set(tag, current);
+    }
+  }
+
+  for (const entry of notes) {
+    for (const tag of entry.data.tags) {
+      const current = counts.get(tag) ?? { postCount: 0, noteCount: 0 };
+      current.noteCount += 1;
+      counts.set(tag, current);
+    }
+  }
+
+  return [...counts.entries()]
+    .map(([tag, countsByType]) => ({
+      tag,
+      slug: slugifyTag(tag),
+      postCount: countsByType.postCount,
+      noteCount: countsByType.noteCount,
+      count: countsByType.postCount + countsByType.noteCount,
     }))
     .sort((left, right) => {
       if (right.count !== left.count) {

@@ -1,11 +1,21 @@
 ---
 import { getCollection } from "astro:content";
-import ContentCard from "@/components/ContentCard.astro";
+import ArchiveYearGroup from "@/components/ArchiveYearGroup.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { sortEntriesByDateDesc } from "@/lib/content";
+import {
+  collectTagCounts,
+  groupEntriesByYear,
+  sortEntriesByDateDesc,
+} from "@/lib/content";
 import { withBase } from "@/lib/paths";
 
 const posts = sortEntriesByDateDesc(await getCollection("posts"));
+const archiveGroups = groupEntriesByYear(posts);
+const topTags = collectTagCounts(posts).slice(0, 6);
+const yearSpan =
+  archiveGroups.length > 0
+    ? `${archiveGroups[archiveGroups.length - 1]?.year} - ${archiveGroups[0]?.year}`
+    : "Archive";
 ---
 
 <BaseLayout title="Posts | Ash Zhang" description="Migrated post archive">
@@ -16,15 +26,32 @@ const posts = sortEntriesByDateDesc(await getCollection("posts"));
       These posts are loaded directly from the existing Markdown files instead of
       being copied into a new proprietary format.
     </p>
+
+    <div class="stats-grid">
+      <article class="stat-card">
+        <span class="eyebrow">Total posts</span>
+        <strong>{posts.length}</strong>
+      </article>
+      <article class="stat-card">
+        <span class="eyebrow">Year span</span>
+        <strong>{yearSpan}</strong>
+      </article>
+      <article class="stat-card">
+        <span class="eyebrow">Top tags</span>
+        <div class="tag-list">
+          {topTags.map((tag) => (
+            <a class="tag-link" href={withBase(`/tag/${tag.slug}/`)}>
+              {tag.tag}
+            </a>
+          ))}
+        </div>
+      </article>
+    </div>
   </section>
 
   <div class="section-head">
     <a class="button" href={withBase("/")}>Back home</a>
   </div>
 
-  <section class="section">
-    <div class="card-grid">
-      {posts.map((entry) => <ContentCard entry={entry} kind="post" />)}
-    </div>
-  </section>
+  {archiveGroups.map((group) => <ArchiveYearGroup group={group} kind="post" />)}
 </BaseLayout>
