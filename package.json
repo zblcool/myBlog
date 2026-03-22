@@ -10,7 +10,6 @@
     "@astrojs/check": "^0.9.8",
     "@astrojs/react": "^5.0.1",
     "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
     "@types/three": "^0.183.1",
     "@vuepress/theme-blog": "^2.2.0",
     "astro": "^6.0.8",

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { cvSnapshot, profile, socialLinks } from "@/data/site";
 import { withBase } from "@/lib/paths";
 ---
 
@@ -8,19 +9,56 @@ import { withBase } from "@/lib/paths";
     <div class="eyebrow">CV</div>
     <h1 class="page-title">Resume and profile</h1>
     <p class="lead">
-      The PDF remains a static asset, but the page around it is now easy to evolve
-      into a richer online profile later.
+      The PDF remains the formal resume, but this page now also gives a quick
+      profile snapshot for people who need the context before opening it.
     </p>
   </section>
 
   <section class="section">
-    <div class="embed-shell">
-      <object data={withBase("/document/Ash-Zhang-CV.pdf")} type="application/pdf">
-        <p>
-          Your browser does not support inline PDF previews.
-          <a href={withBase("/document/Ash-Zhang-CV.pdf")}>Open the PDF directly</a>.
-        </p>
-      </object>
+    <div class="cv-layout">
+      <aside class="panel panel--padded cv-sidebar">
+        <div class="eyebrow">Profile Snapshot</div>
+        <h2>{profile.title}</h2>
+        <p class="lead cv-sidebar__lead">{cvSnapshot.summary}</p>
+
+        <div class="cv-highlight-list">
+          {cvSnapshot.highlights.map((item) => (
+            <article class="cv-highlight-card">
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+            </article>
+          ))}
+        </div>
+
+        <div class="cv-focus">
+          <h3>Focus areas</h3>
+          <ul>
+            {cvSnapshot.focusAreas.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="cv-actions">
+          <a class="button button--primary" href={withBase("/document/Ash-Zhang-CV.pdf")}>
+            Open PDF
+          </a>
+          {socialLinks.map((link) => (
+            <a class="button" href={link.href} target="_blank" rel="noreferrer">
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </aside>
+
+      <div class="embed-shell cv-embed">
+        <object data={withBase("/document/Ash-Zhang-CV.pdf")} type="application/pdf">
+          <p>
+            Your browser does not support inline PDF previews.
+            <a href={withBase("/document/Ash-Zhang-CV.pdf")}>Open the PDF directly</a>.
+          </p>
+        </object>
+      </div>
     </div>
   </section>
 </BaseLayout>

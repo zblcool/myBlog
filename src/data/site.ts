@@ -80,6 +80,21 @@ export const socialLinks = [
   },
 ];
 
+export const cvSnapshot = {
+  summary:
+    "Computer graphics focused web developer building content-first sites, interactive interfaces, and portfolio work that can grow into richer product experiences.",
+  focusAreas: [
+    "Astro and static-site architecture that stays GitHub Pages friendly",
+    "React and Three.js components isolated for future interactive work",
+    "Project storytelling that pairs product context with implementation detail",
+  ],
+  highlights: [
+    { label: "Current direction", value: "Content-first site rebuild with room for 3D work" },
+    { label: "Working style", value: "Structured migrations, durable content systems, clear UI polish" },
+    { label: "Primary stack", value: "Astro, TypeScript, React, Three.js" },
+  ],
+};
+
 export const migrationPrinciples = [
   "Keep Markdown content as the source of truth during migration.",
   "Keep page templates thin so future framework changes stay manageable.",

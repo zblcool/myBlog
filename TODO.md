@@ -11,7 +11,7 @@
 - [x] Redesign the home page so it better introduces Ash, key strengths, and featured work.
 - [ ] Refresh the visual system so the blog, portfolio, CV, and tool pages feel unified.
 - [x] Rework the portfolio page into a clearer project showcase instead of a media dump.
-- [ ] Improve the CV page so it works as both an embedded resume and a concise online profile.
+- [x] Improve the CV page so it works as both an embedded resume and a concise online profile.
 
 ### 2. Content Experience Upgrade
 - [x] Review the current information architecture for Blog, Notes, Tags, Portfolio, CV, and Tools.
@@ -25,7 +25,8 @@
 - [x] Make sure any future stack choice still fits GitHub Pages well.
 - [ ] Reduce page-level inline styling and move toward a clearer global style structure.
   - Progress 2026-03-22: extracted shared panel padding and ThreeMigrationCard spacing into `src/styles/global.css`, removing a first batch of repeated inline styles.
-- [ ] Review old dependencies and remove unused or experimental pieces where appropriate.
+- [x] Review old dependencies and remove unused or experimental pieces where appropriate.
+  - Progress 2026-03-22: kept legacy VuePress packages that still power `legacy:*` scripts and removed unused `@types/react-dom` after `yarn check` and `yarn build` passed on Node 22.17.0.
 - [x] Improve deployment workflow and reduce reliance on manual release steps.
 - [x] Add basic project maintenance tooling if needed, such as linting or build checks.
   - Progress 2026-03-22: deploy workflow now runs `yarn check` before `yarn build`, so type/content validation blocks broken deploys.
