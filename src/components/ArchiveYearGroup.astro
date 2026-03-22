@@ -1,5 +1,6 @@
 ---
 import ContentCard from "@/components/ContentCard.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
 import type { ArchiveYearGroup, WritingKind } from "@/lib/content";
 
 interface Props {
@@ -11,12 +12,11 @@ const { group, kind } = Astro.props;
 ---
 
 <section class="archive-group">
-  <div class="section-head archive-group__head">
-    <div>
-      <h2>{group.year}</h2>
-      <p>{group.entries.length} entries</p>
-    </div>
-  </div>
+  <SectionHeader
+    title={group.year}
+    description={`${group.entries.length} entries`}
+    className="archive-group__head"
+  />
 
   <div class="card-grid">
     {group.entries.map((entry) => <ContentCard entry={entry} kind={kind} />)}

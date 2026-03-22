@@ -1,0 +1,18 @@
+---
+interface Props {
+  title: string | number;
+  description?: string;
+  className?: string;
+}
+
+const { title, description, className } = Astro.props;
+const classes = ["section-head", className].filter(Boolean).join(" ");
+---
+
+<div class={classes}>
+  <div>
+    <h2>{title}</h2>
+    {description && <p>{description}</p>}
+  </div>
+  <slot />
+</div>

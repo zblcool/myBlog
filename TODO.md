@@ -27,6 +27,7 @@
 - [ ] Reduce page-level inline styling and move toward a clearer global style structure.
   - Progress 2026-03-22: extracted shared panel padding and ThreeMigrationCard spacing into `src/styles/global.css`, removing a first batch of repeated inline styles.
   - Progress 2026-03-22: introduced shared `page-intro` and `page-actions` utilities in `src/styles/global.css`, replacing repeated intro-panel and archive action layout patterns across portfolio, CV, tools, posts, notes, and tag pages.
+  - Progress 2026-03-22: extracted a shared `SectionHeader` component for repeated `section-head` page scaffolding across the home page, portfolio pages, tag pages, and archive year groups, reducing another batch of page-level presentation duplication.
 - [x] Review old dependencies and remove unused or experimental pieces where appropriate.
   - Progress 2026-03-22: kept legacy VuePress packages that still power `legacy:*` scripts and removed unused `@types/react-dom` after `yarn check` and `yarn build` passed on Node 22.17.0.
 - [x] Improve deployment workflow and reduce reliance on manual release steps.

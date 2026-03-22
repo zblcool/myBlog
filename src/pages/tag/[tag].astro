@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import ContentCard from "@/components/ContentCard.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageMasthead from "@/components/PageMasthead.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
 import {
   collectTagCounts,
   slugifyTag,
@@ -85,12 +86,10 @@ const relatedTags = collectTagCounts(relatedEntries)
 
   {relatedPosts.length > 0 && (
     <section class="section">
-      <div class="section-head">
-        <div>
-          <h2>Posts</h2>
-          <p>{relatedPosts.length} related post entries</p>
-        </div>
-      </div>
+      <SectionHeader
+        title="Posts"
+        description={`${relatedPosts.length} related post entries`}
+      />
 
       <div class="card-grid">
         {relatedPosts.map((entry) => <ContentCard entry={entry} kind="post" />)}
@@ -100,12 +99,10 @@ const relatedTags = collectTagCounts(relatedEntries)
 
   {relatedNotes.length > 0 && (
     <section class="section">
-      <div class="section-head">
-        <div>
-          <h2>Notes</h2>
-          <p>{relatedNotes.length} related note entries</p>
-        </div>
-      </div>
+      <SectionHeader
+        title="Notes"
+        description={`${relatedNotes.length} related note entries`}
+      />
 
       <div class="card-grid">
         {relatedNotes.map((entry) => <ContentCard entry={entry} kind="notes" />)}

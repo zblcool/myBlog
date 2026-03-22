@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import ContentCard from "@/components/ContentCard.astro";
 import ProjectCard from "@/components/ProjectCard.astro";
 import ProjectSpotlight from "@/components/ProjectSpotlight.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
 import HeroScene from "@/components/react/three/HeroScene";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { projects } from "@/data/projects";
@@ -128,13 +129,12 @@ const showcaseSections = siteSections.filter((section) =>
   </section>
 
   <section class="section">
-    <div class="section-head">
-      <div>
-        <h2>Selected work</h2>
-        <p>More case studies and archive pieces behind the flagship project.</p>
-      </div>
+    <SectionHeader
+      title="Selected work"
+      description="More case studies and archive pieces behind the flagship project."
+    >
       <a class="button" href={withBase("/portfolio/")}>More case studies</a>
-    </div>
+    </SectionHeader>
 
     <div class="card-grid">
       {featuredProjects.map((project) => <ProjectCard project={project} />)}
@@ -142,16 +142,15 @@ const showcaseSections = siteSections.filter((section) =>
   </section>
 
   <section class="section">
-    <div class="section-head">
-      <div>
-        <h2>Writing now</h2>
-        <p>The newest finished posts and active notes, without making the home page read like an archive index.</p>
-      </div>
+    <SectionHeader
+      title="Writing now"
+      description="The newest finished posts and active notes, without making the home page read like an archive index."
+    >
       <div class="hero-actions">
         <a class="button" href={withBase("/post/")}>All posts</a>
         <a class="button" href={withBase("/notes/")}>All notes</a>
       </div>
-    </div>
+    </SectionHeader>
 
     <div class="home-writing-grid">
       <div class="home-writing-column">

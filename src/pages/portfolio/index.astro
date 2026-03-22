@@ -2,6 +2,7 @@
 import PageMasthead from "@/components/PageMasthead.astro";
 import ProjectCard from "@/components/ProjectCard.astro";
 import ProjectSpotlight from "@/components/ProjectSpotlight.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
 import { projects } from "@/data/projects";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { withBase } from "@/lib/paths";
@@ -40,16 +41,10 @@ const projectArchive = projects.slice(1);
   </PageMasthead>
 
   <section class="section">
-    <div class="section-head">
-      <div>
-        <h2>Featured now</h2>
-        <p>
-          Hanzi Workshop is the current flagship case study because it already
-          combines product framing, front-end craft, bilingual UX, and genuine
-          game-prototype depth.
-        </p>
-      </div>
-    </div>
+    <SectionHeader
+      title="Featured now"
+      description="Hanzi Workshop is the current flagship case study because it already combines product framing, front-end craft, bilingual UX, and genuine game-prototype depth."
+    />
 
     <ProjectSpotlight
       project={spotlightProject}
@@ -60,15 +55,10 @@ const projectArchive = projects.slice(1);
   </section>
 
   <section class="section">
-    <div class="section-head">
-      <div>
-        <h2>Project archive</h2>
-        <p>
-          Archive material, live tools, and concept work now sit behind the lead
-          project instead of all fighting for the first impression.
-        </p>
-      </div>
-    </div>
+    <SectionHeader
+      title="Project archive"
+      description="Archive material, live tools, and concept work now sit behind the lead project instead of all fighting for the first impression."
+    />
 
     <div class="card-grid">
       {projectArchive.map((project) => <ProjectCard project={project} />)}

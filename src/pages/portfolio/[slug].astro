@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
 import { projects } from "@/data/projects";
 import { isExternalPath, withBase } from "@/lib/paths";
 
@@ -80,12 +81,10 @@ const { project } = Astro.props;
       </div>
 
       <section class="section">
-        <div class="section-head">
-          <div>
-            <h2>Gallery</h2>
-            <p>Legacy assets kept intact while the surrounding story gets rebuilt.</p>
-          </div>
-        </div>
+        <SectionHeader
+          title="Gallery"
+          description="Legacy assets kept intact while the surrounding story gets rebuilt."
+        />
 
         <div class="project-gallery">
           {project.gallery.map((image) => (
