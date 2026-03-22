@@ -71,7 +71,7 @@ jobs:
           BASE_PATH: ${{ env.FINAL_BASE_PATH }}
           CNAME_DOMAIN: ${{ vars.CNAME_DOMAIN }}
         run: |
-          yarn check
+          yarn run check
           yarn build
 
       - name: Configure SSH for target repository
