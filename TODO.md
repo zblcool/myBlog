@@ -27,7 +27,8 @@
   - Progress 2026-03-22: extracted shared panel padding and ThreeMigrationCard spacing into `src/styles/global.css`, removing a first batch of repeated inline styles.
 - [ ] Review old dependencies and remove unused or experimental pieces where appropriate.
 - [x] Improve deployment workflow and reduce reliance on manual release steps.
-- [ ] Add basic project maintenance tooling if needed, such as linting or build checks.
+- [x] Add basic project maintenance tooling if needed, such as linting or build checks.
+  - Progress 2026-03-22: deploy workflow now runs `yarn check` before `yarn build`, so type/content validation blocks broken deploys.
 
 ## Open Decision: React Migration
 - [ ] Current recommendation: do not migrate to React immediately.
