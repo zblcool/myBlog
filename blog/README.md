@@ -2,14 +2,14 @@
 title: Home
 ---
 <vue-particles color="#787f85" :particleOpacity="0.4" :particlesNumber="30" shapeType="triangle" linesColor="#787f85"  ></vue-particles>
-<img class="indexImg" src="/background.JPG" style="float:right;width: 50%;box-shadow:rgba(0, 0, 0, 0.4) 7px 13px 20px 0px;">
+<img class="indexImg" src="/background.JPG">
 <p class="beginning"> 
    Hey, my name <br> is <b>Ash</b> .
 </p>
 
 <GetStarted/>
 <p class="description"> A web developer who focuses on Computer Graphics </p>
-<p style="font-size:40px">Side projects</p>
+<p class="section-label">Side projects</p>
 <router-link to="/portfolio/">
 <img
     class="posterimg"
@@ -99,6 +99,9 @@ title: Home
 .indexImg  
   transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1)
   border-radius: 5px
+  float right
+  width 50%
+  box-shadow rgba(0, 0, 0, 0.4) 7px 13px 20px 0px
   position: relative
   z-index: 2 !important
   &:hover
@@ -110,6 +113,9 @@ title: Home
     opacity: 0
     /* -webkit-transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) */
     transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1)
+
+.section-label
+  font-size 40px
 
 .aa 
   stroke-width:10;
