@@ -16,7 +16,7 @@ type Mist = {
 };
 
 const GLYPHS = ["汉", "字", "工", "坊", "文", "心", "月", "山", "木", "田", "雨", "火", "人", "明", "休", "忍"];
-const PALETTE = ["#f2b45a", "#8fd8d0", "#d87e63", "#88aee6", "#f1dfb4"];
+const PALETTE = ["#f2a93b", "#30c6be", "#e4674d", "#5d84ff", "#7ccf6b", "#f0d66b"];
 
 function randomBetween(min: number, max: number) {
   return min + Math.random() * (max - min);
@@ -104,7 +104,7 @@ export default function FloatingHanziBackground() {
     applySrgbSpace(renderer);
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x071319, 0.065);
+    scene.fog = new THREE.FogExp2(0x071319, 0.048);
 
     const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 40);
     camera.position.set(0, 0, 12);
@@ -152,7 +152,7 @@ export default function FloatingHanziBackground() {
         textureCanvas.width * 0.42,
       );
       glow.addColorStop(0, "rgba(255,255,255,0.42)");
-      glow.addColorStop(0.4, `${color}66`);
+      glow.addColorStop(0.4, `${color}88`);
       glow.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = glow;
       ctx.beginPath();
@@ -189,8 +189,8 @@ export default function FloatingHanziBackground() {
 
       const gradient = ctx.createRadialGradient(64, 64, 6, 64, 64, 64);
       gradient.addColorStop(0, "rgba(255,255,255,0.72)");
-      gradient.addColorStop(0.25, `${color}66`);
-      gradient.addColorStop(0.6, `${color}24`);
+      gradient.addColorStop(0.25, `${color}88`);
+      gradient.addColorStop(0.6, `${color}30`);
       gradient.addColorStop(1, "rgba(0,0,0,0)");
 
       ctx.fillStyle = gradient;
@@ -212,7 +212,7 @@ export default function FloatingHanziBackground() {
         new THREE.MeshBasicMaterial({
           color,
           transparent: true,
-          opacity: 0.08,
+          opacity: 0.13,
           depthWrite: false,
         }),
       );
@@ -224,7 +224,7 @@ export default function FloatingHanziBackground() {
         new THREE.MeshBasicMaterial({
           color,
           transparent: true,
-          opacity: 0.24,
+          opacity: 0.34,
           wireframe: Math.random() > 0.28,
           depthWrite: false,
         }),
@@ -238,7 +238,7 @@ export default function FloatingHanziBackground() {
           new THREE.SpriteMaterial({
             map: glowTexture,
             transparent: true,
-            opacity: randomBetween(0.16, 0.22),
+            opacity: randomBetween(0.24, 0.34),
             depthWrite: false,
           }),
         );
@@ -253,7 +253,7 @@ export default function FloatingHanziBackground() {
           new THREE.SpriteMaterial({
             map: glyphTexture,
             transparent: true,
-            opacity: randomBetween(0.8, 0.94),
+            opacity: randomBetween(0.92, 1),
             depthWrite: false,
           }),
         );
@@ -304,7 +304,7 @@ export default function FloatingHanziBackground() {
         new THREE.SpriteMaterial({
           map: glowTexture,
           transparent: true,
-          opacity: randomBetween(0.06, 0.12),
+          opacity: randomBetween(0.08, 0.14),
           depthWrite: false,
         }),
       );
