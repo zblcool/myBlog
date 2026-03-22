@@ -5,7 +5,7 @@ import ProjectCard from "@/components/ProjectCard.astro";
 import HeroScene from "@/components/react/three/HeroScene";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { projects } from "@/data/projects";
-import { migrationPrinciples, profile } from "@/data/site";
+import { migrationPrinciples, profile, siteSections } from "@/data/site";
 import { sortEntriesByDateDesc } from "@/lib/content";
 import { withBase } from "@/lib/paths";
 
@@ -47,6 +47,31 @@ const featuredProjects = projects.slice(0, 3);
 
     <div class="hero-visual">
       <HeroScene client:load />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>Explore the site</h2>
+        <p>
+          The rebuild now separates writing, learning notes, work, profile, and
+          tools more clearly so each section has a stronger role.
+        </p>
+      </div>
+    </div>
+
+    <div class="section-directory-grid">
+      {siteSections.map((section) => (
+        <article class="section-directory-card">
+          <span class="section-directory-card__eyebrow">{section.eyebrow}</span>
+          <h3>
+            <a href={withBase(section.href)}>{section.title}</a>
+          </h3>
+          <p>{section.summary}</p>
+          <span class="section-directory-card__detail">{section.detail}</span>
+        </article>
+      ))}
     </div>
   </section>
 

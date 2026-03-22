@@ -14,7 +14,7 @@
 - [ ] Improve the CV page so it works as both an embedded resume and a concise online profile.
 
 ### 2. Content Experience Upgrade
-- [ ] Review the current information architecture for Blog, Notes, Tags, Portfolio, CV, and Tools.
+- [x] Review the current information architecture for Blog, Notes, Tags, Portfolio, CV, and Tools.
 - [x] Define a consistent writing template for posts and notes.
 - [x] Improve archive, tag browsing, and reading flow.
 - [ ] Decide which older notes should stay as raw study notes and which should be polished into articles.

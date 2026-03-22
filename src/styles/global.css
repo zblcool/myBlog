@@ -555,18 +555,21 @@ video {
 
 .principle-grid,
 .project-story-grid,
-.project-kpis {
+.project-kpis,
+.section-directory-grid {
   display: grid;
   gap: 1rem;
 }
 
-.principle-grid {
+.principle-grid,
+.section-directory-grid {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .principle-card,
 .project-story-card,
-.project-kpi {
+.project-kpi,
+.section-directory-card {
   padding: 1.15rem;
   border-radius: calc(var(--radius) - 8px);
   background: var(--panel-strong);
@@ -580,6 +583,33 @@ video {
   font-size: 0.9rem;
   letter-spacing: 0.08em;
   color: var(--accent);
+}
+
+.section-directory-card {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.section-directory-card h3 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.section-directory-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.section-directory-card__eyebrow {
+  color: var(--accent);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.section-directory-card__detail {
+  color: var(--text);
+  font-size: 0.94rem;
 }
 
 .three-stage {
