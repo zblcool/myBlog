@@ -25,18 +25,36 @@ yarn legacy:build
 
 ## GitHub Pages Deployment
 
-The repository now includes a GitHub Actions workflow that builds and deploys the Astro site to GitHub Pages from `master`.
+The repository now includes a GitHub Actions workflow that builds the Astro site from this source repository and pushes the generated `dist/` output to a separate GitHub Pages repository.
 
-- If this repository is used as a project page, the Astro `base` path is derived automatically from the repository name.
-- If you use a custom domain or a root user page, set repository variables in GitHub:
-  - `SITE_URL`
-  - `BASE_PATH`
-  - `CNAME_DOMAIN`
+Current default target:
+
+- source repo: `zblcool/myBlog`
+- deploy repo: `zblcool/zblcool.github.io`
+- deploy branch: `master`
+
+### Required setup
+
+1. Generate an SSH key pair for deployment.
+2. Add the public key as a deploy key with write access on the target Pages repository.
+3. Add the private key to this source repository as a secret named `PAGES_DEPLOY_KEY`.
+
+### Optional repository variables
+
+- `TARGET_PAGES_REPOSITORY`
+- `TARGET_PAGES_BRANCH`
+- `SITE_URL`
+- `BASE_PATH`
+- `CNAME_DOMAIN`
 
 Examples:
 
-- Project page on `https://zblcool.github.io/myBlog`: leave the variables empty.
-- Root site or custom domain: set `SITE_URL` to your final origin and set `BASE_PATH` to `/`.
+- Deploy to `zblcool/zblcool.github.io` as the root site: leave `BASE_PATH` empty or set it to `/`.
+- Deploy to a project Pages repo: set `SITE_URL` and `BASE_PATH` to match the final public URL.
+- Use a custom domain: set `SITE_URL` to the public origin and `CNAME_DOMAIN` to the hostname.
+
+If `TARGET_PAGES_REPOSITORY` is not set, the workflow defaults to `zblcool/zblcool.github.io`.
+If `TARGET_PAGES_BRANCH` is not set, the workflow defaults to `master`.
 
 ## URL Compatibility
 

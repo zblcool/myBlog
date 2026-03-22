@@ -1,4 +1,4 @@
-name: Deploy Astro Site
+name: Deploy Astro Site To Pages Repo
 
 on:
   push:
@@ -8,26 +8,18 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: github-pages
+  group: external-pages-deploy
   cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
 
       - name: Set up Node.js
         uses: actions/setup-node@v5
@@ -38,20 +30,97 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Build Astro site
+      - name: Resolve deployment target
         env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          TARGET_PAGES_REPOSITORY: ${{ vars.TARGET_PAGES_REPOSITORY }}
+          TARGET_PAGES_BRANCH: ${{ vars.TARGET_PAGES_BRANCH }}
           SITE_URL: ${{ vars.SITE_URL }}
           BASE_PATH: ${{ vars.BASE_PATH }}
+        run: |
+          set -eu
+
+          TARGET_REPOSITORY="${TARGET_PAGES_REPOSITORY:-zblcool/zblcool.github.io}"
+          TARGET_BRANCH="${TARGET_PAGES_BRANCH:-master}"
+          TARGET_OWNER="${TARGET_REPOSITORY%%/*}"
+          TARGET_NAME="${TARGET_REPOSITORY##*/}"
+
+          if [ -n "${SITE_URL:-}" ]; then
+            FINAL_SITE_URL="${SITE_URL}"
+          else
+            FINAL_SITE_URL="https://${TARGET_NAME}"
+          fi
+
+          if [ -n "${BASE_PATH:-}" ]; then
+            FINAL_BASE_PATH="${BASE_PATH}"
+          elif [ "${TARGET_NAME}" = "${TARGET_OWNER}.github.io" ]; then
+            FINAL_BASE_PATH="/"
+          else
+            FINAL_BASE_PATH="/${TARGET_NAME}/"
+          fi
+
+          {
+            echo "TARGET_REPOSITORY=${TARGET_REPOSITORY}"
+            echo "TARGET_BRANCH=${TARGET_BRANCH}"
+            echo "FINAL_SITE_URL=${FINAL_SITE_URL}"
+            echo "FINAL_BASE_PATH=${FINAL_BASE_PATH}"
+          } >> "$GITHUB_ENV"
+
+      - name: Build Astro site
+        env:
+          SITE_URL: ${{ env.FINAL_SITE_URL }}
+          BASE_PATH: ${{ env.FINAL_BASE_PATH }}
           CNAME_DOMAIN: ${{ vars.CNAME_DOMAIN }}
         run: yarn build
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: ./dist
+      - name: Configure SSH for target repository
+        env:
+          PAGES_DEPLOY_KEY: ${{ secrets.PAGES_DEPLOY_KEY }}
+        run: |
+          set -eu
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          if [ -z "${PAGES_DEPLOY_KEY:-}" ]; then
+            echo "Missing required secret: PAGES_DEPLOY_KEY" >&2
+            exit 1
+          fi
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$PAGES_DEPLOY_KEY" > ~/.ssh/pages_deploy_key
+          chmod 600 ~/.ssh/pages_deploy_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+          cat <<'EOF' > ~/.ssh/config
+          Host github-pages-target
+            HostName github.com
+            User git
+            IdentityFile ~/.ssh/pages_deploy_key
+            IdentitiesOnly yes
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Publish dist to target Pages repository
+        env:
+          TARGET_REPOSITORY: ${{ env.TARGET_REPOSITORY }}
+          TARGET_BRANCH: ${{ env.TARGET_BRANCH }}
+        run: |
+          set -eu
+
+          TARGET_DIR="$RUNNER_TEMP/pages-repo"
+          git clone --depth 1 --branch "$TARGET_BRANCH" "git@github-pages-target:${TARGET_REPOSITORY}.git" "$TARGET_DIR"
+
+          find "$TARGET_DIR" -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          cp -R dist/. "$TARGET_DIR/"
+
+          cd "$TARGET_DIR"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if [ -z "$(git status --short)" ]; then
+            echo "No deploy changes detected."
+            exit 0
+          fi
+
+          git add -A
+          git commit -m "Deploy from ${GITHUB_REPOSITORY}@${GITHUB_SHA}"
+          git push origin "$TARGET_BRANCH"
