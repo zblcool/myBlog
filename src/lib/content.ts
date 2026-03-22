@@ -1,4 +1,5 @@
 import type { CollectionEntry } from "astro:content";
+import { isExternalPath, withBase } from "@/lib/paths";
 
 export type PostEntry = CollectionEntry<"posts">;
 export type NoteEntry = CollectionEntry<"notes">;
@@ -39,6 +40,38 @@ export function getExcerpt(markdown: string, maxLength = 180) {
   }
 
   return `${plain.slice(0, maxLength).trim()}...`;
+}
+
+function normalizeImageSource(value: string) {
+  const normalized = value.trim().replace(/^<|>$/g, "");
+
+  if (!normalized) {
+    return undefined;
+  }
+
+  if (isExternalPath(normalized) || normalized.startsWith("/")) {
+    return withBase(normalized);
+  }
+
+  if (normalized.startsWith("./") || normalized.startsWith("../")) {
+    return normalized;
+  }
+
+  return withBase(`/${normalized}`);
+}
+
+export function getFirstImageSource(markdown: string) {
+  const htmlMatch = markdown.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
+  if (htmlMatch?.[1]) {
+    return normalizeImageSource(htmlMatch[1]);
+  }
+
+  const markdownMatch = markdown.match(/!\[[^\]]*]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/);
+  if (markdownMatch?.[1]) {
+    return normalizeImageSource(markdownMatch[1]);
+  }
+
+  return undefined;
 }
 
 export function getEntryUrl(kind: WritingKind, entryOrId: WritingEntry | string) {

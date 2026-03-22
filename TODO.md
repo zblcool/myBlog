@@ -3,8 +3,8 @@
 ## Current Direction
 
 ### Deployment Constraint
-- [ ] Keep the project compatible with GitHub Pages static hosting.
-- [ ] Prefer workflows that can build to static assets and deploy cleanly with GitHub Actions.
+- [x] Keep the project compatible with GitHub Pages static hosting.
+- [x] Prefer workflows that can build to static assets and deploy cleanly with GitHub Actions.
 
 ### 1. Brand Upgrade
 - [ ] Clarify the site's core positioning: personal brand site, technical blog, or both.
@@ -21,11 +21,11 @@
 - [ ] Create a content backlog for future featured posts and evergreen pages.
 
 ### 3. Technical Upgrade
-- [ ] Review whether VuePress 1 should be kept, upgraded, or replaced.
-- [ ] Make sure any future stack choice still fits GitHub Pages well.
+- [x] Review whether VuePress 1 should be kept, upgraded, or replaced.
+- [x] Make sure any future stack choice still fits GitHub Pages well.
 - [ ] Reduce page-level inline styling and move toward a clearer global style structure.
 - [ ] Review old dependencies and remove unused or experimental pieces where appropriate.
-- [ ] Improve deployment workflow and reduce reliance on manual release steps.
+- [x] Improve deployment workflow and reduce reliance on manual release steps.
 - [ ] Add basic project maintenance tooling if needed, such as linting or build checks.
 
 ## Open Decision: React Migration

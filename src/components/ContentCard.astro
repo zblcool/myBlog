@@ -4,6 +4,7 @@ import {
   formatDate,
   getEntryUrl,
   getExcerpt,
+  getFirstImageSource,
   getTagUrl,
 } from "@/lib/content";
 import { withBase } from "@/lib/paths";
@@ -14,9 +15,23 @@ interface Props {
 }
 
 const { entry, kind } = Astro.props;
+const thumbnail = getFirstImageSource(entry.body ?? "");
 ---
 
 <article class="content-card">
+  {
+    thumbnail && (
+      <a class="content-card__thumbnail-link" href={withBase(getEntryUrl(kind, entry))}>
+        <img
+          class="content-card__thumbnail"
+          src={thumbnail}
+          alt={`${entry.data.title} thumbnail`}
+          loading="lazy"
+        />
+      </a>
+    )
+  }
+
   <div class="content-card__meta">
     <span>{kind === "post" ? "Post" : "Note"}</span>
     <span> · </span>
