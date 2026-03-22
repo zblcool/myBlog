@@ -13,7 +13,6 @@ type FloatingShape = {
 
 type Actor = {
   group: THREE.Group;
-  radius: number;
   velocity: THREE.Vector3;
   spin: THREE.Vector3;
   bobPhase: number;
@@ -182,8 +181,8 @@ export default function FloatingHanziBackground({
     const bounds = coarsePointer
       ? { x: 6.4, y: 4, z: 3.6 }
       : { x: 8.4, y: 4.8, z: 4.5 };
-    const actorCount = prefersReducedMotion ? 8 : coarsePointer ? 11 : 14;
-    const mistCount = prefersReducedMotion ? 3 : coarsePointer ? 4 : 5;
+    const actorCount = prefersReducedMotion ? 7 : coarsePointer ? 9 : 12;
+    const mistCount = prefersReducedMotion ? 3 : coarsePointer ? 3 : 4;
 
     let renderer: THREE.WebGLRenderer;
     try {
@@ -200,7 +199,7 @@ export default function FloatingHanziBackground({
 
     renderer.setClearColor(0x000000, 0);
     renderer.setPixelRatio(
-      Math.min(window.devicePixelRatio || 1, coarsePointer ? 1.15 : 1.5),
+      Math.min(window.devicePixelRatio || 1, coarsePointer ? 1 : 1.2),
     );
     applySrgbSpace(renderer);
 
@@ -214,7 +213,6 @@ export default function FloatingHanziBackground({
     const pointerTarget = new THREE.Vector2();
     const pointerCurrent = new THREE.Vector2();
     const glowTextureCache = new Map<string, THREE.CanvasTexture>();
-    const tempDelta = new THREE.Vector3();
     const actors: Actor[] = [];
     const mists: Mist[] = [];
 
@@ -337,7 +335,6 @@ export default function FloatingHanziBackground({
       scene.add(group);
       actors.push({
         group,
-        radius: elongated ? clampBetween(1.4 + shape.stretch * 0.38, 1.8, 3.1) : randomBetween(1.1, 1.64),
         velocity: new THREE.Vector3(
           randomBetween(-0.22, 0.22),
           randomBetween(-0.14, 0.14),
@@ -416,29 +413,6 @@ export default function FloatingHanziBackground({
       }
     };
 
-    const resolveActorCollisions = () => {
-      for (let i = 0; i < actors.length; i += 1) {
-        for (let j = i + 1; j < actors.length; j += 1) {
-          const left = actors[i];
-          const right = actors[j];
-          tempDelta.subVectors(right.group.position, left.group.position);
-          const distance = tempDelta.length();
-          const minDistance = left.radius + right.radius;
-
-          if (distance === 0 || distance >= minDistance) {
-            continue;
-          }
-
-          const normal = tempDelta.normalize();
-          const overlap = minDistance - distance;
-          left.group.position.addScaledVector(normal, -overlap * 0.5);
-          right.group.position.addScaledVector(normal, overlap * 0.5);
-          left.velocity.addScaledVector(normal, -overlap * 0.08);
-          right.velocity.addScaledVector(normal, overlap * 0.08);
-        }
-      }
-    };
-
     const resize = () => {
       const width = window.innerWidth || 1;
       const height = window.innerHeight || 1;
@@ -459,12 +433,16 @@ export default function FloatingHanziBackground({
 
     let frameId = 0;
     let jarScrollVelocity = 0;
+    let pendingScrollImpulseX = 0;
+    let pendingScrollImpulseY = 0;
     let previousTime = performance.now();
     const render = (timestamp: number) => {
       const dt = Math.min((timestamp - previousTime) / 1000, 1 / 30);
       previousTime = timestamp;
       const elapsed = timestamp / 1000;
       jarScrollVelocity = THREE.MathUtils.lerp(jarScrollVelocity, 0, 0.06);
+      pendingScrollImpulseX *= 0.82;
+      pendingScrollImpulseY *= 0.82;
 
       pointerCurrent.lerp(pointerTarget, 0.035);
       camera.position.x = pointerCurrent.x * 0.8 + Math.sin(elapsed * 0.08) * 0.34;
@@ -472,7 +450,35 @@ export default function FloatingHanziBackground({
         pointerCurrent.y * 0.56 + Math.cos(elapsed * 0.06) * 0.24 + jarScrollVelocity * 0.74;
       camera.lookAt(pointerCurrent.x * 0.24, pointerCurrent.y * 0.18 + jarScrollVelocity * 0.12, 0);
 
-      resolveActorCollisions();
+      if (Math.abs(pendingScrollImpulseX) > 0.0001 || Math.abs(pendingScrollImpulseY) > 0.0001) {
+        jarScrollVelocity = clampBetween(
+          jarScrollVelocity + pendingScrollImpulseY * 0.52,
+          -0.26,
+          0.26,
+        );
+
+        actors.forEach((actor, index) => {
+          const elongated = isElongated(actor.shape);
+          const lateralSwing = actor.driftBias * Math.abs(pendingScrollImpulseY) * 0.16;
+          actor.velocity.y += pendingScrollImpulseY * (elongated ? 0.64 : 0.5);
+          actor.velocity.x += pendingScrollImpulseX * 0.44 + lateralSwing;
+          actor.velocity.z += actor.depthBias * Math.abs(pendingScrollImpulseY) * 0.045;
+          actor.spin.z += pendingScrollImpulseY * (elongated ? 0.09 : 0.06);
+          actor.spin.x += actor.driftBias * pendingScrollImpulseY * 0.06;
+
+          if (index % 2 === 0) {
+            actor.velocity.x += pendingScrollImpulseY * 0.025;
+          } else {
+            actor.velocity.x -= pendingScrollImpulseY * 0.025;
+          }
+        });
+
+        mists.forEach((mist, index) => {
+          const sign = index % 2 === 0 ? 1 : -1;
+          mist.velocity.y += pendingScrollImpulseY * 0.14;
+          mist.velocity.x += pendingScrollImpulseX * 0.1 + sign * Math.abs(pendingScrollImpulseY) * 0.012;
+        });
+      }
 
       actors.forEach((actor, index) => {
         const elongated = isElongated(actor.shape);
@@ -526,29 +532,8 @@ export default function FloatingHanziBackground({
         return;
       }
 
-      jarScrollVelocity = clampBetween(jarScrollVelocity + impulseY * 0.9, -0.3, 0.3);
-
-      actors.forEach((actor, index) => {
-        const elongated = isElongated(actor.shape);
-        const lateralSwing = actor.driftBias * Math.abs(impulseY) * 0.18;
-        actor.velocity.y += impulseY * (elongated ? 1.24 : 0.94);
-        actor.velocity.x += impulseX * 0.72 + lateralSwing;
-        actor.velocity.z += actor.depthBias * Math.abs(impulseY) * 0.07;
-        actor.spin.z += impulseY * (elongated ? 0.28 : 0.18);
-        actor.spin.x += actor.driftBias * impulseY * 0.18;
-
-        if (index % 2 === 0) {
-          actor.velocity.x += impulseY * 0.06;
-        } else {
-          actor.velocity.x -= impulseY * 0.06;
-        }
-      });
-
-      mists.forEach((mist, index) => {
-        const sign = index % 2 === 0 ? 1 : -1;
-        mist.velocity.y += impulseY * 0.28;
-        mist.velocity.x += impulseX * 0.18 + sign * Math.abs(impulseY) * 0.025;
-      });
+      pendingScrollImpulseX = clampBetween(pendingScrollImpulseX + impulseX, -0.14, 0.14);
+      pendingScrollImpulseY = clampBetween(pendingScrollImpulseY + impulseY, -0.18, 0.18);
     };
 
     const handleVisibilityChange = () => {
