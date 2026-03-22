@@ -24,11 +24,12 @@
 ### 3. Technical Upgrade
 - [x] Review whether VuePress 1 should be kept, upgraded, or replaced.
 - [x] Make sure any future stack choice still fits GitHub Pages well.
-- [ ] Reduce page-level inline styling and move toward a clearer global style structure.
+- [x] Reduce page-level inline styling and move toward a clearer global style structure.
   - Progress 2026-03-22: extracted shared panel padding and ThreeMigrationCard spacing into `src/styles/global.css`, removing a first batch of repeated inline styles.
   - Progress 2026-03-22: introduced shared `page-intro` and `page-actions` utilities in `src/styles/global.css`, replacing repeated intro-panel and archive action layout patterns across portfolio, CV, tools, posts, notes, and tag pages.
   - Progress 2026-03-22: extracted a shared `SectionHeader` component for repeated `section-head` page scaffolding across the home page, portfolio pages, tag pages, and archive year groups, reducing another batch of page-level presentation duplication.
   - Progress 2026-03-23: removed the remaining inline `style` attributes from the legacy `blog/README.md` home page, moving image layout/shadow and the section heading size into scoped stylesheet classes.
+  - Progress 2026-03-23: centralized the remaining legacy VuePress `.content-wrapper` and embed wrapper rules in `blog/.vuepress/styles/index.styl`, and removed dead or duplicate page-local style blocks from the legacy CV, tool, and portfolio pages.
 - [x] Review old dependencies and remove unused or experimental pieces where appropriate.
   - Progress 2026-03-22: kept legacy VuePress packages that still power `legacy:*` scripts and removed unused `@types/react-dom` after `yarn check` and `yarn build` passed on Node 22.17.0.
 - [x] Improve deployment workflow and reduce reliance on manual release steps.

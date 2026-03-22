@@ -32,11 +32,6 @@
   </div>
 </template>
 <style lang="stylus">
-.content-wrapper {
-  max-width: 70% !important;
-  // margin-bottom: 10%;
-}
-
 .footer {
   position: fixed;
   bottom: 0;

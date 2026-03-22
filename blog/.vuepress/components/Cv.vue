@@ -1,5 +1,5 @@
 <template>
-  <div class="cv-wrap">
+  <div class="legacy-embed-wrap">
     <h1>Ash Zhang's CV</h1>
     <object
       data="/document/Ash-Zhang-CV.pdf"
@@ -14,18 +14,3 @@
     </object>
   </div>
 </template>
-
-<style lang="stylus" scoped>
-.cv-wrap
-    // height 800px
-    display flex
-    object
-        align-items justify-self start
-</style>
-
-<style lang="stylus" >
-.content-wrapper {
-  max-width: 70% !important;
-  // margin-bottom: 10%;
-}
-</style>
