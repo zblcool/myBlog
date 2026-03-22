@@ -3,8 +3,8 @@
 :root {
   --page-bg: #f7f0e2;
   --page-bg-strong: #f2e1c5;
-  --panel: rgba(255, 250, 240, 0.78);
-  --panel-strong: rgba(255, 248, 236, 0.94);
+  --panel: rgba(255, 250, 240, 0.56);
+  --panel-strong: rgba(255, 248, 236, 0.82);
   --text: #1f1d1a;
   --muted: #666155;
   --accent: #b24a2f;
@@ -82,16 +82,8 @@ video {
   width: 100%;
   height: 100%;
   display: block;
-  opacity: 0.84;
-}
-
-.site-background__veil {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.72), transparent 34%),
-    radial-gradient(circle at top right, rgba(242, 169, 59, 0.18), transparent 26%),
-    linear-gradient(180deg, rgba(247, 240, 226, 0.56) 0%, rgba(245, 234, 215, 0.78) 100%);
+  opacity: 1;
+  filter: saturate(1.16) contrast(1.08);
 }
 
 .site-header {
@@ -99,7 +91,7 @@ video {
   top: 0;
   z-index: 20;
   backdrop-filter: blur(18px);
-  background: rgba(247, 240, 226, 0.88);
+  background: rgba(247, 240, 226, 0.64);
   border-bottom: 1px solid var(--line);
 }
 
@@ -656,7 +648,7 @@ video {
   justify-content: space-between;
   gap: 1rem;
   padding: 1.3rem 1.4rem;
-  background: rgba(255, 250, 240, 0.74);
+  background: rgba(255, 250, 240, 0.56);
   border: 1px solid var(--line);
   border-radius: var(--radius);
 }
