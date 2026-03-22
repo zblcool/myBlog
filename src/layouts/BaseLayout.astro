@@ -1,0 +1,84 @@
+---
+import "@/styles/global.css";
+import { navLinks, profile, socialLinks } from "@/data/site";
+import { stripBase, withBase } from "@/lib/paths";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = `${profile.name} | ${profile.title}`,
+  description = profile.tagline,
+} = Astro.props;
+
+const pathname = stripBase(Astro.url.pathname);
+
+function isActive(href: string) {
+  if (href === "/") {
+    return pathname === href;
+  }
+
+  return pathname === href || pathname.startsWith(href);
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/png" href={withBase("/logo.png")} />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <div class="site-header__inner">
+          <a class="brand" href={withBase("/")}>
+            <img class="brand__mark" src={withBase("/logo.png")} alt="Ash Zhang logo" />
+            <span class="brand__text">
+              <span class="brand__title">{profile.name}</span>
+              <span class="brand__subtitle">{profile.title}</span>
+            </span>
+          </a>
+
+          <nav class="nav" aria-label="Primary navigation">
+            {
+              navLinks.map((link) => (
+                <a href={withBase(link.href)} data-active={isActive(link.href)}>
+                  {link.label}
+                </a>
+              ))
+            }
+          </nav>
+        </div>
+      </header>
+
+      <main class="page">
+        <slot />
+      </main>
+
+      <footer class="site-footer">
+        <div class="site-footer__panel">
+          <div>
+            <strong>{profile.name}</strong>
+            <p class="muted">{profile.tagline}</p>
+          </div>
+
+          <div class="site-footer__links">
+            {
+              socialLinks.map((link) => (
+                <a href={link.href} target="_blank" rel="noreferrer">
+                  {link.label}
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

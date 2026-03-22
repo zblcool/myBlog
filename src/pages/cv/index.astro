@@ -1,0 +1,26 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { withBase } from "@/lib/paths";
+---
+
+<BaseLayout title="CV | Ash Zhang" description="Ash Zhang CV">
+  <section class="panel" style="padding: 1.75rem;">
+    <div class="eyebrow">CV</div>
+    <h1 class="page-title">Resume and profile</h1>
+    <p class="lead">
+      The PDF remains a static asset, but the page around it is now easy to evolve
+      into a richer online profile later.
+    </p>
+  </section>
+
+  <section class="section">
+    <div class="embed-shell">
+      <object data={withBase("/document/Ash-Zhang-CV.pdf")} type="application/pdf">
+        <p>
+          Your browser does not support inline PDF previews.
+          <a href={withBase("/document/Ash-Zhang-CV.pdf")}>Open the PDF directly</a>.
+        </p>
+      </object>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,98 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { projects } from "@/data/projects";
+import { isExternalPath, withBase } from "@/lib/paths";
+
+export async function getStaticPaths() {
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+---
+
+<BaseLayout
+  title={`${project.title} | Ash Zhang`}
+  description={project.summary}
+>
+  <article class="project-detail">
+    <section class="project-hero">
+      <div class="project-hero__copy">
+        <div class="eyebrow">Case Study</div>
+        <h1>{project.title}</h1>
+        <p class="lead">{project.headline}</p>
+        <p class="article-intro">{project.summary}</p>
+
+        <div class="project-kpis">
+          <div class="project-kpi">
+            <span class="project-kpi__label">Year</span>
+            <strong>{project.year}</strong>
+          </div>
+          <div class="project-kpi">
+            <span class="project-kpi__label">Status</span>
+            <strong>{project.status}</strong>
+          </div>
+          <div class="project-kpi">
+            <span class="project-kpi__label">Role</span>
+            <strong>{project.role}</strong>
+          </div>
+        </div>
+
+        <div class="tag-list">
+          {project.stack.map((item) => (
+            <span class="tag-link">{item}</span>
+          ))}
+        </div>
+
+        <div class="project-card__actions">
+          {project.links.map((link) => (
+            <a
+              class="button"
+              href={isExternalPath(link.href) ? link.href : withBase(link.href)}
+              target={link.external ? "_blank" : undefined}
+              rel={link.external ? "noreferrer" : undefined}
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <img class="project-hero__cover" src={withBase(project.cover)} alt={project.title} />
+    </section>
+
+    <section class="project-detail__body">
+      <div class="project-story-grid">
+        <article class="project-story-card">
+          <h2>Challenge</h2>
+          <p>{project.challenge}</p>
+        </article>
+        <article class="project-story-card">
+          <h2>Approach</h2>
+          <p>{project.approach}</p>
+        </article>
+        <article class="project-story-card">
+          <h2>Outcome</h2>
+          <p>{project.outcome}</p>
+        </article>
+      </div>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2>Gallery</h2>
+            <p>Legacy assets kept intact while the surrounding story gets rebuilt.</p>
+          </div>
+        </div>
+
+        <div class="project-gallery">
+          {project.gallery.map((image) => (
+            <img src={withBase(image)} alt={project.title} />
+          ))}
+        </div>
+      </section>
+    </section>
+  </article>
+</BaseLayout>

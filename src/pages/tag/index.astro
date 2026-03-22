@@ -1,0 +1,36 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { collectTagCounts } from "@/lib/content";
+import { withBase } from "@/lib/paths";
+
+const posts = await getCollection("posts");
+const notes = await getCollection("notes");
+const tags = collectTagCounts([...posts, ...notes]);
+---
+
+<BaseLayout title="Tags | Ash Zhang" description="Tag archive">
+  <section class="panel" style="padding: 1.75rem;">
+    <div class="eyebrow">Tags</div>
+    <h1 class="page-title">Tag archive</h1>
+    <p class="lead">
+      Tags stay attached to the source Markdown and are indexed separately in the
+      new site layer.
+    </p>
+  </section>
+
+  <section class="section">
+    <div class="card-grid">
+      {
+        tags.map((item) => (
+          <article class="tag-card">
+            <h3>
+              <a href={withBase(`/tag/${item.slug}/`)}>{item.tag}</a>
+            </h3>
+            <p class="muted">{item.count} linked entries</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

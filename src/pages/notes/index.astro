@@ -1,0 +1,30 @@
+---
+import { getCollection } from "astro:content";
+import ContentCard from "@/components/ContentCard.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { sortEntriesByDateDesc } from "@/lib/content";
+import { withBase } from "@/lib/paths";
+
+const notes = sortEntriesByDateDesc(await getCollection("notes"));
+---
+
+<BaseLayout title="Notes | Ash Zhang" description="Migrated note archive">
+  <section class="panel" style="padding: 1.75rem;">
+    <div class="eyebrow">Notes</div>
+    <h1 class="page-title">Learning notebook</h1>
+    <p class="lead">
+      Notes are still authored in Markdown, but now rendered through a newer,
+      more flexible site shell.
+    </p>
+  </section>
+
+  <div class="section-head">
+    <a class="button" href={withBase("/")}>Back home</a>
+  </div>
+
+  <section class="section">
+    <div class="card-grid">
+      {notes.map((entry) => <ContentCard entry={entry} kind="notes" />)}
+    </div>
+  </section>
+</BaseLayout>

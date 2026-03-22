@@ -1,0 +1,49 @@
+---
+import type { Project } from "@/data/projects";
+import { isExternalPath, withBase } from "@/lib/paths";
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+---
+
+<article class="project-card">
+  <img class="project-card__cover" src={withBase(project.cover)} alt={project.title} />
+
+  <div class="project-card__meta">
+    <span>{project.year}</span>
+    <span>·</span>
+    <span>{project.status}</span>
+  </div>
+
+  <h3>
+    <a href={withBase(`/portfolio/${project.slug}/`)}>{project.title}</a>
+  </h3>
+
+  <p class="project-card__headline">{project.headline}</p>
+  <p>{project.summary}</p>
+
+  <div class="tag-list">
+    {project.stack.map((item) => (
+      <span class="tag-link">{item}</span>
+    ))}
+  </div>
+
+  <div class="project-card__actions">
+    <a class="button button--primary" href={withBase(`/portfolio/${project.slug}/`)}>
+      Read case study
+    </a>
+    {project.links[0] && (
+      <a
+        class="button"
+        href={isExternalPath(project.links[0].href) ? project.links[0].href : withBase(project.links[0].href)}
+        target={project.links[0].external ? "_blank" : undefined}
+        rel={project.links[0].external ? "noreferrer" : undefined}
+      >
+        {project.links[0].label}
+      </a>
+    )}
+  </div>
+</article>

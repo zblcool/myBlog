@@ -1,0 +1,47 @@
+---
+import type { WritingEntry, WritingKind } from "@/lib/content";
+import {
+  formatDate,
+  getEntryUrl,
+  getExcerpt,
+  getTagUrl,
+} from "@/lib/content";
+import { withBase } from "@/lib/paths";
+
+interface Props {
+  entry: WritingEntry;
+  kind: WritingKind;
+}
+
+const { entry, kind } = Astro.props;
+---
+
+<article class="content-card">
+  <div class="content-card__meta">
+    <span>{kind === "post" ? "Post" : "Note"}</span>
+    <span> · </span>
+    <span>{formatDate(entry.data.date)}</span>
+    {entry.data.location && (
+      <>
+        <span> · </span>
+        <span>{entry.data.location}</span>
+      </>
+    )}
+  </div>
+
+  <h3>
+    <a href={withBase(getEntryUrl(kind, entry))}>{entry.data.title}</a>
+  </h3>
+
+  <p class="content-card__excerpt">{getExcerpt(entry.body ?? "")}</p>
+
+  {entry.data.tags.length > 0 && (
+    <div class="tag-list">
+      {entry.data.tags.slice(0, 3).map((tag) => (
+        <a class="tag-link" href={withBase(getTagUrl(tag))}>
+          {tag}
+        </a>
+      ))}
+    </div>
+  )}
+</article>

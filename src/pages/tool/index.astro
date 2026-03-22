@@ -1,0 +1,23 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { toolLinks } from "@/data/site";
+
+const tool = toolLinks[0];
+---
+
+<BaseLayout title="Tools | Ash Zhang" description="Tools and experiments">
+  <section class="panel" style="padding: 1.75rem;">
+    <div class="eyebrow">Tools</div>
+    <h1 class="page-title">{tool.title}</h1>
+    <p class="lead">{tool.summary}</p>
+    <a class="button button--primary" href={tool.href} target="_blank" rel="noreferrer">
+      {tool.externalLabel}
+    </a>
+  </section>
+
+  <section class="section">
+    <div class="embed-shell">
+      <iframe src={tool.embedHref} title={tool.title}></iframe>
+    </div>
+  </section>
+</BaseLayout>

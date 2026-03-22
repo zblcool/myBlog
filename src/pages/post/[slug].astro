@@ -1,0 +1,57 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { formatDate, getTagUrl } from "@/lib/content";
+import { withBase } from "@/lib/paths";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+
+  return posts.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout
+  title={`${entry.data.title} | Ash Zhang`}
+  description={entry.data.description ?? entry.data.title}
+>
+  <article class="article-shell">
+    <div class="eyebrow">Post</div>
+    <h1>{entry.data.title}</h1>
+    <div class="article-meta">
+      <span>{formatDate(entry.data.date)}</span>
+      {entry.data.location && (
+        <>
+          <span> · </span>
+          <span>{entry.data.location}</span>
+        </>
+      )}
+      {entry.data.author && (
+        <>
+          <span> · </span>
+          <span>{entry.data.author}</span>
+        </>
+      )}
+    </div>
+
+    {entry.data.tags.length > 0 && (
+      <div class="tag-list">
+        {entry.data.tags.map((tag) => (
+          <a class="tag-link" href={withBase(getTagUrl(tag))}>
+            {tag}
+          </a>
+        ))}
+      </div>
+    )}
+
+    <div class="article-body">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

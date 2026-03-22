@@ -1,4 +1,6 @@
 node_modules
 .DS_Store
 /blog/.vuepress/dist
+/.astro
+/dist
 yarn-error.log*

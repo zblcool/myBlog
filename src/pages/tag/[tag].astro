@@ -1,0 +1,86 @@
+---
+import { getCollection } from "astro:content";
+import ContentCard from "@/components/ContentCard.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { slugifyTag, sortEntriesByDateDesc } from "@/lib/content";
+import { withBase } from "@/lib/paths";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  const notes = await getCollection("notes");
+  const allEntries = [...posts, ...notes];
+  const seen = new Set<string>();
+
+  return allEntries.flatMap((entry) =>
+    entry.data.tags.flatMap((tag) => {
+      const slug = slugifyTag(tag);
+
+      if (seen.has(slug)) {
+        return [];
+      }
+
+      seen.add(slug);
+      return {
+        params: { tag: slug },
+        props: { tag },
+      };
+    }),
+  );
+}
+
+const { tag } = Astro.props;
+const posts = await getCollection("posts");
+const notes = await getCollection("notes");
+
+const relatedPosts = sortEntriesByDateDesc(
+  posts.filter((entry) => entry.data.tags.includes(tag)),
+);
+const relatedNotes = sortEntriesByDateDesc(
+  notes.filter((entry) => entry.data.tags.includes(tag)),
+);
+---
+
+<BaseLayout title={`${tag} | Ash Zhang`} description={`Entries tagged ${tag}`}>
+  <section class="panel" style="padding: 1.75rem;">
+    <div class="eyebrow">Tag</div>
+    <h1 class="page-title">{tag}</h1>
+    <p class="lead">
+      This tag page is generated from source metadata, which keeps the indexing
+      logic separate from the page layout.
+    </p>
+  </section>
+
+  <div class="section-head">
+    <a class="button" href={withBase("/tag/")}>All tags</a>
+  </div>
+
+  {relatedPosts.length > 0 && (
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Posts</h2>
+          <p>{relatedPosts.length} related post entries</p>
+        </div>
+      </div>
+
+      <div class="card-grid">
+        {relatedPosts.map((entry) => <ContentCard entry={entry} kind="post" />)}
+      </div>
+    </section>
+  )}
+
+  {relatedNotes.length > 0 && (
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Notes</h2>
+          <p>{relatedNotes.length} related note entries</p>
+        </div>
+      </div>
+
+      <div class="card-grid">
+        {relatedNotes.map((entry) => <ContentCard entry={entry} kind="notes" />)}
+      </div>
+    </section>
+  )}
+</BaseLayout>

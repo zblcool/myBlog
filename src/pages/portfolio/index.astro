@@ -1,0 +1,35 @@
+---
+import ProjectCard from "@/components/ProjectCard.astro";
+import { projects } from "@/data/projects";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { withBase } from "@/lib/paths";
+---
+
+<BaseLayout title="Portfolio | Ash Zhang" description="Portfolio direction">
+  <section class="panel portfolio-panel">
+    <div class="eyebrow">Portfolio</div>
+    <h1 class="page-title">Case studies with room to grow</h1>
+    <p class="lead">
+      The old media wall is now turning into a clearer project archive. Each case
+      study keeps its content in data files, which makes the portfolio easier to
+      expand now and easier to migrate later.
+    </p>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>Project stories</h2>
+        <p>
+          A mix of archive material, live tools, and concept work, all prepared to
+          evolve into richer case studies.
+        </p>
+      </div>
+      <a class="button" href={withBase("/")}>Back home</a>
+    </div>
+
+    <div class="card-grid">
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </section>
+</BaseLayout>
