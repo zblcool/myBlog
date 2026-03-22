@@ -24,6 +24,7 @@
 - [x] Review whether VuePress 1 should be kept, upgraded, or replaced.
 - [x] Make sure any future stack choice still fits GitHub Pages well.
 - [ ] Reduce page-level inline styling and move toward a clearer global style structure.
+  - Progress 2026-03-22: extracted shared panel padding and ThreeMigrationCard spacing into `src/styles/global.css`, removing a first batch of repeated inline styles.
 - [ ] Review old dependencies and remove unused or experimental pieces where appropriate.
 - [x] Improve deployment workflow and reduce reliance on manual release steps.
 - [ ] Add basic project maintenance tooling if needed, such as linting or build checks.

@@ -185,6 +185,10 @@ video {
   border-radius: var(--radius);
 }
 
+.panel--padded {
+  padding: 1.75rem;
+}
+
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.9fr);
@@ -296,6 +300,27 @@ video {
   border: 1px solid var(--line);
   border-radius: calc(var(--radius) - 8px);
   padding: 1.1rem;
+}
+
+.migration-card h2 {
+  margin-bottom: 0.5rem;
+}
+
+.migration-card .muted {
+  margin-top: 0;
+}
+
+.migration-card__toggle {
+  margin-top: 0.6rem;
+}
+
+.migration-card__steps {
+  margin-top: 1rem;
+  padding-left: 1.1rem;
+}
+
+.migration-card__steps li {
+  margin-bottom: 0.55rem;
 }
 
 .stat-card strong {

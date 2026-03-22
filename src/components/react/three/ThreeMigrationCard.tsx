@@ -16,26 +16,21 @@ export default function ThreeMigrationCard({ steps }: Props) {
   return (
     <section className="migration-card">
       <div className="eyebrow">Three.js Lane</div>
-      <h2 style={{ marginBottom: "0.5rem" }}>Ready for interactive work later</h2>
-      <p className="muted" style={{ marginTop: 0 }}>
-        {summary}
-      </p>
+      <h2>Ready for interactive work later</h2>
+      <p className="muted">{summary}</p>
 
       <button
         type="button"
-        className="button"
+        className="button migration-card__toggle"
         onClick={() => setExpanded((current) => !current)}
-        style={{ marginTop: "0.6rem" }}
       >
         {expanded ? "Hide migration rules" : "Show migration rules"}
       </button>
 
       {expanded && (
-        <ol style={{ marginTop: "1rem", paddingLeft: "1.1rem" }}>
+        <ol className="migration-card__steps">
           {steps.map((step) => (
-            <li key={step} style={{ marginBottom: "0.55rem" }}>
-              {step}
-            </li>
+            <li key={step}>{step}</li>
           ))}
         </ol>
       )}
