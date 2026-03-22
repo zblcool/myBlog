@@ -7,7 +7,7 @@
 - [x] Prefer workflows that can build to static assets and deploy cleanly with GitHub Actions.
 
 ### 1. Brand Upgrade
-- [ ] Clarify the site's core positioning: personal brand site, technical blog, or both.
+- [x] Clarify the site's core positioning: personal brand site, technical blog, or both.
 - [x] Redesign the home page so it better introduces Ash, key strengths, and featured work.
 - [ ] Refresh the visual system so the blog, portfolio, CV, and tool pages feel unified.
 - [x] Rework the portfolio page into a clearer project showcase instead of a media dump.
@@ -17,8 +17,8 @@
 - [x] Review the current information architecture for Blog, Notes, Tags, Portfolio, CV, and Tools.
 - [x] Define a consistent writing template for posts and notes.
 - [x] Improve archive, tag browsing, and reading flow.
-- [ ] Decide which older notes should stay as raw study notes and which should be polished into articles.
-- [ ] Create a content backlog for future featured posts and evergreen pages.
+- [x] Decide which older notes should stay as raw study notes and which should be polished into articles.
+- [x] Create a content backlog for future featured posts and evergreen pages.
 
 ### 3. Technical Upgrade
 - [x] Review whether VuePress 1 should be kept, upgraded, or replaced.
@@ -40,7 +40,7 @@
 - [ ] Only migrate if the future site needs richer component-driven interaction, stronger design flexibility, or a longer-term platform refresh.
 
 ## Suggested Starting Order
-- [ ] First: clarify positioning and desired site outcome.
-- [ ] Second: redesign the home page and portfolio structure.
-- [ ] Third: tidy content architecture and templates.
+- [x] First: clarify positioning and desired site outcome.
+- [x] Second: redesign the home page and portfolio structure.
+- [x] Third: tidy content architecture and templates.
 - [ ] Fourth: revisit React or another framework migration after the product direction is clearer.

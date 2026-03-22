@@ -1,10 +1,10 @@
 export const profile = {
   name: "Ash Zhang",
-  title: "Computer Graphics Focused Web Developer",
+  title: "Interactive Graphics Developer & Technical Writer",
   tagline:
-    "A personal site for writing, experiments, and portfolio work, rebuilt to stay content-first while leaving room for future 3D work.",
+    "A personal brand site for technical writing, graphics experiments, and portfolio work that can grow into richer interactive experiences.",
   intro:
-    "The rebuild keeps writing in Markdown, stores project data separately from page templates, and gives interactive work its own React and Three.js lane.",
+    "The site now has two clear jobs: publish durable writing and showcase interactive, design-heavy work like Hanzi Workshop without mixing content and UI logic together.",
 };
 
 export const navLinks = [
