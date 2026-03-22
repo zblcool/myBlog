@@ -1,5 +1,6 @@
 ---
 import "@/styles/global.css";
+import FloatingHanziBackground from "@/components/react/three/FloatingHanziBackground";
 import { navLinks, profile, socialLinks } from "@/data/site";
 import { stripBase, withBase } from "@/lib/paths";
 
@@ -34,6 +35,11 @@ function isActive(href: string) {
     <link rel="icon" type="image/png" href={withBase("/logo.png")} />
   </head>
   <body>
+    <div class="site-background" aria-hidden="true">
+      <FloatingHanziBackground client:load />
+      <div class="site-background__veil"></div>
+    </div>
+
     <div class="site-shell">
       <header class="site-header">
         <div class="site-header__inner">
