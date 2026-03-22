@@ -85,8 +85,20 @@ jobs:
 
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          printf '%s\n' "$PAGES_DEPLOY_KEY" > ~/.ssh/pages_deploy_key
+          if printf '%s' "$PAGES_DEPLOY_KEY" | grep -q "BEGIN OPENSSH PRIVATE KEY"; then
+            printf '%s' "$PAGES_DEPLOY_KEY" | tr -d '\r' > ~/.ssh/pages_deploy_key
+          else
+            printf '%s' "$PAGES_DEPLOY_KEY" | tr -d '\r' | base64 --decode > ~/.ssh/pages_deploy_key
+          fi
           chmod 600 ~/.ssh/pages_deploy_key
+
+          if ! ssh-keygen -y -f ~/.ssh/pages_deploy_key >/dev/null 2>&1; then
+            echo "PAGES_DEPLOY_KEY is not a valid SSH private key." >&2
+            echo "Store the raw private key or a base64-encoded copy of the private key in the secret." >&2
+            echo "Do not use the public key, and make sure the secret preserves the full key body." >&2
+            exit 1
+          fi
+
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 

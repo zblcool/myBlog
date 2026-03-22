@@ -39,6 +39,13 @@ Current default target:
 2. Add the public key as a deploy key with write access on the target Pages repository.
 3. Add the private key to this source repository as a secret named `PAGES_DEPLOY_KEY`.
 
+`PAGES_DEPLOY_KEY` can be either:
+
+- the raw private key content
+- a base64-encoded copy of the private key content
+
+Do not store the public key in this secret. If GitHub Actions reports `error in libcrypto`, the secret content is usually malformed or newline-normalized incorrectly.
+
 ### Optional repository variables
 
 - `TARGET_PAGES_REPOSITORY`
