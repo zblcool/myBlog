@@ -192,6 +192,17 @@ video {
   padding: 1.75rem;
 }
 
+.page-intro {
+  display: grid;
+  gap: 1rem;
+  padding: 1.75rem;
+}
+
+.page-intro .page-title,
+.page-intro .lead {
+  margin: 0;
+}
+
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.9fr);
@@ -355,6 +366,12 @@ video {
 .section-head p,
 .muted {
   color: var(--muted);
+}
+
+.page-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .card-grid {
@@ -761,10 +778,6 @@ video {
 
 .three-stage__caption span {
   color: rgba(248, 241, 231, 0.74);
-}
-
-.portfolio-panel {
-  padding: 1.75rem;
 }
 
 .project-spotlight {

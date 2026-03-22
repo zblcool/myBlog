@@ -49,7 +49,7 @@ const relatedTags = collectTagCounts(relatedEntries)
 ---
 
 <BaseLayout title={`${tag} | Ash Zhang`} description={`Entries tagged ${tag}`}>
-  <section class="panel panel--padded">
+  <section class="panel page-intro">
     <div class="eyebrow">Tag</div>
     <h1 class="page-title">{tag}</h1>
     <p class="lead">
@@ -83,7 +83,7 @@ const relatedTags = collectTagCounts(relatedEntries)
     )}
   </section>
 
-  <div class="section-head">
+  <div class="page-actions">
     <a class="button" href={withBase("/tag/")}>All tags</a>
   </div>
 
