@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import ContentCard from "@/components/ContentCard.astro";
 import ProjectCard from "@/components/ProjectCard.astro";
+import ProjectSpotlight from "@/components/ProjectSpotlight.astro";
 import HeroScene from "@/components/react/three/HeroScene";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { projects } from "@/data/projects";
@@ -13,7 +14,8 @@ const posts = sortEntriesByDateDesc(await getCollection("posts"));
 const notes = sortEntriesByDateDesc(await getCollection("notes"));
 const latestPosts = posts.slice(0, 3);
 const latestNotes = notes.slice(0, 3);
-const featuredProjects = projects.slice(0, 3);
+const spotlightProject = projects[0];
+const featuredProjects = projects.slice(1, 4);
 ---
 
 <BaseLayout>
@@ -78,13 +80,35 @@ const featuredProjects = projects.slice(0, 3);
   <section class="section">
     <div class="section-head">
       <div>
-        <h2>Selected work</h2>
+        <h2>Current spotlight</h2>
         <p>
-          Portfolio content now lives in a dedicated data layer, which means the
-          project stories can keep evolving without being trapped inside one page.
+          The rebuild should lead with the work that best represents the next
+          version of the site. Right now that is Hanzi Workshop: a bilingual game
+          prototype with real interface depth, a clearer visual direction, and a
+          genuine in-run capture.
         </p>
       </div>
       <a class="button" href={withBase("/portfolio/")}>Open all case studies</a>
+    </div>
+
+    <ProjectSpotlight
+      project={spotlightProject}
+      eyebrow="Featured Project"
+      title="Hanzi Workshop deserves to lead the portfolio"
+      summary="This is the strongest bridge between your current site direction and your future Three.js-friendly work: it is interactive, design-heavy, technically layered, and already has enough material to present like a proper case study."
+    />
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>Selected work</h2>
+        <p>
+          The rest of the portfolio still matters, but it now sits behind a
+          clearer lead project instead of competing for attention on equal footing.
+        </p>
+      </div>
+      <a class="button" href={withBase("/portfolio/")}>More case studies</a>
     </div>
 
     <div class="card-grid">

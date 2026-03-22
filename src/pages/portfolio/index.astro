@@ -1,35 +1,62 @@
 ---
 import ProjectCard from "@/components/ProjectCard.astro";
+import ProjectSpotlight from "@/components/ProjectSpotlight.astro";
 import { projects } from "@/data/projects";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { withBase } from "@/lib/paths";
+
+const spotlightProject = projects[0];
+const projectArchive = projects.slice(1);
 ---
 
 <BaseLayout title="Portfolio | Ash Zhang" description="Portfolio direction">
   <section class="panel portfolio-panel">
     <div class="eyebrow">Portfolio</div>
-    <h1 class="page-title">Case studies with room to grow</h1>
+    <h1 class="page-title">Case studies with a clearer lead project</h1>
     <p class="lead">
-      The old media wall is now turning into a clearer project archive. Each case
-      study keeps its content in data files, which makes the portfolio easier to
-      expand now and easier to migrate later.
+      The old media wall is turning into a real portfolio. The goal is not only
+      to store project assets, but to show which work best represents the site
+      today and where future interactive work should go next.
     </p>
   </section>
 
   <section class="section">
     <div class="section-head">
       <div>
-        <h2>Project stories</h2>
+        <h2>Featured now</h2>
         <p>
-          A mix of archive material, live tools, and concept work, all prepared to
-          evolve into richer case studies.
+          Hanzi Workshop is the current flagship case study because it already
+          combines product framing, front-end craft, bilingual UX, and genuine
+          game-prototype depth.
+        </p>
+      </div>
+      <a class="button" href={withBase(`/portfolio/${spotlightProject.slug}/`)}>
+        Open featured case study
+      </a>
+    </div>
+
+    <ProjectSpotlight
+      project={spotlightProject}
+      eyebrow="Flagship Case Study"
+      title="Hanzi Workshop / 汉字工坊"
+      summary="The repo may still be called hanziHero, but as portfolio work it reads best as a broader Hanzi Workshop case study: a shared launcher, two distinct game directions, and a current focus on readable, playable hanzi systems."
+    />
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>Project archive</h2>
+        <p>
+          Archive material, live tools, and concept work now sit behind the lead
+          project instead of all fighting for the first impression.
         </p>
       </div>
       <a class="button" href={withBase("/")}>Back home</a>
     </div>
 
     <div class="card-grid">
-      {projects.map((project) => <ProjectCard project={project} />)}
+      {projectArchive.map((project) => <ProjectCard project={project} />)}
     </div>
   </section>
 </BaseLayout>

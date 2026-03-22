@@ -650,6 +650,85 @@ video {
   padding: 1.75rem;
 }
 
+.project-spotlight {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+  gap: 1.25rem;
+  padding: 1.35rem;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(255, 251, 245, 0.9), rgba(255, 246, 232, 0.82));
+  border: 1px solid rgba(178, 74, 47, 0.16);
+  box-shadow: var(--shadow);
+}
+
+.project-spotlight__copy {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+}
+
+.project-spotlight__copy h2 {
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 1.05;
+}
+
+.project-spotlight__media {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.project-spotlight__primary {
+  width: 100%;
+  min-height: 300px;
+  border-radius: calc(var(--radius) - 6px);
+  object-fit: cover;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.project-spotlight__gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.project-spotlight__gallery img {
+  width: 100%;
+  height: 132px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.project-spotlight__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.8rem;
+}
+
+.project-spotlight__fact {
+  padding: 1rem;
+  border-radius: calc(var(--radius) - 10px);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(178, 74, 47, 0.14);
+}
+
+.project-spotlight__fact span {
+  display: inline-flex;
+  margin-bottom: 0.55rem;
+  color: var(--accent);
+  font-size: 0.84rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.project-spotlight__fact p {
+  margin: 0;
+  color: var(--muted);
+}
+
 .project-detail {
   display: grid;
   gap: 2rem;
@@ -727,8 +806,13 @@ video {
     grid-template-columns: 1fr;
   }
 
+  .project-spotlight,
   .project-hero {
     grid-template-columns: 1fr;
+  }
+
+  .project-spotlight__gallery {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
 
   .site-header__inner {

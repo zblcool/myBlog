@@ -1,0 +1,78 @@
+---
+import type { Project } from "@/data/projects";
+import { isExternalPath, withBase } from "@/lib/paths";
+
+interface Props {
+  project: Project;
+  eyebrow?: string;
+  title?: string;
+  summary?: string;
+}
+
+const {
+  project,
+  eyebrow = "Current Spotlight",
+  title = project.title,
+  summary = project.summary,
+} = Astro.props;
+
+const gallery = project.gallery.slice(1, 4);
+---
+
+<article class="project-spotlight">
+  <div class="project-spotlight__copy">
+    <div class="eyebrow">{eyebrow}</div>
+    <h2>{title}</h2>
+    <p class="lead">{project.headline}</p>
+    <p class="article-intro">{summary}</p>
+
+    <div class="project-card__meta">
+      <span>{project.year}</span>
+      <span>·</span>
+      <span>{project.status}</span>
+    </div>
+
+    <div class="tag-list">
+      {project.stack.map((item) => (
+        <span class="tag-link">{item}</span>
+      ))}
+    </div>
+
+    <div class="project-card__actions">
+      <a class="button button--primary" href={withBase(`/portfolio/${project.slug}/`)}>
+        Read case study
+      </a>
+      {project.links[0] && (
+        <a
+          class="button"
+          href={isExternalPath(project.links[0].href) ? project.links[0].href : withBase(project.links[0].href)}
+          target={project.links[0].external ? "_blank" : undefined}
+          rel={project.links[0].external ? "noreferrer" : undefined}
+        >
+          {project.links[0].label}
+        </a>
+      )}
+    </div>
+
+    <div class="project-spotlight__facts">
+      <article class="project-spotlight__fact">
+        <span>Why it stands out</span>
+        <p>{project.challenge}</p>
+      </article>
+      <article class="project-spotlight__fact">
+        <span>Why it matters now</span>
+        <p>{project.outcome}</p>
+      </article>
+    </div>
+  </div>
+
+  <div class="project-spotlight__media">
+    <img class="project-spotlight__primary" src={withBase(project.cover)} alt={project.title} />
+
+    <div class="project-spotlight__gallery">
+      {gallery.map((image) => (
+        <img src={withBase(image)} alt={project.title} />
+      ))}
+    </div>
+  </div>
+</article>

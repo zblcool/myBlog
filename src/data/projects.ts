@@ -32,8 +32,9 @@ export const projects: Project[] = [
       "This project lives in the hanziHero repository and currently ships as a two-game launcher: the survivor-style Hanzi Hero and the deckbuilding Cangjie Road. It is one of the clearest examples of the kind of interactive, language-driven work this site should highlight.",
     role: "Game concept, systems design, interface direction, and front-end implementation",
     stack: ["JavaScript", "Game Prototype", "Babylon.js", "Firebase", "Bilingual UX"],
-    cover: "/pics/portfolios/hanzi-workshop/launcher-screenshot.png",
+    cover: "/pics/portfolios/hanzi-workshop/hanzi-hero-battle.png",
     gallery: [
+      "/pics/portfolios/hanzi-workshop/hanzi-hero-battle.png",
       "/pics/portfolios/hanzi-workshop/launcher-screenshot.png",
       "/pics/portfolios/hanzi-workshop/hanzi-hero-screenshot.png",
       "/pics/portfolios/hanzi-workshop/cangjie-road-screenshot.png",

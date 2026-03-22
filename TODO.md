@@ -8,9 +8,9 @@
 
 ### 1. Brand Upgrade
 - [ ] Clarify the site's core positioning: personal brand site, technical blog, or both.
-- [ ] Redesign the home page so it better introduces Ash, key strengths, and featured work.
+- [x] Redesign the home page so it better introduces Ash, key strengths, and featured work.
 - [ ] Refresh the visual system so the blog, portfolio, CV, and tool pages feel unified.
-- [ ] Rework the portfolio page into a clearer project showcase instead of a media dump.
+- [x] Rework the portfolio page into a clearer project showcase instead of a media dump.
 - [ ] Improve the CV page so it works as both an embedded resume and a concise online profile.
 
 ### 2. Content Experience Upgrade
