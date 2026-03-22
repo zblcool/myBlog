@@ -1,7 +1,9 @@
 ---
+import { getCollection } from "astro:content";
 import "@/styles/global.css";
 import FloatingHanziBackground from "@/components/react/three/FloatingHanziBackground";
 import { navLinks, profile, socialLinks } from "@/data/site";
+import { collectTagSummaries } from "@/lib/content";
 import { stripBase, withBase } from "@/lib/paths";
 
 interface Props {
@@ -13,6 +15,12 @@ const {
   title = `${profile.name} | ${profile.title}`,
   description = profile.tagline,
 } = Astro.props;
+
+const posts = await getCollection("posts");
+const notes = await getCollection("notes");
+const floatingTags = collectTagSummaries(posts, notes)
+  .slice(0, 16)
+  .map(({ tag }) => tag);
 
 const pathname = stripBase(Astro.url.pathname);
 
@@ -36,7 +44,7 @@ function isActive(href: string) {
   </head>
   <body>
     <div class="site-background" aria-hidden="true">
-      <FloatingHanziBackground client:load />
+      <FloatingHanziBackground client:load tags={floatingTags} />
     </div>
 
     <div class="site-shell">
