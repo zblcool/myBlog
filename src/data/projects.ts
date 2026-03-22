@@ -23,6 +23,41 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    slug: "hanzi-workshop",
+    title: "Hanzi Workshop / 汉字工坊",
+    year: "2026",
+    status: "Active Prototype",
+    headline: "A bilingual web game project that turns hanzi structure into playable systems instead of decoration.",
+    summary:
+      "This project lives in the hanziHero repository and currently ships as a two-game launcher: the survivor-style Hanzi Hero and the deckbuilding Cangjie Road. It is one of the clearest examples of the kind of interactive, language-driven work this site should highlight.",
+    role: "Game concept, systems design, interface direction, and front-end implementation",
+    stack: ["JavaScript", "Game Prototype", "Babylon.js", "Firebase", "Bilingual UX"],
+    cover: "/pics/portfolios/hanzi-workshop/launcher-screenshot.png",
+    gallery: [
+      "/pics/portfolios/hanzi-workshop/launcher-screenshot.png",
+      "/pics/portfolios/hanzi-workshop/hanzi-hero-screenshot.png",
+      "/pics/portfolios/hanzi-workshop/cangjie-road-screenshot.png",
+    ],
+    challenge:
+      "The core challenge is making Chinese characters feel readable, learnable, and tactically interesting at the same time. That means balancing language clarity, game feel, bilingual onboarding, and a presentation layer that still feels like a real game instead of an educational demo.",
+    approach:
+      "The project is structured as a shared launcher plus two prototype directions. Shared language and theme preferences carry across pages, Hanzi Hero explores fast battlefield readability and combat effects, and Cangjie Road explores a deckbuilding interpretation of character composition with a Babylon.js stage layer.",
+    outcome:
+      "Hanzi Workshop already reads as a serious prototype line rather than a loose experiment. It has a presentable launcher, clear visual identity, release notes, and a branching workflow that supports rapid iteration while keeping a stable mainline for showcase use.",
+    links: [
+      {
+        label: "View repository",
+        href: "https://github.com/zblcool/hanziHero",
+        external: true,
+      },
+      {
+        label: "Read changelog",
+        href: "https://github.com/zblcool/hanziHero/blob/main/CHANGELOG.md",
+        external: true,
+      },
+    ],
+  },
+  {
     slug: "visual-memory",
     title: "Visual Memory",
     year: "2020",
