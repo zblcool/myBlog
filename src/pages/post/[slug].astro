@@ -1,7 +1,13 @@
 ---
 import { getCollection, render } from "astro:content";
+import EntryPager from "@/components/EntryPager.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { formatDate, getTagUrl } from "@/lib/content";
+import {
+  formatDate,
+  getAdjacentEntries,
+  getTagUrl,
+  sortEntriesByDateDesc,
+} from "@/lib/content";
 import { withBase } from "@/lib/paths";
 
 export async function getStaticPaths() {
@@ -15,6 +21,8 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+const posts = sortEntriesByDateDesc(await getCollection("posts"));
+const { newer, older } = getAdjacentEntries(posts, entry.id);
 ---
 
 <BaseLayout
@@ -54,4 +62,6 @@ const { Content } = await render(entry);
       <Content />
     </div>
   </article>
+
+  <EntryPager kind="post" newer={newer} older={older} />
 </BaseLayout>

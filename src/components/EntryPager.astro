@@ -1,0 +1,61 @@
+---
+import type { WritingEntry, WritingKind } from "@/lib/content";
+import { formatDate, getEntryUrl } from "@/lib/content";
+import { withBase } from "@/lib/paths";
+
+interface Props {
+  kind: WritingKind;
+  newer?: WritingEntry;
+  older?: WritingEntry;
+}
+
+const { kind, newer, older } = Astro.props;
+const collectionLabel = kind === "post" ? "posts" : "notes";
+---
+
+<section class="entry-pager panel">
+  <div class="entry-pager__header">
+    <div>
+      <div class="eyebrow">Continue Reading</div>
+      <h2>Keep moving through the archive</h2>
+    </div>
+
+    <a class="button" href={withBase(`/${kind}/`)}>
+      Back to all {collectionLabel}
+    </a>
+  </div>
+
+  <div class="entry-pager__grid">
+    {
+      newer ? (
+        <a class="entry-pager__card" href={withBase(getEntryUrl(kind, newer))}>
+          <span class="entry-pager__label">Newer</span>
+          <strong>{newer.data.title}</strong>
+          <span>{formatDate(newer.data.date)}</span>
+        </a>
+      ) : (
+        <div class="entry-pager__card entry-pager__card--empty">
+          <span class="entry-pager__label">Newer</span>
+          <strong>You are at the newest entry</strong>
+          <span>Nothing more recent in this collection yet.</span>
+        </div>
+      )
+    }
+
+    {
+      older ? (
+        <a class="entry-pager__card" href={withBase(getEntryUrl(kind, older))}>
+          <span class="entry-pager__label">Older</span>
+          <strong>{older.data.title}</strong>
+          <span>{formatDate(older.data.date)}</span>
+        </a>
+      ) : (
+        <div class="entry-pager__card entry-pager__card--empty">
+          <span class="entry-pager__label">Older</span>
+          <strong>You are at the oldest entry</strong>
+          <span>No earlier entry to step back into here.</span>
+        </div>
+      )
+    }
+  </div>
+</section>

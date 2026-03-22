@@ -74,6 +74,26 @@ export function getFirstImageSource(markdown: string) {
   return undefined;
 }
 
+export function getAdjacentEntries<T extends WritingEntry>(
+  entries: T[],
+  currentId: string,
+) {
+  const currentIndex = entries.findIndex((entry) => entry.id === currentId);
+
+  if (currentIndex === -1) {
+    return {
+      newer: undefined,
+      older: undefined,
+    };
+  }
+
+  return {
+    newer: currentIndex > 0 ? entries[currentIndex - 1] : undefined,
+    older:
+      currentIndex < entries.length - 1 ? entries[currentIndex + 1] : undefined,
+  };
+}
+
 export function getEntryUrl(kind: WritingKind, entryOrId: WritingEntry | string) {
   const id = typeof entryOrId === "string" ? entryOrId : entryOrId.id;
   return `/${kind}/${id}/`;
