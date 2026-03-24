@@ -36,15 +36,15 @@
 - [x] Add basic project maintenance tooling if needed, such as linting or build checks.
   - Progress 2026-03-22: deploy workflow now runs `yarn check` before `yarn build`, so type/content validation blocks broken deploys.
 
-## Open Decision: React Migration
-- [ ] Current recommendation: do not migrate to React immediately.
-- [ ] Decide whether this project should stay content-first on VuePress or move to a React-based stack.
-- [ ] If moving to React, keep the solution compatible with static export on GitHub Pages.
-- [ ] If migration is considered, compare the value of React against keeping the current static-site workflow.
-- [ ] Only migrate if the future site needs richer component-driven interaction, stronger design flexibility, or a longer-term platform refresh.
+## 4. Architecture Direction
+- [x] Commit to Astro as the primary site architecture and stop planning around legacy VuePress as a parallel path.
+- [x] Keep the active architecture compatible with static export on GitHub Pages.
+- [x] Use React only for isolated interactive islands when Astro alone is not enough.
+- [x] Remove leftover VuePress maintenance hooks from the active toolchain.
+  - Progress 2026-03-25: removed `legacy:*` scripts from `package.json`, dropped VuePress-only packages, updated the README to describe Astro as the active stack, and deleted the outdated manual deploy script that still targeted `blog/.vuepress/dist`.
 
 ## Suggested Starting Order
 - [x] First: clarify positioning and desired site outcome.
 - [x] Second: redesign the home page and portfolio structure.
 - [x] Third: tidy content architecture and templates.
-- [ ] Fourth: revisit React or another framework migration after the product direction is clearer.
+- [x] Fourth: commit to the Astro-first architecture and clear out leftover VuePress maintenance overhead.

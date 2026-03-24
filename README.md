@@ -6,7 +6,7 @@
 
 > This is my personal blog that stores the thought I had and the notes I took during the exploration of broad areas.
 
-This site started on VuePress and is now being migrated to Astro with a data-first structure that keeps content, project metadata, and interactive components easier to move later.
+This site started on VuePress and now runs on an Astro-first architecture. Markdown content in `blog/_posts` and `blog/_notes` remains the source of truth, while `src/` contains the active site shell, structured data, and interactive islands.
 
 ## Local Development
 
@@ -14,13 +14,8 @@ This site started on VuePress and is now being migrated to Astro with a data-fir
 nvm use
 yarn install
 yarn dev
-```
-
-Legacy VuePress commands are still available during migration:
-
-```bash
-yarn legacy:dev
-yarn legacy:build
+yarn check
+yarn build
 ```
 
 ## GitHub Pages Deployment
@@ -76,4 +71,4 @@ The Astro build writes legacy redirect files for old GitHub Pages tag URLs such 
 - `/tag/C%23/`
 - `/notes/page/2/`
 
-These redirects help old bookmarks and indexed URLs survive the migration.
+These redirects help old bookmarks and indexed URLs survive the architecture transition.

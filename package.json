@@ -11,19 +11,14 @@
     "@astrojs/react": "^5.0.1",
     "@types/react": "^19.2.14",
     "@types/three": "^0.183.1",
-    "@vuepress/theme-blog": "^2.2.0",
     "astro": "^6.0.8",
-    "typescript": "^5.9.3",
-    "vuepress": "^1.5.2",
-    "vuepress-plugin-mathjax": "^1.2.8"
+    "typescript": "^5.9.3"
   },
   "scripts": {
     "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
     "build": "ASTRO_TELEMETRY_DISABLED=1 astro build && node ./scripts/postbuild.mjs",
     "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
-    "check": "ASTRO_TELEMETRY_DISABLED=1 astro check",
-    "legacy:dev": "vuepress dev blog",
-    "legacy:build": "vuepress build blog"
+    "check": "ASTRO_TELEMETRY_DISABLED=1 astro check"
   },
   "dependencies": {
     "katex": "^0.16.40",
@@ -31,8 +26,6 @@
     "react-dom": "^19.2.4",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
-    "three": "^0.129.0",
-    "vue-particles": "^1.0.9",
-    "vuepress-plugin-live2d": "^0.0.7"
+    "three": "^0.129.0"
   }
 }
