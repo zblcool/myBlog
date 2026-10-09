@@ -1,0 +1,22 @@
+---
+import { withBase } from "@/lib/paths";
+
+interface Props {
+  active: "post" | "notes" | "tag";
+}
+
+const { active } = Astro.props;
+const tabs = [
+  { key: "post", label: "Posts", href: "/post/" },
+  { key: "notes", label: "Notes", href: "/notes/" },
+  { key: "tag", label: "Topics", href: "/tag/" },
+];
+---
+
+<nav class="tabs" aria-label="Writing sections">
+  {tabs.map((tab) => (
+    <a href={withBase(tab.href)} aria-current={tab.key === active ? "page" : undefined}>
+      {tab.label}
+    </a>
+  ))}
+</nav>

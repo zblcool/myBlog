@@ -24,7 +24,7 @@ export const contactLabel = "Start a project";
 export const navLinks = [
   { label: "Work", href: "/portfolio/" },
   { label: "Services", href: "/#services" },
-  { label: "Writing", href: "/post/" },
+  { label: "Writing", href: "/post/", match: ["/post/", "/notes/", "/tag/"] },
   { label: "About", href: "/cv/" },
 ];
 

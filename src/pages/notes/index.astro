@@ -1,9 +1,9 @@
 ---
 import { getCollection } from "astro:content";
 import ArchiveList from "@/components/ArchiveList.astro";
+import WritingTabs from "@/components/WritingTabs.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { groupEntriesByYear, sortEntriesByDateDesc } from "@/lib/content";
-import { withBase } from "@/lib/paths";
 
 const groups = groupEntriesByYear(sortEntriesByDateDesc(await getCollection("notes")));
 ---
@@ -11,12 +11,9 @@ const groups = groupEntriesByYear(sortEntriesByDateDesc(await getCollection("not
 <BaseLayout title="Notes | Ash Zhang" description="Working notes and study material." cta={false}>
   <div class="wrap">
     <header class="page-head">
-      <span class="label">Notes</span>
+      <WritingTabs active="notes" />
       <h1>Notes</h1>
-      <p>
-        Working notes and study material.
-        <a class="link-arrow" href={withBase("/tag/")}>Browse by tag</a>
-      </p>
+      <p>Working notes and study material.</p>
     </header>
     <div class="page-body">
       <ArchiveList groups={groups} kind="notes" />

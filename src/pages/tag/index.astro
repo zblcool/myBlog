@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import WritingTabs from "@/components/WritingTabs.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { collectTagSummaries } from "@/lib/content";
 import { withBase } from "@/lib/paths";
@@ -10,8 +11,9 @@ const tags = collectTagSummaries(await getCollection("posts"), await getCollecti
 <BaseLayout title="Topics | Ash Zhang" description="Browse writing by topic." cta={false}>
   <div class="wrap">
     <header class="page-head">
-      <span class="label">Tags</span>
+      <WritingTabs active="tag" />
       <h1>Topics</h1>
+      <p>Browse posts and notes by subject.</p>
     </header>
     <div class="tag-cloud page-body">
       {tags.map((item) => (

@@ -15,6 +15,6 @@ const { entry, kind } = Astro.props;
   <span class="label">{formatDate(entry.data.date)}</span>
   <h3>{entry.data.title}</h3>
   <span class="tag-list">
-    {entry.data.tags.slice(0, 2).map((tag) => <span class="tag">{tag}</span>)}
+    {entry.data.tags.filter((tag) => !["notes", "post"].includes(tag.toLowerCase())).slice(0, 2).map((tag) => <span class="tag">{tag}</span>)}
   </span>
 </a>

@@ -16,7 +16,8 @@ const {
 } = Astro.props;
 
 const pathname = stripBase(Astro.url.pathname);
-const isActive = (href: string) => !href.includes("#") && pathname.startsWith(href);
+const isActive = (link: { href: string; match?: string[] }) =>
+  !link.href.includes("#") && (link.match ?? [link.href]).some((path) => pathname.startsWith(path));
 const external = contactHref.startsWith("http");
 ---
 
@@ -46,7 +47,7 @@ const external = contactHref.startsWith("http");
         </a>
         <nav class="nav" aria-label="Primary">
           {navLinks.map((link) => (
-            <a href={withBase(link.href)} data-active={isActive(link.href)}>
+            <a href={withBase(link.href)} data-active={isActive(link)}>
               {link.label}
             </a>
           ))}

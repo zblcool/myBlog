@@ -910,3 +910,31 @@ a.tag:hover {
   align-self: center;
   margin-left: 0.75rem;
 }
+
+/* Writing sub-navigation */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.tabs a {
+  padding: 0.45rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: var(--muted);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.tabs a:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.tabs a[aria-current="page"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}

@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import ContentCard from "@/components/ContentCard.astro";
+import WritingTabs from "@/components/WritingTabs.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import {
   collectTagCounts,
@@ -48,9 +49,8 @@ const relatedEntries = [...relatedPosts, ...relatedNotes];
 <BaseLayout title={`${tag} | Ash Zhang`} description={`Entries tagged ${tag}`} cta={false}>
   <div class="wrap">
     <header class="page-head">
-      <span class="label">Tag</span>
+      <WritingTabs active="tag" />
       <h1>{tag}</h1>
-      <p><a class="link-arrow" href={withBase("/tag/")}>All topics</a></p>
     </header>
     <div class="page-body">
       {relatedPosts.length > 0 && (
