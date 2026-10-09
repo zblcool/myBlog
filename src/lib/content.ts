@@ -147,7 +147,7 @@ export function groupEntriesByYear<T extends WritingEntry>(
 
 export function getEntryUrl(kind: WritingKind, entryOrId: WritingEntry | string) {
   const id = typeof entryOrId === "string" ? entryOrId : entryOrId.id;
-  return `/${kind}/${id}/`;
+  return `/blog/${kind}/${id}/`;
 }
 
 export function slugifyTag(tag: string) {
@@ -162,7 +162,7 @@ export function slugifyTag(tag: string) {
 }
 
 export function getTagUrl(tag: string) {
-  return `/tag/${slugifyTag(tag)}/`;
+  return `/blog/tag/${slugifyTag(tag)}/`;
 }
 
 export function collectTagCounts(entries: WritingEntry[]) {

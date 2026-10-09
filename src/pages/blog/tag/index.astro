@@ -17,7 +17,7 @@ const tags = collectTagSummaries(await getCollection("posts"), await getCollecti
     </header>
     <div class="tag-cloud page-body">
       {tags.map((item) => (
-        <a class="tag" href={withBase(`/tag/${item.slug}/`)}>{item.tag}<span>{item.count}</span></a>
+        <a class="tag" href={withBase(`/blog/tag/${item.slug}/`)}>{item.tag}<span>{item.count}</span></a>
       ))}
     </div>
   </div>

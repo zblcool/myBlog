@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- App icon: Ashmartisan mark (dark version) on a navy tile. Geometry mirrors src/brand/BrandMark.tsx. -->
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1D2935"/>
+      <stop offset="1" stop-color="#121A23"/>
+    </linearGradient>
+    <linearGradient id="left" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1F3F4"/><stop offset="1" stop-color="#A1A9B1"/></linearGradient>
+    <linearGradient id="right" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7496B7"/><stop offset="1" stop-color="#6784A4"/></linearGradient>
+    <linearGradient id="fold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F4F6F6"/><stop offset="1" stop-color="#C9D0D6"/></linearGradient>
+    <linearGradient id="orange" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2A250"/><stop offset="1" stop-color="#E38F44"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#tile)"/>
+  <svg x="86" y="118" width="340" height="264" viewBox="206 116 304 236">
+    <g stroke-linejoin="round" stroke-width="6">
+      <path d="M357 127 L389 127 L499 342 L449 342 Z" fill="url(#right)" stroke="url(#right)"/>
+      <path d="M342 127 L390 127 L268 338 L219 338 Z" fill="url(#left)" stroke="url(#left)"/>
+      <path d="M334 276 C344 256 370 249 388 270 L434 342 L384 342 L350 284 Z" fill="url(#fold)" stroke="url(#fold)"/>
+      <path d="M330 268 C334 268 337 271 339 274 L286 342 L218 342 Z" fill="url(#orange)" stroke="url(#orange)"/>
+    </g>
+  </svg>
+</svg>

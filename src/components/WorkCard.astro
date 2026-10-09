@@ -10,7 +10,7 @@ interface Props {
 const { project, lead = false } = Astro.props;
 ---
 
-<a class:list={["work-card", lead && "work-card--lead"]} href={withBase(`/portfolio/${project.slug}/`)}>
+<a class:list={["work-card", lead && "work-card--lead"]} href={withBase(`/blog/portfolio/${project.slug}/`)}>
   <div class="work-card__media">
     <img src={withBase(project.cover)} alt={project.title} loading="lazy" />
   </div>

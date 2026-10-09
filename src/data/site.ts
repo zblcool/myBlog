@@ -22,10 +22,12 @@ export const contactHref = `mailto:${contactEmail}`;
 export const contactLabel = "Start a project";
 
 export const navLinks = [
-  { label: "Work", href: "/portfolio/" },
-  { label: "Services", href: "/#services" },
-  { label: "Writing", href: "/post/", match: ["/post/", "/notes/", "/tag/"] },
-  { label: "About", href: "/cv/" },
+  { label: "Work", href: "/blog/portfolio/" },
+  { label: "Services", href: "/blog/#services" },
+  { label: "Writing", href: "/blog/post/", match: ["/blog/post/", "/blog/notes/", "/blog/tag/"] },
+  { label: "About", href: "/blog/cv/" },
+  // The business site at the root; `match: []` so "/" never marks it active.
+  { label: "Ashmartisan", href: "/", match: [] },
 ];
 
 export const facts = [

@@ -1,0 +1,167 @@
+---
+/**
+ * Hero with a teaser of the explainer: real renders of the worm gearbox, numbered parts that
+ * open the part panel, view switching, and a button that swaps in the live 3D.
+ */
+import Lockup from "./Lockup.astro";
+import { demoLink } from "@/studio/config";
+import { heroHotspots, shot, type ViewId } from "@/studio/data/devices";
+import type { Copy } from "@/studio/i18n/en";
+import { withBase } from "@/lib/paths";
+
+interface Props {
+  t: Copy;
+}
+
+const { t } = Astro.props;
+const h = t.hero;
+const views: ViewId[] = ["solid", "xray", "section", "exploded"];
+const live = demoLink("worm-gearbox", { lang: t.lang });
+const first = heroHotspots[1].key;
+---
+
+<section class="hero">
+  <div class="hero__grid-bg" aria-hidden="true"></div>
+  <div class="wrap hero__intro">
+    <div>
+      <p class="eyebrow">{h.eyebrow}</p>
+      <h1 set:html={h.title} />
+    </div>
+    <div class="hero__side">
+      <p class="hero__lead">{h.lead}</p>
+      <div class="actions">
+        <a class="btn btn--orange" href={live || "#showcase"} target={live ? "_blank" : undefined} rel={live ? "noreferrer" : undefined}>
+          {h.primary}
+          <span aria-hidden="true">↗</span>
+        </a>
+        <a class="btn btn--ghost" href="#contact">{h.secondary}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="app" data-hero-viewer>
+      <div class="app__bar">
+        <Lockup size={18} />
+        <span class="app__pill">{h.device}<span aria-hidden="true">▾</span></span>
+        <a class="app__quote" href="#contact">{h.quote}</a>
+      </div>
+
+      <div class="app__stage" data-view="solid">
+        <div class="app__frame">
+          {views.map((view, i) => (
+            <img
+              class="app__shot"
+              data-shot={view}
+              src={withBase(shot("worm-gearbox", view))}
+              alt={`${h.device}: ${h.views[view]}`}
+              width="1600"
+              height="1000"
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchpriority={i === 0 ? "high" : undefined}
+            />
+          ))}
+          <div class="hotspots" data-hotspots>
+            {heroHotspots.map((spot, i) => (
+              <button
+                class="hotspot"
+                type="button"
+                style={`left:${spot.x}%;top:${spot.y}%`}
+                data-part={spot.key}
+                aria-pressed={spot.key === first ? "true" : "false"}
+                aria-label={h.parts[spot.key].title}
+              >
+                <span class="hotspot__num">{i + 1}</span>
+                <span class="hotspot__label">{h.parts[spot.key].title}</span>
+              </button>
+            ))}
+          </div>
+          {live && <iframe class="app__live" data-live title={h.device} hidden allow="fullscreen" />}
+        </div>
+
+        <aside class="panel" aria-live="polite">
+          {heroHotspots.map((spot, i) => {
+            const part = h.parts[spot.key];
+            return (
+              <div class="panel__part" data-panel={spot.key} hidden={spot.key !== first}>
+                <p class="panel__num">{String(i + 1).padStart(2, "0")}</p>
+                <h3>{part.title}</h3>
+                <p>{part.summary}</p>
+                <dl>
+                  {part.specs.map(([label, value]) => (
+                    <div>
+                      <dt>{label}</dt>
+                      <dd>{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <a class="panel__ask" href="#contact" data-prefill={`${h.device} · ${part.title}`}>{h.ask}</a>
+              </div>
+            );
+          })}
+        </aside>
+      </div>
+
+      <div class="app__toolbar">
+        <div class="segmented" role="group" aria-label="View">
+          {views.map((view) => (
+            <button type="button" data-set-view={view} aria-pressed={view === "solid" ? "true" : "false"}>
+              {h.views[view]}
+            </button>
+          ))}
+        </div>
+        <span class="app__hint" data-hint>{h.hint}</span>
+        {live && (
+          <button class="app__go-live" type="button" data-go-live={live}>
+            <span class="app__dot" aria-hidden="true"></span>
+            {h.live} <small>{h.liveNote}</small>
+          </button>
+        )}
+      </div>
+    </div>
+
+    <ul class="hero__points">
+      {h.points.map((point) => <li>{point}</li>)}
+    </ul>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-hero-viewer]");
+  if (root) {
+    const stage = root.querySelector<HTMLElement>(".app__stage")!;
+
+    root.querySelectorAll<HTMLButtonElement>("[data-set-view]").forEach((button) =>
+      button.addEventListener("click", () => {
+        stage.dataset.view = button.dataset.setView;
+        root.querySelectorAll("[data-set-view]").forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
+      }),
+    );
+
+    root.querySelectorAll<HTMLButtonElement>("[data-part]").forEach((button) =>
+      button.addEventListener("click", () => {
+        const part = button.dataset.part;
+        root.querySelectorAll("[data-part]").forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
+        root.querySelectorAll<HTMLElement>("[data-panel]").forEach((p) => (p.hidden = p.dataset.panel !== part));
+      }),
+    );
+
+    // "Ask about this part" pre-fills the enquiry message.
+    root.querySelectorAll<HTMLAnchorElement>("[data-prefill]").forEach((link) =>
+      link.addEventListener("click", () => {
+        const message = document.querySelector<HTMLTextAreaElement>("#contact textarea[name=message]");
+        if (message && !message.value.trim()) message.value = `${link.dataset.prefill}\n\n`;
+      }),
+    );
+
+    const goLive = root.querySelector<HTMLButtonElement>("[data-go-live]");
+    const frame = root.querySelector<HTMLIFrameElement>("[data-live]");
+    goLive?.addEventListener("click", () => {
+      if (!frame) return;
+      frame.src = goLive.dataset.goLive!;
+      frame.hidden = false;
+      root.classList.add("is-live");
+      goLive.disabled = true;
+    });
+  }
+</script>

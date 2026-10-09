@@ -1,0 +1,65 @@
+---
+/**
+ * The "A" mark, redrawn from the brand board (same geometry as the explainer's
+ * src/brand/markGeometry.ts). `onDark` swaps the dark parts for silver.
+ */
+interface Props {
+  size?: number;
+  variant?: "onDark" | "onLight";
+  class?: string;
+}
+
+const { size = 32, variant = "onDark", class: className } = Astro.props;
+
+const paths = [
+  { part: "right", d: "M357 127 L389 127 L499 342 L449 342 Z" },
+  { part: "left", d: "M342 127 L390 127 L268 338 L219 338 Z" },
+  { part: "fold", d: "M334 276 C344 256 370 249 388 270 L434 342 L384 342 L350 284 Z" },
+  { part: "orange", d: "M330 268 C334 268 337 271 339 274 L286 342 L218 342 Z" },
+] as const;
+
+const gradients = {
+  left: { x1: 0, x2: 0, y2: 1 },
+  right: { x1: 0, x2: 0, y2: 1 },
+  fold: { x1: 0, x2: 1, y2: 1 },
+  orange: { x1: 1, x2: 0, y2: 1 },
+};
+
+const colors = {
+  onLight: {
+    left: ["#192530", "#354350"],
+    right: ["#6A89A9", "#577493"],
+    fold: ["#1C2733", "#46576A"],
+    orange: ["#FAB672", "#F2A250"],
+  },
+  onDark: {
+    left: ["#F1F3F4", "#A1A9B1"],
+    right: ["#7496B7", "#6784A4"],
+    fold: ["#F4F6F6", "#C9D0D6"],
+    orange: ["#F2A250", "#E38F44"],
+  },
+}[variant];
+
+// Unique per instance: a gradient referenced across a hidden <svg> stops rendering in Chrome.
+const id = `mark-${variant}-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<svg
+  class={className}
+  viewBox="206 116 304 236"
+  width={Math.round((size * 304) / 236)}
+  height={size}
+  aria-hidden="true"
+>
+  <defs>
+    {paths.map(({ part }) => (
+      <linearGradient id={`${id}-${part}`} x1={gradients[part].x1} y1="0" x2={gradients[part].x2} y2={gradients[part].y2}>
+        <stop offset="0" stop-color={colors[part][0]} />
+        <stop offset="1" stop-color={colors[part][1]} />
+      </linearGradient>
+    ))}
+  </defs>
+  <g stroke-linejoin="round" stroke-width="6">
+    {paths.map(({ part, d }) => <path d={d} fill={`url(#${id}-${part})`} stroke={`url(#${id}-${part})`} />)}
+  </g>
+</svg>

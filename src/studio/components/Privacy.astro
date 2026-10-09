@@ -1,0 +1,30 @@
+---
+import { contactEmail } from "@/studio/config";
+import { localePath, type Lang } from "@/studio/i18n";
+import type { Copy } from "@/studio/i18n/en";
+
+interface Props {
+  t: Copy;
+}
+
+const { t } = Astro.props;
+const p = t.privacy;
+const last = p.sections.length - 1;
+---
+
+<section class="section legal">
+  <div class="wrap legal__inner">
+    <h1>{p.title}</h1>
+    <p class="legal__updated">{p.updated}</p>
+    {p.sections.map((section, i) => (
+      <>
+        <h2>{section.h}</h2>
+        <p>
+          {section.p}
+          {i === last && <> <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</>}
+        </p>
+      </>
+    ))}
+    <a class="link-arrow" href={localePath(t.lang as Lang, "/")}>{p.back}</a>
+  </div>
+</section>

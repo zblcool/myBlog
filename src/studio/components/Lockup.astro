@@ -1,0 +1,21 @@
+---
+import BrandMark from "./BrandMark.astro";
+import { brand } from "@/studio/config";
+
+interface Props {
+  size?: number;
+  variant?: "onDark" | "onLight";
+  tagline?: string;
+}
+
+const { size = 28, variant = "onDark", tagline } = Astro.props;
+const [bold, regular] = brand.nameParts;
+---
+
+<span class:list={["lockup", `lockup--${variant}`]} style={`--mark:${size}px`}>
+  <BrandMark size={size} variant={variant} />
+  <span class="lockup__text">
+    <span class="lockup__word"><b>{bold}</b>{regular}</span>
+    {tagline && <span class="lockup__tagline">{tagline}</span>}
+  </span>
+</span>

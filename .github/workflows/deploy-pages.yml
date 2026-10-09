@@ -70,6 +70,12 @@ jobs:
           SITE_URL: ${{ env.FINAL_SITE_URL }}
           BASE_PATH: ${{ env.FINAL_BASE_PATH }}
           CNAME_DOMAIN: ${{ vars.CNAME_DOMAIN }}
+          # Ashmartisan site wiring (src/studio/config.ts); all optional.
+          PUBLIC_DEMO_URL: ${{ vars.PUBLIC_DEMO_URL }}
+          PUBLIC_FORM_ENDPOINT: ${{ vars.PUBLIC_FORM_ENDPOINT }}
+          PUBLIC_FORM_ACCESS_KEY: ${{ vars.PUBLIC_FORM_ACCESS_KEY }}
+          PUBLIC_ANALYTICS_DOMAIN: ${{ vars.PUBLIC_ANALYTICS_DOMAIN }}
+          PUBLIC_ANALYTICS_HOST: ${{ vars.PUBLIC_ANALYTICS_HOST }}
         run: |
           yarn run check
           yarn build

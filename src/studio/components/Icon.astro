@@ -1,0 +1,38 @@
+---
+/** Line icons in the brand board's style: 24px grid, 1.5 stroke, round joins. */
+interface Props {
+  name: string;
+  size?: number;
+}
+
+const { name, size = 28 } = Astro.props;
+
+const icons: Record<string, string> = {
+  target: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.5"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/>',
+  xray: '<rect x="3.5" y="3.5" width="17" height="17" rx="2" stroke-dasharray="2.5 2.2"/><path d="M8 16l3-8 2 5 1.5-3 1.5 6"/>',
+  explode: '<rect x="9" y="9" width="6" height="6" rx="1"/><path d="M4 4h4v4H4zM16 4h4v4h-4zM4 16h4v4H4zM16 16h4v4h-4z"/><path d="M8 8l1 1M16 8l-1 1M8 16l1-1M16 16l-1-1"/>',
+  play: '<circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l5.5-3.5z"/>',
+  sliders: '<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>',
+  swatch: '<path d="M4 4h6v13a3 3 0 1 1-6 0z"/><path d="M10 8.5l4.2-4.2 4.3 4.2L10 17"/><path d="M12.5 20H20v-6h-3.5"/><circle cx="7" cy="17" r="0.8"/>',
+  link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.7 5.6 3.7 9s-1.2 6.4-3.7 9c-2.5-2.6-3.7-5.6-3.7-9S9.5 5.6 12 3z"/>',
+  cube: '<path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z"/><path d="M4 7.4l8 4.6 8-4.6M12 12v9.2"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2.5l1.6 2.3 2.7-.8.4 2.8 2.6 1.1-1.2 2.5 1.6 2.3-2.6 1.1-.4 2.8-2.7-.8L12 21.5l-1.6-2.3-2.7.8-.4-2.8-2.6-1.1 1.2-2.5-1.6-2.3 2.6-1.1.4-2.8 2.7.8z"/>',
+  box: '<path d="M12 3l8 4v10l-8 4-8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/><path d="M8 5l8 4"/>',
+  screens: '<rect x="2.5" y="4" width="14" height="10" rx="1.2"/><path d="M7 18h5M9.5 14v4"/><rect x="17.5" y="9" width="4" height="10" rx="1"/>',
+};
+---
+
+<svg
+  class="icon"
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  set:html={icons[name] ?? ""}
+/>

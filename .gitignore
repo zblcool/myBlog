@@ -4,3 +4,5 @@ node_modules
 /.astro
 /dist
 yarn-error.log*
+.env
+.env.local

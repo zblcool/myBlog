@@ -4,9 +4,26 @@
 
 [Live site](https://zblcool.github.io)
 
-> This is my personal blog that stores the thought I had and the notes I took during the exploration of broad areas.
+> The Ashmartisan business site at the root, and my personal blog (thoughts and notes from exploring broad areas) under `/blog/`.
 
 This site started on VuePress and now runs on an Astro-first architecture. Markdown content in `blog/_posts` and `blog/_notes` remains the source of truth, while `src/` contains the active site shell, structured data, and interactive islands.
+
+## Site Structure
+
+One Astro build serves two sites on the same domain:
+
+| Path | What | Code |
+|---|---|---|
+| `/`, `/privacy/` | **Ashmartisan** business site (English), built around the [Interactive Equipment Explainer](https://github.com/zblcool/Interactive-Equipment-Explainer) | `src/studio/` (copy in `src/studio/i18n/en.ts`; `zh.ts` is an unpublished translation), assets in `public/studio/` |
+| `/blog/…` | Personal blog, portfolio and CV | `src/pages/blog/`, `src/components/`, `src/layouts/BaseLayout.astro` |
+
+The two sites share nothing but `src/lib/paths.ts`; each layout imports its own stylesheet, so their CSS never mixes. The business site deliberately does not link to the blog; the blog is reachable at `/blog/` and links back to the root.
+The blog moved from the root to `/blog/`: `scripts/postbuild.mjs` writes a redirect at every pre-move address (`/post/…`, `/notes/…`, `/tag/…`, `/portfolio/…`, `/cv/`, `/tool/`).
+
+Ashmartisan wiring comes from optional `PUBLIC_*` variables (see `.env.example`; in CI set them as repository variables):
+`PUBLIC_DEMO_URL` (the deployed explainer; without it the live-demo buttons are hidden), `PUBLIC_FORM_ENDPOINT` (without it the contact form opens the visitor's email app), `PUBLIC_ANALYTICS_DOMAIN`.
+
+The product renders in `public/studio/shots/` are frames captured from the explainer's canvas, one per device and view (`<id>.webp`, `<id>-xray.webp`, …). Model credits are in `src/studio/data/devices.ts`.
 
 ## Local Development
 

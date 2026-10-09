@@ -1,0 +1,135 @@
+---
+/**
+ * Enquiry form. With PUBLIC_FORM_ENDPOINT set it posts JSON to that form service; without
+ * one it opens the visitor's email app with the same content (no backend either way).
+ */
+import { contactEmail, form } from "@/studio/config";
+import { localePath, type Lang } from "@/studio/i18n";
+import type { Copy } from "@/studio/i18n/en";
+
+interface Props {
+  t: Copy;
+}
+
+const { t } = Astro.props;
+const c = t.contact;
+const f = c.fields;
+---
+
+<section class="section section--navy contact" id="contact">
+  <div class="wrap contact__grid">
+    <div class="contact__intro">
+      <p class="eyebrow">{c.label}</p>
+      <h2 set:html={c.title} />
+      <p class="section__lead">{c.lead}</p>
+      <p class="contact__direct">
+        {c.email} <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+      </p>
+    </div>
+
+    <form
+      class="form"
+      data-enquiry
+      data-endpoint={form.endpoint}
+      data-access-key={form.accessKey}
+      data-email={contactEmail}
+      data-subject={c.subject}
+      data-sending={c.sending}
+      data-sent={c.sent}
+      data-mailto={c.mailto}
+      data-failed={c.failed}
+      novalidate
+    >
+      <div class="form__row">
+        <label>
+          <span>{f.name}</span>
+          <input name="name" autocomplete="name" required />
+        </label>
+        <label>
+          <span>{f.email}</span>
+          <input name="email" type="email" autocomplete="email" required />
+        </label>
+      </div>
+      <div class="form__row">
+        <label>
+          <span>{f.company}</span>
+          <input name="company" autocomplete="organization" />
+        </label>
+        <label>
+          <span>{f.need}</span>
+          <select name="need">
+            {f.needOptions.map((option) => <option>{option}</option>)}
+          </select>
+        </label>
+      </div>
+      <label>
+        <span>{f.message}</span>
+        <textarea name="message" rows="5" placeholder={f.messagePlaceholder} required></textarea>
+      </label>
+      <input class="form__trap" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <label class="form__consent">
+        <input type="checkbox" name="consent" required />
+        <span>{c.consent} <a href={localePath(t.lang as Lang, "/privacy/")}>{c.privacy}</a></span>
+      </label>
+      <div class="form__foot">
+        <button class="btn btn--orange" type="submit">{c.submit}</button>
+        <p class="form__status" role="status" data-status></p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  const formEl = document.querySelector<HTMLFormElement>("[data-enquiry]");
+  if (formEl) {
+    const d = formEl.dataset;
+    const status = formEl.querySelector<HTMLElement>("[data-status]")!;
+    const submit = formEl.querySelector<HTMLButtonElement>("button[type=submit]")!;
+    const emailLink = `<a href="mailto:${d.email}">${d.email}</a>`;
+
+    formEl.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!formEl.reportValidity()) return;
+      const data = Object.fromEntries(new FormData(formEl)) as Record<string, string>;
+      if (data._gotcha) return;
+
+      const lines = [
+        `${data.name}${data.company ? ` · ${data.company}` : ""}`,
+        data.email,
+        data.need,
+        "",
+        data.message,
+      ];
+
+      if (!d.endpoint) {
+        const href = `mailto:${d.email}?subject=${encodeURIComponent(`${d.subject}: ${data.need}`)}&body=${encodeURIComponent(lines.join("\n"))}`;
+        window.location.href = href;
+        status.innerHTML = `${d.mailto} ${emailLink}.`;
+        return;
+      }
+
+      submit.disabled = true;
+      status.textContent = d.sending!;
+      try {
+        const response = await fetch(d.endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({
+            ...data,
+            ...(d.accessKey ? { access_key: d.accessKey } : {}),
+            _subject: `${d.subject}: ${data.need}`,
+            language: document.documentElement.lang,
+            page_url: window.location.href,
+          }),
+        });
+        if (!response.ok) throw new Error(String(response.status));
+        formEl.reset();
+        status.textContent = d.sent!;
+      } catch {
+        status.innerHTML = `${d.failed} ${emailLink}.`;
+      } finally {
+        submit.disabled = false;
+      }
+    });
+  }
+</script>

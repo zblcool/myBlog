@@ -1,0 +1,114 @@
+---
+import "@fontsource/montserrat/latin-400.css";
+import "@fontsource/montserrat/latin-500.css";
+import "@fontsource/montserrat/latin-600.css";
+import "@fontsource/montserrat/latin-700.css";
+import "@fontsource/jetbrains-mono/latin-400.css";
+import "@fontsource/jetbrains-mono/latin-500.css";
+import "@/studio/styles/studio.css";
+import Lockup from "@/studio/components/Lockup.astro";
+import { analytics, brand, contactEmail, socialLinks } from "@/studio/config";
+import { devices } from "@/studio/data/devices";
+import { copies, localePath, type Lang } from "@/studio/i18n";
+import { withBase } from "@/lib/paths";
+
+interface Props {
+  lang: Lang;
+  /** Path of this page without the language prefix, for the canonical link. */
+  path?: string;
+  title?: string;
+  description?: string;
+}
+
+const { lang, path = "/", title, description } = Astro.props;
+const t = copies[lang];
+const pageTitle = title ?? t.meta.title;
+const pageDescription = description ?? t.meta.description;
+const home = localePath(lang, "/");
+const year = new Date().getFullYear();
+
+const nav = [
+  { href: `${home}#product`, label: t.nav.product },
+  { href: `${home}#showcase`, label: t.nav.showcase },
+  { href: `${home}#shows`, label: t.nav.shows },
+  { href: `${home}#process`, label: t.nav.process },
+  { href: `${home}#faq`, label: t.nav.faq },
+];
+
+const absolute = (p: string) => (Astro.site ? new URL(p, Astro.site).toString() : undefined);
+---
+
+<!doctype html>
+<html lang={t.htmlLang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <meta name="theme-color" content={brand.palette.navy} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={brand.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:image" content={absolute(withBase("/studio/shots/worm-gearbox.webp")) ?? withBase("/studio/shots/worm-gearbox.webp")} />
+    {Astro.site && <link rel="canonical" href={absolute(localePath(lang, path))} />}
+    <link rel="icon" type="image/svg+xml" href={withBase("/studio/favicon.svg")} />
+    <link rel="apple-touch-icon" href={withBase("/studio/apple-touch-icon.png")} />
+    {analytics.domain && <script is:inline defer data-domain={analytics.domain} src={`${analytics.host}/js/script.js`} />}
+  </head>
+  <body data-lang={lang}>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="header" data-header>
+      <div class="wrap header__inner">
+        <a class="header__brand" href={home} aria-label={brand.name}>
+          <Lockup size={26} />
+        </a>
+        <button class="header__toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
+          <span class="header__burger" aria-hidden="true"></span>
+          <span class="sr-only">{t.nav.menu}</span>
+        </button>
+        <nav class="header__nav" id="site-nav" aria-label="Primary">
+          {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+          <a class="btn btn--orange btn--sm" href={`${home}#contact`}>{t.nav.cta}</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer__grid">
+        <div class="footer__brand">
+          <Lockup size={34} tagline={t.tagline} />
+        </div>
+        <div class="footer__links">
+          <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+          {socialLinks.map((link) => <a href={link.href} target="_blank" rel="noreferrer">{link.label}</a>)}
+          <a href={localePath(lang, "/privacy/")}>{t.footer.privacy}</a>
+        </div>
+      </div>
+      <div class="wrap footer__meta">
+        <p>© {year} {brand.name}. {t.footer.rights}</p>
+        <p class="footer__credits">
+          {t.footer.credits}: {devices.map((d) => d.credit).join(" · ")}
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      const header = document.querySelector<HTMLElement>("[data-header]")!;
+      const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]")!;
+      const setOpen = (open: boolean) => {
+        header.classList.toggle("is-open", open);
+        toggle.setAttribute("aria-expanded", String(open));
+      };
+      toggle.addEventListener("click", () => setOpen(!header.classList.contains("is-open")));
+      header.querySelectorAll(".header__nav a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+      const onScroll = () => header.classList.toggle("is-scrolled", window.scrollY > 8);
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,158 @@
+---
+/** The four demo devices: tabs, view switching on captured renders, and live 3D on demand. */
+import { demoLink } from "@/studio/config";
+import { devices, shot } from "@/studio/data/devices";
+import type { Copy } from "@/studio/i18n/en";
+import { withBase } from "@/lib/paths";
+
+interface Props {
+  t: Copy;
+}
+
+const { t } = Astro.props;
+const s = t.showcase;
+---
+
+<section class="section section--dark" id="showcase">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">{s.label}</p>
+      <h2>{s.title}</h2>
+      <p class="section__lead">{s.lead}</p>
+    </div>
+
+    <div class="showcase" data-showcase>
+      <div class="showcase__tabs" role="tablist" aria-label={s.label}>
+        {devices.map((device, i) => (
+          <button
+            class="showcase__tab"
+            type="button"
+            role="tab"
+            id={`tab-${device.id}`}
+            aria-controls={`pane-${device.id}`}
+            aria-selected={i === 0 ? "true" : "false"}
+            tabindex={i === 0 ? 0 : -1}
+            data-tab={device.id}
+          >
+            <span class="showcase__index">{String(i + 1).padStart(2, "0")}</span>
+            <span>
+              <strong>{s.devices[device.id].name}</strong>
+              <small>{s.devices[device.id].tagline}</small>
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {devices.map((device, i) => {
+        const text = s.devices[device.id];
+        const live = demoLink(device.id, { lang: t.lang });
+        return (
+          <div
+            class="showcase__pane"
+            role="tabpanel"
+            id={`pane-${device.id}`}
+            aria-labelledby={`tab-${device.id}`}
+            hidden={i !== 0}
+            data-pane={device.id}
+          >
+            <div class="showcase__stage" data-view="solid">
+              {device.views.map((view) => (
+                <img
+                  class="app__shot"
+                  data-shot={view}
+                  src={withBase(shot(device.id, view))}
+                  alt={`${text.name}: ${t.hero.views[view]}`}
+                  width="1600"
+                  height="1000"
+                  loading="lazy"
+                />
+              ))}
+              {live && <iframe class="app__live" data-live title={text.name} hidden allow="fullscreen" />}
+              <div class="segmented segmented--float" role="group" aria-label="View">
+                {device.views.map((view) => (
+                  <button type="button" data-set-view={view} aria-pressed={view === "solid" ? "true" : "false"}>
+                    {t.hero.views[view]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div class="showcase__info">
+              <h3>{text.name}</h3>
+              <p>{text.text}</p>
+              {live && (
+                <div class="actions">
+                  <button class="btn btn--orange btn--sm" type="button" data-go-live={live} data-close-label={s.close} data-open-label={s.load}>
+                    {s.load}
+                  </button>
+                  <a class="btn btn--ghost btn--sm" href={live} target="_blank" rel="noreferrer">{s.open}</a>
+                </div>
+              )}
+              <p class="showcase__note">{live ? `${s.note}. ` : ""}{s.rendersNote}</p>
+              <p class="showcase__credit">{device.credit}</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-showcase]");
+  if (root) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>("[data-tab]")];
+    const select = (tab: HTMLButtonElement) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute("aria-selected", String(on));
+        t.tabIndex = on ? 0 : -1;
+      });
+      root.querySelectorAll<HTMLElement>("[data-pane]").forEach((pane) => {
+        const on = pane.dataset.pane === tab.dataset.tab;
+        pane.hidden = !on;
+        // Leaving a pane unloads its live 3D so only one WebGL context runs at a time.
+        if (!on) stopLive(pane);
+      });
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener("click", () => select(tab));
+      tab.addEventListener("keydown", (e) => {
+        const step = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 0;
+        if (!step) return;
+        e.preventDefault();
+        const next = tabs[(i + step + tabs.length) % tabs.length];
+        next.focus();
+        select(next);
+      });
+    });
+
+    root.querySelectorAll<HTMLElement>("[data-pane]").forEach((pane) => {
+      const stage = pane.querySelector<HTMLElement>(".showcase__stage")!;
+      pane.querySelectorAll<HTMLButtonElement>("[data-set-view]").forEach((button) =>
+        button.addEventListener("click", () => {
+          stage.dataset.view = button.dataset.setView;
+          pane.querySelectorAll("[data-set-view]").forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
+        }),
+      );
+      pane.querySelector<HTMLButtonElement>("[data-go-live]")?.addEventListener("click", (e) => {
+        const button = e.currentTarget as HTMLButtonElement;
+        if (pane.classList.contains("is-live")) return stopLive(pane);
+        const frame = pane.querySelector<HTMLIFrameElement>("[data-live]")!;
+        frame.src = button.dataset.goLive!;
+        frame.hidden = false;
+        pane.classList.add("is-live");
+        button.textContent = button.dataset.closeLabel!;
+      });
+    });
+
+    function stopLive(pane: HTMLElement) {
+      const frame = pane.querySelector<HTMLIFrameElement>("[data-live]");
+      const button = pane.querySelector<HTMLButtonElement>("[data-go-live]");
+      if (!frame || !pane.classList.contains("is-live")) return;
+      frame.removeAttribute("src");
+      frame.hidden = true;
+      pane.classList.remove("is-live");
+      if (button) button.textContent = button.dataset.openLabel!;
+    }
+  }
+</script>
