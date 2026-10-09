@@ -21,7 +21,7 @@ The two sites share nothing but `src/lib/paths.ts`; each layout imports its own 
 The blog moved from the root to `/blog/`: `scripts/postbuild.mjs` writes a redirect at every pre-move address (`/post/…`, `/notes/…`, `/tag/…`, `/portfolio/…`, `/cv/`, `/tool/`).
 
 Ashmartisan wiring comes from optional `PUBLIC_*` variables (see `.env.example`; in CI set them as repository variables):
-`PUBLIC_DEMO_URL` (overrides the explainer address; defaults to its Vercel deployment), `PUBLIC_FORM_ENDPOINT` (without it the contact form opens the visitor's email app), `PUBLIC_ANALYTICS_DOMAIN`.
+`PUBLIC_DEMO_URL` (overrides the explainer address; defaults to its Vercel deployment), `PUBLIC_FORM_ENDPOINT` (overrides the Formspree form), `PUBLIC_ANALYTICS_DOMAIN`.
 
 The product renders in `public/studio/shots/` are frames captured from the explainer's canvas, one per device and view (`<id>.webp`, `<id>-xray.webp`, …). Model credits are in `src/studio/data/devices.ts`.
 

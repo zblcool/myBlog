@@ -25,7 +25,8 @@ export const socialLinks = [
 export const demoUrl = configured(env.PUBLIC_DEMO_URL) || "https://interactive-equipment-explainer-nu.vercel.app/";
 
 export const form = {
-  endpoint: configured(env.PUBLIC_FORM_ENDPOINT),
+  /** Formspree form; PUBLIC_FORM_ENDPOINT overrides it. */
+  endpoint: configured(env.PUBLIC_FORM_ENDPOINT) || "https://formspree.io/f/moejdzrl",
   accessKey: env.PUBLIC_FORM_ACCESS_KEY ?? "",
 };
 
