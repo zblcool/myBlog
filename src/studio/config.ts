@@ -19,10 +19,10 @@ export const socialLinks = [
 ];
 
 /**
- * The live Interactive Equipment Explainer. Dev builds fall back to its local dev server;
- * a production build without PUBLIC_DEMO_URL hides the live-demo buttons.
+ * The live Interactive Equipment Explainer: its Vercel deployment until it gets its own domain.
+ * PUBLIC_DEMO_URL overrides it (e.g. http://localhost:5173 to try a local explainer build).
  */
-export const demoUrl = configured(env.PUBLIC_DEMO_URL) || (env.DEV ? "http://localhost:5173" : "");
+export const demoUrl = configured(env.PUBLIC_DEMO_URL) || "https://interactive-equipment-explainer-nu.vercel.app/";
 
 export const form = {
   endpoint: configured(env.PUBLIC_FORM_ENDPOINT),
