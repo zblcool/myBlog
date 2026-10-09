@@ -1,36 +1,23 @@
 ---
-import { getCollection } from "astro:content";
 import "@/styles/global.css";
-import FloatingHanziBackground from "@/components/react/three/FloatingHanziBackground";
-import { navLinks, profile, socialLinks } from "@/data/site";
-import { collectTagSummaries } from "@/lib/content";
+import { contactHref, contactLabel, navLinks, profile, socialLinks } from "@/data/site";
 import { stripBase, withBase } from "@/lib/paths";
 
 interface Props {
   title?: string;
   description?: string;
+  cta?: boolean;
 }
 
 const {
   title = `${profile.name} | ${profile.title}`,
-  description = profile.tagline,
+  description = profile.description,
+  cta = true,
 } = Astro.props;
 
-const posts = await getCollection("posts");
-const notes = await getCollection("notes");
-const floatingTags = collectTagSummaries(posts, notes)
-  .slice(0, 16)
-  .map(({ tag }) => tag);
-
 const pathname = stripBase(Astro.url.pathname);
-
-function isActive(href: string) {
-  if (href === "/") {
-    return pathname === href;
-  }
-
-  return pathname === href || pathname.startsWith(href);
-}
+const isActive = (href: string) => !href.includes("#") && pathname.startsWith(href);
+const external = contactHref.startsWith("http");
 ---
 
 <!doctype html>
@@ -40,59 +27,69 @@ function isActive(href: string) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
     <link rel="icon" type="image/png" href={withBase("/logo.png")} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400&display=swap"
+    />
   </head>
   <body>
-    <div class="site-background" aria-hidden="true">
-      <FloatingHanziBackground client:load tags={floatingTags} />
-      <div class="site-background__veil"></div>
-    </div>
+    <header class="site-header">
+      <div class="wrap site-header__inner">
+        <a class="brand" href={withBase("/")}>
+          <img src={withBase("/logo.png")} alt="" />
+          <span>{profile.name}</span>
+        </a>
+        <nav class="nav" aria-label="Primary">
+          {navLinks.map((link) => (
+            <a href={withBase(link.href)} data-active={isActive(link.href)}>
+              {link.label}
+            </a>
+          ))}
+          <a
+            class="btn btn--sm"
+            href={contactHref}
+            target={external ? "_blank" : undefined}
+            rel={external ? "noreferrer" : undefined}>{contactLabel}</a
+          >
+        </nav>
+      </div>
+    </header>
 
-    <div class="site-shell">
-      <header class="site-header">
-        <div class="site-header__inner">
-          <a class="brand" href={withBase("/")}>
-            <img class="brand__mark" src={withBase("/logo.png")} alt="Ash Zhang logo" />
-            <span class="brand__text">
-              <span class="brand__title">{profile.name}</span>
-              <span class="brand__subtitle">{profile.title}</span>
-            </span>
-          </a>
+    <main class="page">
+      <slot />
+    </main>
 
-          <nav class="nav" aria-label="Primary navigation">
-            {
-              navLinks.map((link) => (
-                <a href={withBase(link.href)} data-active={isActive(link.href)}>
-                  {link.label}
-                </a>
-              ))
-            }
-          </nav>
-        </div>
-      </header>
-
-      <main class="page">
-        <slot />
-      </main>
-
-      <footer class="site-footer">
-        <div class="site-footer__panel">
-          <div>
-            <strong>{profile.name}</strong>
-            <p class="muted">{profile.tagline}</p>
-          </div>
-
-          <div class="site-footer__links">
-            {
-              socialLinks.map((link) => (
-                <a href={link.href} target="_blank" rel="noreferrer">
-                  {link.label}
-                </a>
-              ))
-            }
+    {cta && (
+      <section class="cta">
+        <div class="wrap">
+          <h2>Have a project in <em>mind?</em></h2>
+          <div class="hero__actions">
+            <a
+              class="btn btn--solid"
+              href={contactHref}
+              target={external ? "_blank" : undefined}
+              rel={external ? "noreferrer" : undefined}>{contactLabel} →</a
+            >
+            <a class="btn" href={withBase("/document/Ash-Zhang-CV.pdf")}>Download CV</a>
           </div>
         </div>
-      </footer>
-    </div>
+      </section>
+    )}
+
+    <footer class="site-footer">
+      <div class="wrap site-footer__inner">
+        <span>© {new Date().getFullYear()} {profile.name}</span>
+        <div class="site-footer__links">
+          {socialLinks.map((link) => (
+            <a href={link.href} target="_blank" rel="noreferrer">{link.label}</a>
+          ))}
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

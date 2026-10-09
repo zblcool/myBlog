@@ -1,13 +1,6 @@
 ---
 import type { WritingEntry, WritingKind } from "@/lib/content";
-import {
-  formatDate,
-  getEntryCover,
-  getEntryCoverAlt,
-  getEntryUrl,
-  getEntrySummary,
-  getTagUrl,
-} from "@/lib/content";
+import { formatDate, getEntryUrl } from "@/lib/content";
 import { withBase } from "@/lib/paths";
 
 interface Props {
@@ -16,49 +9,12 @@ interface Props {
 }
 
 const { entry, kind } = Astro.props;
-const thumbnail = getEntryCover(entry);
-const summary = getEntrySummary(entry);
 ---
 
-<article class="content-card">
-  {
-    thumbnail && (
-      <a class="content-card__thumbnail-link" href={withBase(getEntryUrl(kind, entry))}>
-        <img
-          class="content-card__thumbnail"
-          src={thumbnail}
-          alt={getEntryCoverAlt(entry)}
-          loading="lazy"
-        />
-      </a>
-    )
-  }
-
-  <div class="content-card__meta">
-    <span>{kind === "post" ? "Post" : "Note"}</span>
-    <span> · </span>
-    <span>{formatDate(entry.data.date)}</span>
-    {entry.data.location && (
-      <>
-        <span> · </span>
-        <span>{entry.data.location}</span>
-      </>
-    )}
-  </div>
-
-  <h3>
-    <a href={withBase(getEntryUrl(kind, entry))}>{entry.data.title}</a>
-  </h3>
-
-  <p class="content-card__excerpt">{summary}</p>
-
-  {entry.data.tags.length > 0 && (
-    <div class="tag-list">
-      {entry.data.tags.slice(0, 3).map((tag) => (
-        <a class="tag-link" href={withBase(getTagUrl(tag))}>
-          {tag}
-        </a>
-      ))}
-    </div>
-  )}
-</article>
+<a class="entry-row" href={withBase(getEntryUrl(kind, entry))}>
+  <span class="label">{formatDate(entry.data.date)}</span>
+  <h3>{entry.data.title}</h3>
+  <span class="tag-list">
+    {entry.data.tags.slice(0, 2).map((tag) => <span class="tag">{tag}</span>)}
+  </span>
+</a>

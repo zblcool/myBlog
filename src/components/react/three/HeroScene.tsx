@@ -12,7 +12,7 @@ export default function HeroScene() {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-    camera.position.set(0, 0, 5.2);
+    camera.position.set(0, 0, 7);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -25,20 +25,20 @@ export default function HeroScene() {
     const shell = new THREE.Mesh(
       new THREE.IcosahedronGeometry(1.45, 1),
       new THREE.MeshBasicMaterial({
-        color: 0xb24a2f,
+        color: 0xd4401a,
         wireframe: true,
         transparent: true,
-        opacity: 0.7,
+        opacity: 0.85,
       }),
     );
 
     const core = new THREE.Mesh(
       new THREE.SphereGeometry(0.72, 24, 24),
       new THREE.MeshBasicMaterial({
-        color: 0xf1d3a2,
+        color: 0x14130f,
         wireframe: true,
         transparent: true,
-        opacity: 0.45,
+        opacity: 0.35,
       }),
     );
 
@@ -61,10 +61,10 @@ export default function HeroScene() {
     const points = new THREE.Points(
       pointsGeometry,
       new THREE.PointsMaterial({
-        color: 0xf7f0e2,
-        size: 0.06,
+        color: 0x14130f,
+        size: 0.045,
         transparent: true,
-        opacity: 0.8,
+        opacity: 0.55,
       }),
     );
 
@@ -114,16 +114,5 @@ export default function HeroScene() {
     };
   }, []);
 
-  return (
-    <div className="three-stage">
-      <div className="three-stage__canvas" ref={mountRef} />
-      <div className="three-stage__caption">
-        <strong>Three.js-ready lane</strong>
-        <span>
-          This interactive island already lives outside the content layer, so future
-          framework migration stays more manageable.
-        </span>
-      </div>
-    </div>
-  );
+  return <div className="hero-canvas" ref={mountRef} />;
 }

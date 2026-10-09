@@ -1,67 +1,17 @@
 ---
-import PageMasthead from "@/components/PageMasthead.astro";
-import ProjectCard from "@/components/ProjectCard.astro";
-import ProjectSpotlight from "@/components/ProjectSpotlight.astro";
-import SectionHeader from "@/components/SectionHeader.astro";
-import { projects } from "@/data/projects";
+import WorkCard from "@/components/WorkCard.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { withBase } from "@/lib/paths";
-
-const spotlightProject = projects[0];
-const projectArchive = projects.slice(1);
+import { projects } from "@/data/projects";
 ---
 
-<BaseLayout title="Portfolio | Ash Zhang" description="Portfolio direction">
-  <PageMasthead
-    eyebrow="Portfolio"
-    title="Case studies with a clearer lead project"
-    lead="The old media wall is turning into a real portfolio."
-    detail="The goal is not only to store project assets, but to show which work best represents the site today and where future interactive work should go next."
-  >
-    <a slot="actions" class="button button--primary" href={withBase(`/portfolio/${spotlightProject.slug}/`)}>
-      Open featured case study
-    </a>
-    <a slot="actions" class="button" href={withBase("/")}>Back home</a>
-
-    <article slot="facts" class="page-fact-card">
-      <span>Flagship</span>
-      <strong>{spotlightProject.title}</strong>
-      <p>The current lead case study anchoring the portfolio.</p>
-    </article>
-    <article slot="facts" class="page-fact-card">
-      <span>Portfolio mode</span>
-      <strong>{projects.length} structured projects</strong>
-      <p>Case studies, live tools, and archive pieces now share one data model.</p>
-    </article>
-    <article slot="facts" class="page-fact-card">
-      <span>Future lane</span>
-      <strong>Interactive work first</strong>
-      <p>Graphics-heavy and product-flavored experiments should lead the first impression.</p>
-    </article>
-  </PageMasthead>
-
-  <section class="section">
-    <SectionHeader
-      title="Featured now"
-      description="Hanzi Workshop is the current flagship case study because it already combines product framing, front-end craft, bilingual UX, and genuine game-prototype depth."
-    />
-
-    <ProjectSpotlight
-      project={spotlightProject}
-      eyebrow="Flagship Case Study"
-      title="Hanzi Workshop / 汉字工坊"
-      summary="The repo may still be called hanziHero, but as portfolio work it reads best as a broader Hanzi Workshop case study: a shared launcher, two distinct game directions, and a current focus on readable, playable hanzi systems."
-    />
-  </section>
-
-  <section class="section">
-    <SectionHeader
-      title="Project archive"
-      description="Archive material, live tools, and concept work now sit behind the lead project instead of all fighting for the first impression."
-    />
-
-    <div class="card-grid">
-      {projectArchive.map((project) => <ProjectCard project={project} />)}
+<BaseLayout title="Work | Ash Zhang" description="Selected interactive, game and design projects by Ash Zhang.">
+  <div class="wrap">
+    <header class="page-head">
+      <span class="label">Work</span>
+      <h1>Selected projects</h1>
+    </header>
+    <div class="work-grid page-body">
+      {projects.map((project, i) => <WorkCard project={project} lead={i === 0} />)}
     </div>
-  </section>
+  </div>
 </BaseLayout>

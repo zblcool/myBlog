@@ -2,8 +2,6 @@
 import { getCollection } from "astro:content";
 import ContentCard from "@/components/ContentCard.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import PageMasthead from "@/components/PageMasthead.astro";
-import SectionHeader from "@/components/SectionHeader.astro";
 import {
   collectTagCounts,
   slugifyTag,
@@ -45,68 +43,32 @@ const relatedNotes = sortEntriesByDateDesc(
   notes.filter((entry) => entry.data.tags.includes(tag)),
 );
 const relatedEntries = [...relatedPosts, ...relatedNotes];
-const relatedTags = collectTagCounts(relatedEntries)
-  .filter((item) => item.tag !== tag)
-  .slice(0, 6);
 ---
 
-<BaseLayout title={`${tag} | Ash Zhang`} description={`Entries tagged ${tag}`}>
-  <PageMasthead
-    eyebrow="Tag"
-    title={tag}
-    lead="This page is generated from source metadata, which keeps the indexing logic separate from the page layout."
-    detail="It is one of the clearest examples of the rebuild rule: content metadata stays in Markdown frontmatter, while the browsing experience stays in reusable site components."
-  >
-    <a slot="actions" class="button button--primary" href={withBase("/tag/")}>All tags</a>
-    <a slot="actions" class="button" href={withBase("/")}>Back home</a>
-
-    <article slot="facts" class="page-fact-card">
-      <span>Total entries</span>
-      <strong>{relatedEntries.length}</strong>
-      <p>All content currently linked by this topic.</p>
-    </article>
-    <article slot="facts" class="page-fact-card">
-      <span>Posts / Notes</span>
-      <strong>{relatedPosts.length} / {relatedNotes.length}</strong>
-      <p>The split between polished writing and rougher study material.</p>
-    </article>
-    {relatedTags.length > 0 && (
-      <article slot="facts" class="page-fact-card">
-        <span>Related tags</span>
-        <div class="tag-list">
-          {relatedTags.map((item) => (
-            <a class="tag-link" href={withBase(`/tag/${item.slug}/`)}>
-              {item.tag}
-            </a>
-          ))}
-        </div>
-      </article>
-    )}
-  </PageMasthead>
-
-  {relatedPosts.length > 0 && (
-    <section class="section">
-      <SectionHeader
-        title="Posts"
-        description={`${relatedPosts.length} related post entries`}
-      />
-
-      <div class="card-grid">
-        {relatedPosts.map((entry) => <ContentCard entry={entry} kind="post" />)}
-      </div>
-    </section>
-  )}
-
-  {relatedNotes.length > 0 && (
-    <section class="section">
-      <SectionHeader
-        title="Notes"
-        description={`${relatedNotes.length} related note entries`}
-      />
-
-      <div class="card-grid">
-        {relatedNotes.map((entry) => <ContentCard entry={entry} kind="notes" />)}
-      </div>
-    </section>
-  )}
+<BaseLayout title={`${tag} | Ash Zhang`} description={`Entries tagged ${tag}`} cta={false}>
+  <div class="wrap">
+    <header class="page-head">
+      <span class="label">Tag</span>
+      <h1>{tag}</h1>
+      <p><a class="link-arrow" href={withBase("/tag/")}>All topics</a></p>
+    </header>
+    <div class="page-body">
+      {relatedPosts.length > 0 && (
+        <section class="archive-group">
+          <h2>Writing</h2>
+          <div class="entry-list">
+            {relatedPosts.map((entry) => <ContentCard entry={entry} kind="post" />)}
+          </div>
+        </section>
+      )}
+      {relatedNotes.length > 0 && (
+        <section class="archive-group">
+          <h2>Notes</h2>
+          <div class="entry-list">
+            {relatedNotes.map((entry) => <ContentCard entry={entry} kind="notes" />)}
+          </div>
+        </section>
+      )}
+    </div>
+  </div>
 </BaseLayout>

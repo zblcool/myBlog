@@ -1,0 +1,22 @@
+---
+import type { Project } from "@/data/projects";
+import { withBase } from "@/lib/paths";
+
+interface Props {
+  project: Project;
+  lead?: boolean;
+}
+
+const { project, lead = false } = Astro.props;
+---
+
+<a class:list={["work-card", lead && "work-card--lead"]} href={withBase(`/portfolio/${project.slug}/`)}>
+  <div class="work-card__media">
+    <img src={withBase(project.cover)} alt={project.title} loading="lazy" />
+  </div>
+  <div class="work-card__body">
+    <h3>{project.title}</h3>
+    <span class="label">{project.kind} · {project.year}</span>
+    <p class="work-card__headline">{project.headline}</p>
+  </div>
+</a>

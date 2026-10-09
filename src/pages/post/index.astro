@@ -1,55 +1,25 @@
 ---
 import { getCollection } from "astro:content";
-import ArchiveYearGroup from "@/components/ArchiveYearGroup.astro";
+import ArchiveList from "@/components/ArchiveList.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import PageMasthead from "@/components/PageMasthead.astro";
-import {
-  collectTagCounts,
-  groupEntriesByYear,
-  sortEntriesByDateDesc,
-} from "@/lib/content";
+import { groupEntriesByYear, sortEntriesByDateDesc } from "@/lib/content";
 import { withBase } from "@/lib/paths";
 
-const posts = sortEntriesByDateDesc(await getCollection("posts"));
-const archiveGroups = groupEntriesByYear(posts);
-const topTags = collectTagCounts(posts).slice(0, 6);
-const yearSpan =
-  archiveGroups.length > 0
-    ? `${archiveGroups[archiveGroups.length - 1]?.year} - ${archiveGroups[0]?.year}`
-    : "Archive";
+const groups = groupEntriesByYear(sortEntriesByDateDesc(await getCollection("posts")));
 ---
 
-<BaseLayout title="Posts | Ash Zhang" description="Migrated post archive">
-  <PageMasthead
-    eyebrow="Posts"
-    title="Writing archive"
-    lead="These posts are loaded directly from the existing Markdown files instead of being copied into a new proprietary format."
-    detail="This section should read like the more polished half of the site: essays, practical notes that grew into articles, and durable writing worth revisiting."
-  >
-    <a slot="actions" class="button button--primary" href={withBase("/tag/")}>Browse tags</a>
-    <a slot="actions" class="button" href={withBase("/")}>Back home</a>
-
-    <article slot="facts" class="page-fact-card">
-      <span>Total posts</span>
-      <strong>{posts.length}</strong>
-      <p>Finished writing pieces already flowing through the Astro content layer.</p>
-    </article>
-    <article slot="facts" class="page-fact-card">
-      <span>Year span</span>
-      <strong>{yearSpan}</strong>
-      <p>The range now visible inside the rebuilt archive.</p>
-    </article>
-    <article slot="facts" class="page-fact-card">
-      <span>Top tags</span>
-      <div class="tag-list">
-        {topTags.map((tag) => (
-          <a class="tag-link" href={withBase(`/tag/${tag.slug}/`)}>
-            {tag.tag}
-          </a>
-        ))}
-      </div>
-    </article>
-  </PageMasthead>
-
-  {archiveGroups.map((group) => <ArchiveYearGroup group={group} kind="post" />)}
+<BaseLayout title="Writing | Ash Zhang" description="Articles on graphics, front-end and software craft." cta={false}>
+  <div class="wrap">
+    <header class="page-head">
+      <span class="label">Writing</span>
+      <h1>Writing</h1>
+      <p>
+        Articles on graphics, front-end and software craft.
+        <a class="link-arrow" href={withBase("/notes/")}>Study notes</a>
+      </p>
+    </header>
+    <div class="page-body">
+      <ArchiveList groups={groups} kind="post" />
+    </div>
+  </div>
 </BaseLayout>

@@ -1,0 +1,20 @@
+---
+import ContentCard from "@/components/ContentCard.astro";
+import type { ArchiveYearGroup, WritingKind } from "@/lib/content";
+
+interface Props {
+  groups: ArchiveYearGroup[];
+  kind: WritingKind;
+}
+
+const { groups, kind } = Astro.props;
+---
+
+{groups.map((group) => (
+  <section class="archive-group">
+    <h2>{group.year}</h2>
+    <div class="entry-list">
+      {group.entries.map((entry) => <ContentCard entry={entry} kind={kind} />)}
+    </div>
+  </section>
+))}

@@ -1,97 +1,62 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import SectionHeader from "@/components/SectionHeader.astro";
 import { projects } from "@/data/projects";
 import { isExternalPath, withBase } from "@/lib/paths";
 
 export async function getStaticPaths() {
-  return projects.map((project) => ({
+  return projects.map((project, i) => ({
     params: { slug: project.slug },
-    props: { project },
+    props: { project, next: projects[(i + 1) % projects.length] },
   }));
 }
 
-const { project } = Astro.props;
+const { project, next } = Astro.props;
+const extra = project.gallery.filter((src) => src !== project.cover);
 ---
 
-<BaseLayout
-  title={`${project.title} | Ash Zhang`}
-  description={project.summary}
->
-  <article class="project-detail">
-    <section class="project-hero">
-      <div class="project-hero__copy">
-        <div class="eyebrow">Case Study</div>
-        <h1>{project.title}</h1>
-        <p class="lead">{project.headline}</p>
-        <p class="article-intro">{project.summary}</p>
-
-        <div class="project-kpis">
-          <div class="project-kpi">
-            <span class="project-kpi__label">Year</span>
-            <strong>{project.year}</strong>
-          </div>
-          <div class="project-kpi">
-            <span class="project-kpi__label">Status</span>
-            <strong>{project.status}</strong>
-          </div>
-          <div class="project-kpi">
-            <span class="project-kpi__label">Role</span>
-            <strong>{project.role}</strong>
-          </div>
-        </div>
-
-        <div class="tag-list">
-          {project.stack.map((item) => (
-            <span class="tag-link">{item}</span>
-          ))}
-        </div>
-
-        <div class="project-card__actions">
-          {project.links.map((link) => (
+<BaseLayout title={`${project.title} | Ash Zhang`} description={project.headline}>
+  <article class="wrap">
+    <header class="page-head">
+      <span class="label">{project.kind} · {project.year}</span>
+      <h1>{project.title}</h1>
+      <p>{project.headline}</p>
+      {project.links.length > 0 && (
+        <div class="hero__actions">
+          {project.links.map((link, i) => (
             <a
-              class="button"
+              class:list={["btn", i === 0 && "btn--solid"]}
               href={isExternalPath(link.href) ? link.href : withBase(link.href)}
               target={link.external ? "_blank" : undefined}
-              rel={link.external ? "noreferrer" : undefined}
+              rel={link.external ? "noreferrer" : undefined}>{link.label}</a
             >
-              {link.label}
-            </a>
           ))}
         </div>
+      )}
+    </header>
+
+    <div class="case-meta">
+      <div><span class="label">Role</span><strong>{project.role}</strong></div>
+      <div><span class="label">Year</span><strong>{project.year}</strong></div>
+      <div><span class="label">Stack</span><strong>{project.stack.join(", ")}</strong></div>
+    </div>
+
+    <img class="case-cover" src={withBase(project.cover)} alt={project.title} />
+
+    <div class="case-story">
+      <section><h2>Challenge</h2><p>{project.challenge}</p></section>
+      <section><h2>Approach</h2><p>{project.approach}</p></section>
+      <section><h2>Outcome</h2><p>{project.outcome}</p></section>
+    </div>
+
+    {extra.length > 0 && (
+      <div class="case-gallery">
+        {extra.map((src) => <img src={withBase(src)} alt={project.title} loading="lazy" />)}
       </div>
+    )}
 
-      <img class="project-hero__cover" src={withBase(project.cover)} alt={project.title} />
-    </section>
-
-    <section class="project-detail__body">
-      <div class="project-story-grid">
-        <article class="project-story-card">
-          <h2>Challenge</h2>
-          <p>{project.challenge}</p>
-        </article>
-        <article class="project-story-card">
-          <h2>Approach</h2>
-          <p>{project.approach}</p>
-        </article>
-        <article class="project-story-card">
-          <h2>Outcome</h2>
-          <p>{project.outcome}</p>
-        </article>
-      </div>
-
-      <section class="section">
-        <SectionHeader
-          title="Gallery"
-          description="Legacy assets kept intact while the surrounding story gets rebuilt."
-        />
-
-        <div class="project-gallery">
-          {project.gallery.map((image) => (
-            <img src={withBase(image)} alt={project.title} />
-          ))}
-        </div>
-      </section>
-    </section>
+    <a class="case-next page-body" href={withBase(`/portfolio/${next.slug}/`)}>
+      <span class="label">Next project</span>
+      <strong>{next.title} →</strong>
+    </a>
   </article>
 </BaseLayout>

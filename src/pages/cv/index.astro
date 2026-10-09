@@ -1,59 +1,52 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import PageMasthead from "@/components/PageMasthead.astro";
-import { cvSnapshot, profile, socialLinks } from "@/data/site";
+import { about, profile, socialLinks } from "@/data/site";
 import { withBase } from "@/lib/paths";
+
+const pdf = withBase("/document/Ash-Zhang-CV.pdf");
 ---
 
-<BaseLayout title="CV | Ash Zhang" description="Ash Zhang CV">
-  <PageMasthead
-    eyebrow="CV"
-    title="Resume and profile"
-    lead="The PDF remains the formal resume, but this page now also gives a quick profile snapshot."
-    detail="It should work for people who need context before opening the document, and for direct sharing when a faster online summary is more useful than a PDF first."
-  >
-    <a slot="actions" class="button button--primary" href={withBase("/document/Ash-Zhang-CV.pdf")}>
-      Open PDF
-    </a>
-    {socialLinks.map((link) => (
-      <a slot="actions" class="button" href={link.href} target="_blank" rel="noreferrer">
-        {link.label}
-      </a>
-    ))}
+<BaseLayout title="About | Ash Zhang" description={profile.description}>
+  <div class="wrap">
+    <header class="page-head">
+      <span class="label">About</span>
+      <h1>{profile.title}</h1>
+      <div class="hero__actions">
+        <a class="btn btn--solid" href={pdf}>Download CV</a>
+        {socialLinks.map((link) => (
+          <a class="btn" href={link.href} target="_blank" rel="noreferrer">{link.label}</a>
+        ))}
+      </div>
+    </header>
 
-    {cvSnapshot.highlights.map((item) => (
-      <article slot="facts" class="page-fact-card">
-        <span>{item.label}</span>
-        <strong>{item.value}</strong>
-      </article>
-    ))}
-  </PageMasthead>
-
-  <section class="section">
-    <div class="cv-layout">
-      <aside class="panel panel--padded cv-sidebar">
-        <div class="eyebrow">Profile Snapshot</div>
-        <h2>{profile.title}</h2>
-        <p class="lead cv-sidebar__lead">{cvSnapshot.summary}</p>
-
-        <div class="cv-focus">
-          <h3>Focus areas</h3>
-          <ul>
-            {cvSnapshot.focusAreas.map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
+    <div class="about-grid page-body">
+      <p class="about-summary">{about.summary}</p>
+      <div>
+        <h2 class="subhead">Strengths</h2>
+        <ul class="plain-list">
+          {about.strengths.map((item) => <li>{item}</li>)}
+        </ul>
+        <h2 class="subhead">Tools</h2>
+        <div class="tag-list">
+          {about.stack.map((item) => <span class="tag">{item}</span>)}
         </div>
-      </aside>
-
-      <div class="embed-shell cv-embed">
-        <object data={withBase("/document/Ash-Zhang-CV.pdf")} type="application/pdf">
-          <p>
-            Your browser does not support inline PDF previews.
-            <a href={withBase("/document/Ash-Zhang-CV.pdf")}>Open the PDF directly</a>.
-          </p>
-        </object>
       </div>
     </div>
-  </section>
+
+    <section class="page-body about-grid">
+      <div>
+        <h2 class="subhead">3D & graphics projects</h2>
+        <ul class="plain-list">
+          {about.research.map((item) => <li><strong>{item.title}</strong><br /><span class="muted">{item.text}</span></li>)}
+        </ul>
+      </div>
+      <div>
+        <h2 class="subhead">Education</h2>
+        <ul class="plain-list">{about.education.map((item) => <li>{item}</li>)}</ul>
+        <h2 class="subhead">Awards</h2>
+        <ul class="plain-list">{about.awards.map((item) => <li>{item}</li>)}</ul>
+      </div>
+    </section>
+
+  </div>
 </BaseLayout>

@@ -1,12 +1,12 @@
 ---
 import { getCollection, render } from "astro:content";
-import EntryPager from "@/components/EntryPager.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import {
   formatDate,
   getAdjacentEntries,
   getEntryCover,
   getEntryCoverAlt,
+  getEntryUrl,
   getTagUrl,
   sortEntriesByDateDesc,
 } from "@/lib/content";
@@ -30,13 +30,14 @@ const intro = entry.data.description ?? entry.data.summary;
 ---
 
 <BaseLayout
+  cta={false}
   title={`${entry.data.title} | Ash Zhang`}
   description={entry.data.description ?? entry.data.title}
 >
   <article class="article-shell">
-    <div class="eyebrow">Post</div>
+    <div class="label">Post</div>
     <h1>{entry.data.title}</h1>
-    <div class="article-meta">
+    <div class="article-meta label">
       <span>{formatDate(entry.data.date)}</span>
       {entry.data.location && (
         <>
@@ -73,5 +74,12 @@ const intro = entry.data.description ?? entry.data.summary;
     </div>
   </article>
 
-  <EntryPager kind="post" newer={newer} older={older} />
+  <div class="pager wrap">
+    {older ? (
+      <a href={withBase(getEntryUrl("post", older))}><span class="label">Older</span><strong>{older.data.title}</strong></a>
+    ) : <span />}
+    {newer && (
+      <a href={withBase(getEntryUrl("post", newer))}><span class="label">Newer</span><strong>{newer.data.title}</strong></a>
+    )}
+  </div>
 </BaseLayout>

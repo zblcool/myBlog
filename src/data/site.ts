@@ -1,114 +1,118 @@
 export const profile = {
   name: "Ash Zhang",
-  title: "Interactive Graphics Developer & Technical Writer",
-  tagline:
-    "A personal brand site for technical writing, graphics experiments, and portfolio work that can grow into richer interactive experiences.",
-  intro:
-    "The site now has two clear jobs: publish durable writing and showcase interactive, design-heavy work like Hanzi Workshop without mixing content and UI logic together.",
+  title: "3D Graphics & WebGL Engineer",
+  location: "Sydney",
+  lead: "Babylon.js, custom shaders and Cesium-based GIS: digital twins, interactive maps and visual experiences that run in the browser.",
+  description:
+    "Ash Zhang is a Sydney-based 3D graphics engineer building real-time WebGL, shader and Cesium GIS experiences for the web.",
 };
 
-export const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "Posts", href: "/post/" },
-  { label: "Notes", href: "/notes/" },
-  { label: "Tags", href: "/tag/" },
-  { label: "Portfolio", href: "/portfolio/" },
-  { label: "CV", href: "/cv/" },
-  { label: "Tools", href: "/tool/" },
-];
-
-export const siteSections = [
-  {
-    eyebrow: "Writing",
-    title: "Posts",
-    href: "/post/",
-    summary:
-      "More polished writing, essays, and practical lessons that should read like finished articles.",
-    detail: "Best for featured ideas, longer explanations, and durable references.",
-  },
-  {
-    eyebrow: "Learning",
-    title: "Notes",
-    href: "/notes/",
-    summary:
-      "Working notes, study fragments, and research trails that are still useful even when they stay rough.",
-    detail: "Best for class notes, experiments, and in-progress thinking.",
-  },
-  {
-    eyebrow: "Navigation",
-    title: "Tags",
-    href: "/tag/",
-    summary:
-      "Topic-first browsing across posts and notes, useful when the subject matters more than the format.",
-    detail: "Best for jumping straight into themes like React, graphics, or algorithms.",
-  },
-  {
-    eyebrow: "Work",
-    title: "Portfolio",
-    href: "/portfolio/",
-    summary:
-      "Case studies and project stories that explain what was built, why it matters, and how it evolved.",
-    detail: "Best for seeing product, engineering, and design work in one place.",
-  },
-  {
-    eyebrow: "Profile",
-    title: "CV",
-    href: "/cv/",
-    summary:
-      "A quick route to the current resume, with room for this page to become a richer online profile.",
-    detail: "Best for recruiters, hiring managers, and direct profile sharing.",
-  },
-  {
-    eyebrow: "Experiments",
-    title: "Tools",
-    href: "/tool/",
-    summary:
-      "Small utilities and side projects that live closer to interactive demos than to articles.",
-    detail: "Best for practical experiments and standalone mini-products.",
-  },
-];
+export const contactEmail = "ash.zhang.work@gmail.com";
 
 export const socialLinks = [
   { label: "GitHub", href: "https://github.com/zblcool" },
-  {
-    label: "LinkedIn",
-    href: "https://www.linkedin.com/in/baolong-zhang-704062a1/",
-  },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/ash-zhang/" },
   {
     label: "Instagram",
     href: "https://www.instagram.com/zblash95/?hl=zh-cn",
   },
 ];
 
-export const cvSnapshot = {
+export const contactHref = `mailto:${contactEmail}`;
+export const contactLabel = "Start a project";
+
+export const navLinks = [
+  { label: "Work", href: "/portfolio/" },
+  { label: "Services", href: "/#services" },
+  { label: "Writing", href: "/post/" },
+  { label: "About", href: "/cv/" },
+];
+
+export const facts = [
+  { value: "Babylon.js", label: "real-time 3D engines" },
+  { value: "Shaders", label: "GLSL, ray-marching, post-processing" },
+  { value: "Cesium", label: "3D GIS and maps" },
+  { value: "9+ yrs", label: "building for the web" },
+];
+
+export const services = [
+  {
+    index: "01",
+    title: "Real-time 3D",
+    text: "Digital twins, product viewers, simulations and games in the browser, tuned for rendering performance.",
+    tools: ["Babylon.js", "Three.js", "WebGL"],
+  },
+  {
+    index: "02",
+    title: "Shaders & visual effects",
+    text: "Custom shaders, procedural geometry and post-processing that give a scene its look.",
+    tools: ["GLSL", "Ray-marching", "Post-processing"],
+  },
+  {
+    index: "03",
+    title: "GIS & 3D maps",
+    text: "Interactive globes and spatial data platforms that make complex geography easy to explore.",
+    tools: ["Cesium", "Resium", "React"],
+  },
+  {
+    index: "04",
+    title: "Interactive web apps",
+    text: "The JavaScript and TypeScript front-end around the 3D: UI, state and APIs.",
+    tools: ["TypeScript", "React", "Node.js"],
+  },
+];
+
+export const about = {
   summary:
-    "Computer graphics focused web developer building content-first sites, interactive interfaces, and portfolio work that can grow into richer product experiences.",
-  focusAreas: [
-    "Astro and static-site architecture that stays GitHub Pages friendly",
-    "React and Three.js components isolated for future interactive work",
-    "Project storytelling that pairs product context with implementation detail",
+    "I'm a 3D graphics engineer for the web. I work from the shader up to the interface, so the visuals, performance and product experience stay in one hand.",
+  strengths: [
+    "Real-time 3D with Babylon.js, Three.js and WebGL",
+    "Shader programming and procedural geometry",
+    "3D GIS platforms built on Cesium",
+    "Rendering performance, GPU efficiency and memory",
   ],
-  highlights: [
-    { label: "Current direction", value: "Content-first site rebuild with room for 3D work" },
-    { label: "Working style", value: "Structured migrations, durable content systems, clear UI polish" },
-    { label: "Primary stack", value: "Astro, TypeScript, React, Three.js" },
+  stack: [
+    "JavaScript",
+    "TypeScript",
+    "Babylon.js",
+    "Three.js",
+    "Cesium",
+    "GLSL",
+    "React",
+    "Node.js",
+  ],
+  research: [
+    {
+      title: "Natural resources GIS platform",
+      text: "A 3D map application for analysing and managing resource data, built on Cesium and React.",
+    },
+    {
+      title: "Voronoi structure generator",
+      text: "Three.js tool using Delaunay triangulation, Jump Flood and ray-marched distance fields.",
+    },
+    {
+      title: "Covid-3D dashboard",
+      text: "Online 3D visualisation of public Covid-19 data with Three.js and React.",
+    },
+    {
+      title: "Virtual Museum Experience",
+      text: "Two-day hackathon build: lit 3D scenes, multiple cameras and a JSON-driven object loader.",
+    },
+  ],
+  education: [
+    "Master of Information Technology, UTS (High Distinction)",
+    "B.Eng. Electronic Engineering, UESTC",
+  ],
+  awards: [
+    "UTS Techcelerator 2021, top project",
+    "Student Games Showcase 2021",
   ],
 };
-
-export const migrationPrinciples = [
-  "Keep Markdown content as the source of truth during migration.",
-  "Keep page templates thin so future framework changes stay manageable.",
-  "Store UI data in dedicated files instead of hardcoding it into page markup.",
-  "Isolate future React and Three.js work inside dedicated component folders.",
-];
 
 export const toolLinks = [
   {
     title: "Stand-ups Lottery",
     href: "https://zblcool.github.io/LuckyBacon",
-    externalLabel: "Open external tool",
-    embedHref: "https://zblcool.github.io/LuckyBacon",
-    summary:
-      "A small utility already hosted separately and embedded here as part of the migration baseline.",
+    summary: "A small team utility for picking who speaks next.",
   },
 ];
