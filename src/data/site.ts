@@ -64,8 +64,8 @@ export const services = [
     index: "04",
     title: "Interactive web apps",
     demo: "ui",
-    hint: "React · live, reorderable UI",
-    text: "The JavaScript and TypeScript front-end around the 3D: UI, state and APIs.",
+    hint: "React + Three.js · configure the object",
+    text: "The React and TypeScript layer around the 3D: controls, state and APIs.",
     tools: ["TypeScript", "React", "Node.js"],
   },
 ];

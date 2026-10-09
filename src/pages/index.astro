@@ -5,7 +5,7 @@ import WorkCard from "@/components/WorkCard.astro";
 import BabylonDemo from "@/components/react/demos/BabylonDemo";
 import CesiumDemo from "@/components/react/demos/CesiumDemo";
 import ShaderDemo from "@/components/react/demos/ShaderDemo";
-import UiDemo from "@/components/react/demos/UiDemo";
+import ConfiguratorDemo from "@/components/react/demos/ConfiguratorDemo";
 import HeroScene from "@/components/react/three/HeroScene";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { projects } from "@/data/projects";
@@ -71,7 +71,7 @@ const external = contactHref.startsWith("http");
               {item.demo === "babylon" && <BabylonDemo client:visible />}
               {item.demo === "shader" && <ShaderDemo client:visible />}
               {item.demo === "cesium" && <CesiumDemo client:visible />}
-              {item.demo === "ui" && <UiDemo client:visible />}
+              {item.demo === "ui" && <ConfiguratorDemo client:visible />}
               <span class="service__hint">{item.hint}</span>
             </div>
             <div class="service__body">
