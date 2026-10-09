@@ -1,9 +1,15 @@
 ---
 import Home from "@/studio/components/Home.astro";
 import StudioLayout from "@/studio/layouts/StudioLayout.astro";
-import { copies } from "@/studio/i18n";
+import { copies, localePath } from "@/studio/i18n";
+import { homeStructuredData } from "@/studio/seo";
+import { withBase } from "@/lib/paths";
+
+const t = copies.en;
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).toString() : path);
+const structuredData = homeStructuredData(t, absolute(localePath("en", "/")), (path) => absolute(withBase(path)));
 ---
 
-<StudioLayout lang="en">
-  <Home t={copies.en} />
+<StudioLayout lang="en" structuredData={structuredData}>
+  <Home t={t} />
 </StudioLayout>

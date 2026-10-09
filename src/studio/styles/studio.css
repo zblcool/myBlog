@@ -1783,15 +1783,6 @@ p {
   gap: clamp(40px, 6vw, 88px);
 }
 
-.contact__direct {
-  margin-top: 28px;
-  font-size: 15px;
-}
-
-.contact__direct a {
-  color: var(--white);
-  font-weight: 600;
-}
 
 .form {
   display: grid;

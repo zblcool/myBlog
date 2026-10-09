@@ -15,7 +15,6 @@ export const brand = {
 export const contactEmail = "ash.zhang.work@gmail.com";
 export const socialLinks = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/ash-zhang/" },
-  { label: "GitHub", href: "https://github.com/zblcool" },
 ];
 
 /**

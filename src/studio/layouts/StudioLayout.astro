@@ -18,9 +18,11 @@ interface Props {
   path?: string;
   title?: string;
   description?: string;
+  /** schema.org JSON-LD for this page. */
+  structuredData?: object;
 }
 
-const { lang, path = "/", title, description } = Astro.props;
+const { lang, path = "/", title, description, structuredData } = Astro.props;
 const t = copies[lang];
 const pageTitle = title ?? t.meta.title;
 const pageDescription = description ?? t.meta.description;
@@ -35,7 +37,11 @@ const nav = [
   { href: `${home}#faq`, label: t.nav.faq },
 ];
 
-const absolute = (p: string) => (Astro.site ? new URL(p, Astro.site).toString() : undefined);
+const absolute = (p: string) => (Astro.site ? new URL(p, Astro.site).toString() : p);
+const pageUrl = absolute(localePath(lang, path));
+const ogImage = absolute(withBase("/studio/og-image.jpg"));
+// "</" inside JSON would close the script element early.
+const jsonLd = structuredData && JSON.stringify(structuredData).replace(/</g, "\\u003c");
 ---
 
 <!doctype html>
@@ -50,8 +56,19 @@ const absolute = (p: string) => (Astro.site ? new URL(p, Astro.site).toString() 
     <meta property="og:site_name" content={brand.name} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
-    <meta property="og:image" content={absolute(withBase("/studio/shots/worm-gearbox.webp")) ?? withBase("/studio/shots/worm-gearbox.webp")} />
-    {Astro.site && <link rel="canonical" href={absolute(localePath(lang, path))} />}
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:locale" content="en_AU" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.meta.ogImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImage} />
+    <link rel="canonical" href={pageUrl} />
+    <link rel="sitemap" href={withBase("/sitemap-index.xml")} />
+    {jsonLd && <script is:inline type="application/ld+json" set:html={jsonLd} />}
     <link rel="icon" type="image/svg+xml" href={withBase("/studio/favicon.svg")} />
     <link rel="apple-touch-icon" href={withBase("/studio/apple-touch-icon.png")} />
     {analytics.domain && <script is:inline defer data-domain={analytics.domain} src={`${analytics.host}/js/script.js`} />}

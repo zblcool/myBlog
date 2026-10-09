@@ -5,6 +5,7 @@ export const en = {
     title: "Ashmartisan · Interactive 3D explainers for industrial equipment",
     description:
       "We turn your equipment into an interactive 3D explainer that runs in any browser: for your website, your sales team and your trade-show stand.",
+    ogImageAlt: "A cut-away worm gear reducer in the Ashmartisan Interactive Equipment Explainer",
   },
   tagline: "Interactive ideas for real world equipment",
   nav: {
@@ -212,16 +213,15 @@ export const en = {
   },
   about: {
     label: "Who's behind it",
-    title: "Ashmartisan is Ash Zhang's studio.",
-    text: "I'm a 3D graphics engineer in Sydney with 9+ years of building for the web, most of it real-time 3D with Babylon.js, Three.js, shaders and Cesium. Ashmartisan is where I build interactive explainers for companies that make and sell equipment.",
+    title: "Ashmartisan is Ash's studio.",
+    text: "I'm a computer graphics engineer in Australia with 9+ years of building for the web, most of it real-time 3D with Babylon.js, Three.js, shaders and Cesium. Ashmartisan is where I build interactive explainers for companies that make and sell equipment.",
     blog: "Read my blog →",
     linkedin: "LinkedIn ↗",
   },
   contact: {
     label: "Contact",
     title: "Have a machine that's hard to <em>explain?</em>",
-    lead: "Tell us what you make and where you want to show it. Ash will reply to you directly.",
-    email: "Or email",
+    lead: "Tell us what you make and where you want to show it, and we'll be in touch.",
     fields: {
       name: "Name",
       email: "Work email",
@@ -235,7 +235,7 @@ export const en = {
     privacy: "Privacy notice",
     submit: "Send enquiry",
     sending: "Sending…",
-    sent: "Thanks, your enquiry is on its way. You'll get a reply by email.",
+    sent: "Thanks, your enquiry has been sent. We'll be in touch.",
     mailto: "Your email app should open with the enquiry filled in. If it doesn't, write to",
     failed: "That didn't go through. Please email",
     subject: "Ashmartisan enquiry",

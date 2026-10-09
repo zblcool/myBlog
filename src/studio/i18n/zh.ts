@@ -6,6 +6,7 @@ export const zh: Copy = {
   meta: {
     title: "Ashmartisan · 工业设备交互式 3D 原理展示",
     description: "把你的设备做成在任何浏览器里都能运行的交互式 3D 原理展示，用在官网、销售拜访和展会展台。",
+    ogImageAlt: "Ashmartisan 交互式原理展示器中剖开的蜗轮蜗杆减速器",
   },
   tagline: "Interactive ideas for real world equipment",
   nav: {
@@ -218,7 +219,6 @@ export const zh: Copy = {
     label: "联系",
     title: "你的设备也很难<em>讲清楚？</em>",
     lead: "告诉我们你做什么产品、想在哪里展示。Ash 会亲自回复你。",
-    email: "或者发邮件到",
     fields: {
       name: "姓名",
       email: "工作邮箱",
