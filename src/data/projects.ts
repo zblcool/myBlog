@@ -22,29 +22,29 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    slug: "hanzi-workshop",
-    title: "Hanzi Workshop 汉字工坊",
+    slug: "hanzi-hero",
+    title: "Hanzi Hero 字海残卷",
     year: "2026",
-    kind: "Playable demo",
-    headline: "Two playable games that turn Chinese character structure into game mechanics.",
-    role: "Concept, systems design, UI, front-end",
-    stack: ["JavaScript", "Babylon.js", "Firebase"],
-    cover: "/pics/portfolios/hanzi-workshop/hanzi-hero-battle.png",
+    kind: "Playable game",
+    headline:
+      "A survivor-style action roguelite where your powers are Chinese characters: pick radicals, fuse them into hanzi, grow those into words.",
+    role: "Concept, game design, 3D, UI, front-end",
+    stack: ["JavaScript", "TypeScript", "Babylon.js", "Three.js", "Firebase"],
+    cover: "/pics/portfolios/hanzi-hero/battle.webp",
     gallery: [
-      "/pics/portfolios/hanzi-workshop/hanzi-hero-battle.png",
-      "/pics/portfolios/hanzi-workshop/launcher-screenshot.png",
-      "/pics/portfolios/hanzi-workshop/hanzi-hero-screenshot.png",
-      "/pics/portfolios/hanzi-workshop/cangjie-road-screenshot.png",
+      "/pics/portfolios/hanzi-hero/battle.webp",
+      "/pics/portfolios/hanzi-hero/title-screen.webp",
+      "/pics/portfolios/hanzi-hero/cangjie-road.webp",
     ],
     challenge:
-      "Make characters readable, learnable and tactically interesting at once, without feeling like an educational app.",
+      "Make Chinese characters the game mechanic rather than decoration: readable in a crowded fight, approachable for players who don't read Chinese, and deep enough that every pick is a real decision. And keep a Babylon.js battlefield full of enemies, fog and calligraphy effects running smoothly on a phone.",
     approach:
-      "A shared bilingual launcher and two games: Hanzi Hero, a fast survivor-style battler, and Cangjie Road, a deckbuilder where characters are built from components.",
+      "On level-up you pick radicals, and they fuse into characters that become skills: 日 + 月 = 明, 雨 + 田 = 雷, 人 + 木 = 休. Duplicate radicals push a skill along different axes, characters grow into words such as 明月 and 雷雨, and certain pick histories unlock hidden characters. Runs move through fog-of-war dungeon chambers with elites, bosses, relics and two heroes; every four waves the realm shifts and stamps a giant glyph from the Thousand Character Classic. A sibling deckbuilder, Cangjie Road 仓颉之路, applies the same character logic to a tower climb.",
     outcome:
-      "A polished, playable prototype line with its own visual identity, release notes and a stable showcase branch.",
+      "Live in the browser at v0.5.0, with an ink-wash identity from the title screen to the HUD, Chinese and English (with pinyin), paper and night-ink themes, a phone landscape and home-screen mode, an online leaderboard and a public changelog.",
     links: [
       {
-        label: "Play live demo",
+        label: "Play now",
         href: "https://hanzi-survivor.vercel.app/",
         external: true,
       },

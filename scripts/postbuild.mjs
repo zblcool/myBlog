@@ -8,6 +8,9 @@ const distDir = path.resolve("dist");
 const blogPrefix = "/blog";
 
 const legacyRedirects = [
+  // Hanzi Workshop was renamed Hanzi Hero (字海残卷).
+  ["/blog/portfolio/hanzi-workshop/", "/blog/portfolio/hanzi-hero/"],
+  ["/portfolio/hanzi-workshop/", "/blog/portfolio/hanzi-hero/"],
   ["/notes/page/2/", "/blog/notes/"],
   ["/notes/page/3/", "/blog/notes/"],
   ["/tag/Algorithms/", "/blog/tag/algorithms/"],
