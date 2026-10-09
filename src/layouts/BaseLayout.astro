@@ -39,13 +39,16 @@ const external = contactHref.startsWith("http");
     />
   </head>
   <body>
-    <header class="site-header">
+    <header class="site-header" id="site-header">
       <div class="wrap site-header__inner">
         <a class="brand" href={withBase("/")}>
           <img src={withBase("/logo.png")} alt="" />
           <span>{profile.name}</span>
         </a>
-        <nav class="nav" aria-label="Primary">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+          <span class="nav-toggle__label">Menu</span>
+        </button>
+        <nav class="nav" id="site-nav" aria-label="Primary">
           {navLinks.map((link) => (
             <a href={withBase(link.href)} data-active={isActive(link)}>
               {link.label}
@@ -81,6 +84,19 @@ const external = contactHref.startsWith("http");
         </div>
       </section>
     )}
+
+    <script>
+      const header = document.getElementById("site-header");
+      const toggle = header?.querySelector<HTMLButtonElement>(".nav-toggle");
+      const setOpen = (open: boolean) => {
+        header?.toggleAttribute("data-open", open);
+        toggle?.setAttribute("aria-expanded", String(open));
+        const label = toggle?.querySelector(".nav-toggle__label");
+        if (label) label.textContent = open ? "Close" : "Menu";
+      };
+      toggle?.addEventListener("click", () => setOpen(!header?.hasAttribute("data-open")));
+      header?.querySelectorAll(".nav a").forEach((link) => link.addEventListener("click", () => setOpen(false)));
+    </script>
 
     <footer class="site-footer">
       <div class="wrap site-footer__inner">

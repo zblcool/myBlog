@@ -2,6 +2,10 @@
 import { getCollection } from "astro:content";
 import ContentCard from "@/components/ContentCard.astro";
 import WorkCard from "@/components/WorkCard.astro";
+import BabylonDemo from "@/components/react/demos/BabylonDemo";
+import CesiumDemo from "@/components/react/demos/CesiumDemo";
+import ShaderDemo from "@/components/react/demos/ShaderDemo";
+import UiDemo from "@/components/react/demos/UiDemo";
 import HeroScene from "@/components/react/three/HeroScene";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { projects } from "@/data/projects";
@@ -63,11 +67,20 @@ const external = contactHref.startsWith("http");
       <div class="services">
         {services.map((item) => (
           <article class="service">
-            <span class="label">{item.index}</span>
-            <h3>{item.title}</h3>
-            <p>{item.text}</p>
-            <div class="tag-list">
-              {item.tools.map((tool) => <span class="tag">{tool}</span>)}
+            <div class="service__stage">
+              {item.demo === "babylon" && <BabylonDemo client:visible />}
+              {item.demo === "shader" && <ShaderDemo client:visible />}
+              {item.demo === "cesium" && <CesiumDemo client:visible />}
+              {item.demo === "ui" && <UiDemo client:visible />}
+              <span class="service__hint">{item.hint}</span>
+            </div>
+            <div class="service__body">
+              <span class="label">{item.index}</span>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+              <div class="tag-list">
+                {item.tools.map((tool) => <span class="tag">{tool}</span>)}
+              </div>
             </div>
           </article>
         ))}
