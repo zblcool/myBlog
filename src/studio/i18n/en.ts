@@ -131,6 +131,7 @@ export const en = {
     title: "Try it the way you would use it.",
     lead: "Pick a scenario and the live demo opens a product set up for it. Everything runs in your browser, nothing to install.",
     open: "Open this demo",
+    more: "Learn more",
     shownWith: "Shown with the {name}",
     all: "Or open the demo and choose there",
     items: [

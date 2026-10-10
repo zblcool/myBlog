@@ -4,6 +4,11 @@ import StudioLayout from "@/studio/layouts/StudioLayout.astro";
 import { copies } from "@/studio/i18n";
 ---
 
-<StudioLayout lang="en" path="/privacy/" title={`${copies.en.privacy.title} · Ashmartisan`}>
+<StudioLayout
+  lang="en"
+  path="/privacy/"
+  title={`${copies.en.privacy.title} · Ashmartisan`}
+  description="How Ashmartisan handles what you send through this website: no cookies, no accounts, and what happens to an enquiry."
+>
   <Privacy t={copies.en} />
 </StudioLayout>

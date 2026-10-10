@@ -9,6 +9,7 @@ import "@/studio/styles/studio.css";
 import Lockup from "@/studio/components/Lockup.astro";
 import { analytics, brand, contactEmail, socialLinks } from "@/studio/config";
 import { devices } from "@/studio/data/devices";
+import { solutions } from "@/studio/data/solutions";
 import { copies, localePath, type Lang } from "@/studio/i18n";
 import { withBase } from "@/lib/paths";
 
@@ -105,6 +106,11 @@ const jsonLd = structuredData && JSON.stringify(structuredData).replace(/</g, "\
           {socialLinks.map((link) => <a href={link.href} target="_blank" rel="noreferrer">{link.label}</a>)}
           <a href={localePath(lang, "/privacy/")}>{t.footer.privacy}</a>
         </div>
+        {lang === "en" && (
+          <div class="footer__links">
+            {solutions.map((s) => <a href={withBase(`/${s.slug}/`)}>{s.name}</a>)}
+          </div>
+        )}
       </div>
       <div class="wrap footer__meta">
         <p>© {year} {brand.name}. {t.footer.rights}</p>

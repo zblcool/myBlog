@@ -1,0 +1,147 @@
+---
+/**
+ * Landing pages, one per way the explainer is used (studio/data/solutions.ts): each opens the
+ * live demo in its scenario and carries its own title, description, FAQ and structured data.
+ */
+import Icon from "@/studio/components/Icon.astro";
+import StudioLayout from "@/studio/layouts/StudioLayout.astro";
+import { demoLink } from "@/studio/config";
+import { copies, localePath } from "@/studio/i18n";
+import { shot } from "@/studio/data/devices";
+import { solutionLabels as L, solutions, type Solution } from "@/studio/data/solutions";
+import { solutionStructuredData } from "@/studio/seo";
+import { withBase } from "@/lib/paths";
+
+export function getStaticPaths() {
+  return solutions.map((s) => ({ params: { solution: s.slug }, props: { s } }));
+}
+
+interface Props {
+  s: Solution;
+}
+
+const { s } = Astro.props;
+const t = copies.en;
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).toString() : path);
+const path = `/${s.slug}/`;
+const home = localePath("en", "/");
+const demo = demoLink(undefined, { scene: s.scene, lang: "en" });
+const others = solutions.filter((o) => o.slug !== s.slug);
+const deviceName = t.showcase.devices[s.device].name;
+const viewName = t.hero.views[s.view];
+const structuredData = solutionStructuredData(s, absolute(localePath("en", path)), absolute(home));
+---
+
+<StudioLayout lang="en" path={path} title={s.title} description={s.description} structuredData={structuredData}>
+  <section class="hero solution-hero">
+    <div class="hero__grid-bg" aria-hidden="true"></div>
+    <div class="wrap solution-hero__grid">
+      <div>
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href={home}>{L.home}</a> <span aria-hidden="true">/</span> <span>{s.name}</span>
+        </nav>
+        <p class="eyebrow">{s.eyebrow}</p>
+        <h1 set:html={s.h1} />
+        <p class="hero__lead">{s.lead}</p>
+        <div class="actions">
+          {demo && (
+            <a class="btn btn--orange" href={demo} target="_blank" rel="noreferrer">
+              {L.demo} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+          <a class="btn btn--ghost" href={`${home}#contact`}>{L.contact}</a>
+        </div>
+      </div>
+      <figure class="solution-hero__shot">
+        <img src={withBase(shot(s.device, s.view))} alt={L.shotAlt(deviceName, viewName)} width="1600" height="1000" />
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section__head">
+        <h2>{s.featuresTitle}</h2>
+      </div>
+      <div class="features features--three">
+        {s.features.map((feature) => (
+          <article class="feature">
+            <Icon name={feature.icon} />
+            <h3>{feature.title}</h3>
+            <p>{feature.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="wrap split">
+      <div>
+        <h2>{s.stepsTitle}</h2>
+        <ol class="steps steps--stacked">
+          {s.steps.map((step, i) => (
+            <li>
+              <span class="steps__num">{i + 1}</span>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div>
+        <h2>{s.fitTitle}</h2>
+        <ul class="ticks ticks--dark">
+          {s.fit.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="faq">
+    <div class="wrap split split--faq">
+      <div>
+        <p class="eyebrow">{t.faq.label}</p>
+        <h2>{t.faq.title}</h2>
+      </div>
+      <div class="faq">
+        {s.faq.map((item, i) => (
+          <details open={i === 0}>
+            <summary>{item.q}</summary>
+            <p>{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--navy">
+    <div class="wrap">
+      <p class="eyebrow">{L.related}</p>
+      <div class="solution-links">
+        {others.map((o) => (
+          <a class="solution-link" href={withBase(`/${o.slug}/`)}>
+            <Icon name={o.icon} size={30} />
+            <span>
+              <strong>{o.name}</strong>
+              <small>{o.eyebrow}</small>
+            </span>
+            <span aria-hidden="true">→</span>
+          </a>
+        ))}
+      </div>
+      <div class="solution-cta">
+        <h2 set:html={L.ctaTitle} />
+        <p class="section__lead">{L.ctaText}</p>
+        <div class="actions">
+          <a class="btn btn--orange" href={`${home}#contact`}>{L.contact}</a>
+          {demo && (
+            <a class="btn btn--ghost" href={demo} target="_blank" rel="noreferrer">
+              {L.demo} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+</StudioLayout>

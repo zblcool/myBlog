@@ -19,6 +19,10 @@ const pathname = stripBase(Astro.url.pathname);
 const isActive = (link: { href: string; match?: string[] }) =>
   !link.href.includes("#") && (link.match ?? [link.href]).some((path) => pathname.startsWith(path));
 const external = contactHref.startsWith("http");
+// Absolute addresses for search engines and link previews (the site URL is set in astro.config.mjs).
+const absolute = (p: string) => (Astro.site ? new URL(p, Astro.site).toString() : p);
+const canonical = absolute(Astro.url.pathname);
+const shareImage = absolute(withBase("/studio/og-image.jpg"));
 ---
 
 <!doctype html>
@@ -28,8 +32,20 @@ const external = contactHref.startsWith("http");
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={profile.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={shareImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={shareImage} />
+    <link rel="sitemap" href={withBase("/sitemap-index.xml")} />
     <link rel="icon" type="image/png" href={withBase("/logo.png")} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

@@ -132,6 +132,7 @@ export const zh: Copy = {
     title: "按你的使用方式来体验。",
     lead: "选一个场景，在线演示会打开一个按这种方式设置好的产品。全部在浏览器里运行，无需安装。",
     open: "打开这个演示",
+    more: "了解更多",
     shownWith: "演示设备：{name}",
     all: "或者直接打开演示再选择",
     items: [

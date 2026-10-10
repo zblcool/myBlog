@@ -106,14 +106,17 @@ function withBase(pathname) {
 
 function createRedirectHtml(targetPath) {
   const escapedTarget = targetPath.replace(/"/g, "&quot;");
+  // Search engines index the target, not these old addresses.
+  const canonical = new URL(targetPath, getSiteUrl()).toString().replace(/"/g, "&quot;");
 
   return `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <title>Redirecting...</title>
+    <meta name="robots" content="noindex">
     <meta http-equiv="refresh" content="0; url=${escapedTarget}">
-    <link rel="canonical" href="${escapedTarget}">
+    <link rel="canonical" href="${canonical}">
     <script>
       window.location.replace(${JSON.stringify(targetPath)});
     </script>

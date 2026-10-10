@@ -2051,12 +2051,41 @@ p {
   font-size: 13px;
 }
 
+.scenario__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
 .scenario__go {
+  color: inherit;
   font-weight: 600;
+  text-decoration: none;
   transition: color 0.2s;
 }
 
-.scenario:hover .scenario__go {
+.scenario__go:hover {
+  color: var(--orange-2);
+}
+
+/* The whole card is a target for the demo link (the "Learn more" link sits above it). */
+.scenario__go::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.scenario__more {
+  position: relative;
+  z-index: 1;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.scenario__more:hover {
   color: var(--orange-2);
 }
 
@@ -2068,5 +2097,177 @@ p {
   .scenarios__grid {
     grid-template-columns: 1fr;
     gap: 14px;
+  }
+}
+
+/* ---------- Landing pages (pages/[solution].astro) ---------- */
+
+.solution-hero__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  align-items: center;
+  gap: clamp(32px, 5vw, 72px);
+}
+
+.solution-hero h1 {
+  margin: 14px 0 22px;
+  font-size: clamp(2.1rem, 4.4vw, 3.5rem);
+}
+
+.solution-hero .hero__lead {
+  max-width: 58ch;
+  color: var(--d-text);
+}
+
+.solution-hero .actions {
+  margin-top: 30px;
+}
+
+.solution-hero__shot {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--d-line);
+  border-radius: 16px;
+  box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.7);
+}
+
+.solution-hero__shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.crumbs {
+  margin-bottom: 22px;
+  color: var(--d-muted);
+  font-size: 13px;
+}
+
+.crumbs a {
+  color: var(--d-text);
+  text-decoration: none;
+}
+
+.crumbs a:hover {
+  color: var(--orange);
+}
+
+/* Steps as a column (the shared .steps runs across four columns on the home page). */
+.steps--stacked {
+  grid-template-columns: 1fr;
+  gap: 26px;
+  margin-top: 32px;
+}
+
+.steps--stacked::before {
+  top: 22px;
+  bottom: 40px;
+  left: 22px;
+  right: auto;
+  width: 1px;
+  height: auto;
+  background: repeating-linear-gradient(180deg, var(--steel-2) 0 6px, transparent 6px 12px);
+}
+
+.steps--stacked li {
+  padding-left: 66px;
+}
+
+.steps--stacked .steps__num {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+}
+
+/* Six features: two rows of three. */
+.features--three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Ticks on a light section. */
+.ticks--dark {
+  color: var(--text);
+}
+
+.solution-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.solution-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 22px;
+  border: 1px solid var(--d-line);
+  border-radius: var(--radius);
+  color: var(--d-text);
+  text-decoration: none;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.solution-link:hover {
+  border-color: var(--orange);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.solution-link .icon {
+  flex: none;
+  color: var(--orange);
+}
+
+.solution-link span:nth-child(2) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.solution-link small {
+  color: var(--d-muted);
+  font-size: 13px;
+}
+
+.solution-cta {
+  margin-top: clamp(56px, 8vw, 96px);
+  text-align: center;
+}
+
+.solution-cta h2 {
+  margin-bottom: 14px;
+}
+
+.solution-cta .section__lead {
+  max-width: 56ch;
+  margin: 0 auto 28px;
+}
+
+.solution-cta .actions {
+  justify-content: center;
+}
+
+
+@media (max-width: 1100px) {
+  .features--three {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 860px) {
+  .solution-hero__grid,
+  .solution-links {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .features--three {
+    grid-template-columns: 1fr;
   }
 }

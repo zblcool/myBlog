@@ -5,6 +5,8 @@
  */
 import Icon from "./Icon.astro";
 import { demoLink } from "@/studio/config";
+import { solutions } from "@/studio/data/solutions";
+import { withBase } from "@/lib/paths";
 import type { Copy } from "@/studio/i18n/en";
 
 interface Props {
@@ -16,6 +18,8 @@ const s = t.scenarios;
 // The device each scenario opens in the explainer.
 const devices = { website: "worm-gearbox", tradeshow: "jet-engine", embed: "hope-rotor" } as const;
 const chooser = demoLink(undefined, { lang: t.lang });
+// Each scenario's landing page (the published site is English only).
+const pageOf = (scene: string) => solutions.find((sol) => sol.scene === scene);
 ---
 
 {chooser && (
@@ -30,7 +34,7 @@ const chooser = demoLink(undefined, { lang: t.lang });
       </div>
       <div class="scenarios__grid">
         {s.items.map((item) => (
-          <a class="scenario" href={demoLink(undefined, { scene: item.id, lang: t.lang })} target="_blank" rel="noreferrer">
+          <article class="scenario">
             <span class="scenario__icon"><Icon name={item.icon} size={30} /></span>
             <span class="scenario__where">{item.where}</span>
             <h3>{item.title}</h3>
@@ -38,8 +42,13 @@ const chooser = demoLink(undefined, { lang: t.lang });
             <span class="scenario__device">
               {s.shownWith.replace("{name}", t.showcase.devices[devices[item.id as keyof typeof devices]].name)}
             </span>
-            <span class="scenario__go">{s.open} ↗</span>
-          </a>
+            <span class="scenario__actions">
+              <a class="scenario__go" href={demoLink(undefined, { scene: item.id, lang: t.lang })} target="_blank" rel="noreferrer">{s.open} ↗</a>
+              {t.lang === "en" && pageOf(item.id) && (
+                <a class="scenario__more" href={withBase(`/${pageOf(item.id)!.slug}/`)}>{s.more} →</a>
+              )}
+            </span>
+          </article>
         ))}
       </div>
       <p class="scenarios__all">
