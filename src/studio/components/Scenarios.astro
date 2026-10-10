@@ -1,0 +1,50 @@
+---
+/**
+ * Live demo entry: three scenarios, each opening the explainer set up for it (`?scene=` in the
+ * explainer, see its src/app/demo/scenes.ts). The explainer shows the same choice when opened bare.
+ */
+import Icon from "./Icon.astro";
+import { demoLink } from "@/studio/config";
+import type { Copy } from "@/studio/i18n/en";
+
+interface Props {
+  t: Copy;
+}
+
+const { t } = Astro.props;
+const s = t.scenarios;
+// The device each scenario opens in the explainer.
+const devices = { website: "worm-gearbox", tradeshow: "jet-engine", embed: "hope-rotor" } as const;
+const chooser = demoLink(undefined, { lang: t.lang });
+---
+
+{chooser && (
+  <section class="section scenarios" id="demo">
+    <div class="wrap">
+      <div class="section__head section__head--split">
+        <div>
+          <p class="eyebrow">{s.label}</p>
+          <h2>{s.title}</h2>
+        </div>
+        <p class="section__lead">{s.lead}</p>
+      </div>
+      <div class="scenarios__grid">
+        {s.items.map((item) => (
+          <a class="scenario" href={demoLink(undefined, { scene: item.id, lang: t.lang })} target="_blank" rel="noreferrer">
+            <span class="scenario__icon"><Icon name={item.icon} size={30} /></span>
+            <span class="scenario__where">{item.where}</span>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+            <span class="scenario__device">
+              {s.shownWith.replace("{name}", t.showcase.devices[devices[item.id as keyof typeof devices]].name)}
+            </span>
+            <span class="scenario__go">{s.open} ↗</span>
+          </a>
+        ))}
+      </div>
+      <p class="scenarios__all">
+        <a class="link-arrow" href={chooser} target="_blank" rel="noreferrer">{s.all} ↗</a>
+      </p>
+    </div>
+  </section>
+)}

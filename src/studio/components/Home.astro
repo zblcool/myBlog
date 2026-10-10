@@ -1,6 +1,7 @@
 ---
 import Contact from "./Contact.astro";
 import Hero from "./Hero.astro";
+import Scenarios from "./Scenarios.astro";
 import Icon from "./Icon.astro";
 import Showcase from "./Showcase.astro";
 import { demoLink, socialLinks } from "@/studio/config";
@@ -14,7 +15,7 @@ interface Props {
 
 const { t } = Astro.props;
 const linkedin = socialLinks.find((l) => l.label === "LinkedIn")!.href;
-const kioskLink = demoLink(undefined, { mode: "kiosk", lang: t.lang });
+const kioskLink = demoLink(undefined, { scene: "tradeshow", lang: t.lang });
 const modes = [
   { device: "disk-brake", view: "xray" },
   { device: "hope-rotor", view: "exploded" },
@@ -23,6 +24,8 @@ const modes = [
 ---
 
 <Hero t={t} />
+
+<Scenarios t={t} />
 
 <section class="section section--paper" id="problem">
   <div class="wrap">

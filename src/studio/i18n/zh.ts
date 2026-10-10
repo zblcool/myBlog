@@ -127,6 +127,37 @@ export const zh: Copy = {
       },
     },
   },
+  scenarios: {
+    label: "在线演示",
+    title: "按你的使用方式来体验。",
+    lead: "选一个场景，在线演示会打开一个按这种方式设置好的产品。全部在浏览器里运行，无需安装。",
+    open: "打开这个演示",
+    shownWith: "演示设备：{name}",
+    all: "或者直接打开演示再选择",
+    items: [
+      {
+        id: "website",
+        icon: "screens",
+        where: "官网 · 销售平板",
+        title: "讲解一个产品",
+        text: "编号部件、透视、剖切和爆炸视图，一步步的讲解动画，以及可调的运行参数。",
+      },
+      {
+        id: "tradeshow",
+        icon: "stand",
+        where: "展会展台",
+        title: "展会大屏",
+        text: "没人操作时自动展示，有人一碰就交给他操作，访客还能扫码把产品带走。",
+      },
+      {
+        id: "embed",
+        icon: "embed",
+        where: "你现有的网站",
+        title: "嵌入你的网页",
+        text: "作为现有产品页上的一块，点击后才加载。在一个示例电商页面里演示，附可复制的代码。",
+      },
+    ],
+  },
   shows: {
     label: "展会",
     title: "同一份成果，直接撑起你的展台。",

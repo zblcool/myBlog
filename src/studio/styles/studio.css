@@ -1981,3 +1981,92 @@ p {
 .legal .link-arrow {
   margin-top: 48px;
 }
+
+/* ---------- Live demo scenarios ---------- */
+
+.scenarios__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.scenario {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 26px 24px 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+
+.scenario:hover {
+  border-color: var(--steel-2);
+  box-shadow: 0 14px 34px rgba(22, 32, 42, 0.1);
+  transform: translateY(-3px);
+}
+
+.scenario__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 10px;
+  border-radius: 14px;
+  background: var(--navy);
+  color: var(--orange);
+}
+
+.scenario__where {
+  color: var(--steel);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.scenario h3 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.scenario p {
+  margin: 0;
+  color: #4a5866;
+  line-height: 1.6;
+}
+
+.scenario__device {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+  color: #6b7885;
+  font-size: 13px;
+}
+
+.scenario__go {
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.scenario:hover .scenario__go {
+  color: var(--orange-2);
+}
+
+.scenarios__all {
+  margin: 28px 0 0;
+}
+
+@media (max-width: 900px) {
+  .scenarios__grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}

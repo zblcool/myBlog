@@ -126,6 +126,37 @@ export const en = {
       },
     },
   },
+  scenarios: {
+    label: "Live demo",
+    title: "Try it the way you would use it.",
+    lead: "Pick a scenario and the live demo opens a product set up for it. Everything runs in your browser, nothing to install.",
+    open: "Open this demo",
+    shownWith: "Shown with the {name}",
+    all: "Or open the demo and choose there",
+    items: [
+      {
+        id: "website",
+        icon: "screens",
+        where: "Website · sales tablet",
+        title: "Explain a product",
+        text: "Numbered parts, X-ray, section and exploded views, a guided walkthrough and live operating parameters.",
+      },
+      {
+        id: "tradeshow",
+        icon: "stand",
+        where: "Trade-show stand",
+        title: "Run a trade-show screen",
+        text: "Presents by itself when nobody is touching it, hands over when someone does, and visitors scan a QR code to take it home.",
+      },
+      {
+        id: "embed",
+        icon: "embed",
+        where: "A website you already have",
+        title: "Embed it in your pages",
+        text: "One block on an existing product page that loads only when clicked. Shown inside a sample shop page, with the code to copy.",
+      },
+    ],
+  },
   shows: {
     label: "Trade shows",
     title: "The same build runs your stand.",
