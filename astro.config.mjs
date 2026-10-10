@@ -32,18 +32,11 @@ function getRepositoryContext() {
   };
 }
 
+/** The site's own domain (GitHub Pages custom domain); SITE_URL overrides it. */
+const DEFAULT_SITE_URL = "https://ashmartisan.com";
+
 function getSiteUrl() {
-  if (process.env.SITE_URL) {
-    return process.env.SITE_URL;
-  }
-
-  const { owner } = getRepositoryContext();
-
-  if (owner) {
-    return `https://${owner}.github.io`;
-  }
-
-  return "https://zblcool.github.io";
+  return process.env.SITE_URL || DEFAULT_SITE_URL;
 }
 
 function getBasePath(siteUrl) {

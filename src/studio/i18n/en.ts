@@ -25,7 +25,7 @@ export const en = {
     lead: "We turn your CAD or product model into a 3D explainer that runs in any browser. Buyers click a part to learn what it does, look inside with X-ray and section views, take it apart and watch it run. The same build works on your website, a sales rep's tablet and your trade-show screen.",
     primary: "Try the live demo",
     secondary: "Book a demo",
-    points: ["Runs in the browser, no app to install", "From phones to 4K stand screens", "Works offline at trade shows", "English and Chinese built in"],
+    points: ["Runs in the browser, no app to install", "From phones to 4K stand screens", "Works offline at trade shows", "Multilingual: Spanish and more"],
     device: "Worm Gear Reducer",
     quote: "Get a quote",
     hint: "Click a numbered part",
@@ -91,7 +91,7 @@ export const en = {
       { icon: "sliders", title: "Live parameters", text: "Sliders for speed or load, with read-outs that update while the model runs." },
       { icon: "swatch", title: "Colours and finishes", text: "Switch RAL colours and finishes so buyers see the configuration they would order." },
       { icon: "link", title: "Shareable views", text: "Every product and part has its own link. Sales can send a buyer straight to the right detail." },
-      { icon: "globe", title: "Two languages", text: "English and Chinese built in. Adding a language means adding text, not code." },
+      { icon: "globe", title: "Multilingual", text: "Speak your buyers' language: Spanish and more. Adding a language means adding text, not code." },
     ],
   },
   showcase: {

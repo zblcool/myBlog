@@ -18,10 +18,10 @@ export const socialLinks = [
 ];
 
 /**
- * The live Interactive Equipment Explainer: its Vercel deployment until it gets its own domain.
+ * The live Interactive Equipment Explainer (its Vercel deployment, on the demo subdomain).
  * PUBLIC_DEMO_URL overrides it (e.g. http://localhost:5173 to try a local explainer build).
  */
-export const demoUrl = configured(env.PUBLIC_DEMO_URL) || "https://interactive-equipment-explainer-nu.vercel.app/";
+export const demoUrl = configured(env.PUBLIC_DEMO_URL) || "https://demo.ashmartisan.com/";
 
 export const form = {
   /** Formspree form; PUBLIC_FORM_ENDPOINT overrides it. */

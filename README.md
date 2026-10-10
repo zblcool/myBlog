@@ -2,7 +2,7 @@
 
 ## Site
 
-[Live site](https://zblcool.github.io)
+[Live site](https://ashmartisan.com)
 
 > The Ashmartisan business site at the root, and my personal blog (thoughts and notes from exploring broad areas) under `/blog/`.
 

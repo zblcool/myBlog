@@ -65,18 +65,11 @@ function getRepositoryContext() {
   };
 }
 
+/** The site's own domain (GitHub Pages custom domain); SITE_URL overrides it. */
+const DEFAULT_SITE_URL = "https://ashmartisan.com";
+
 function getSiteUrl() {
-  if (process.env.SITE_URL) {
-    return process.env.SITE_URL;
-  }
-
-  const { owner } = getRepositoryContext();
-
-  if (owner) {
-    return `https://${owner}.github.io`;
-  }
-
-  return "https://zblcool.github.io";
+  return process.env.SITE_URL || DEFAULT_SITE_URL;
 }
 
 function getBasePath(siteUrl) {
@@ -165,12 +158,13 @@ async function listBlogPages(dir = path.join(distDir, "blog"), prefix = "/") {
 async function main() {
   await writeFile(path.join(distDir, ".nojekyll"), "", "utf8");
 
-  if (process.env.CNAME_DOMAIN) {
-    await writeFile(
-      path.join(distDir, "CNAME"),
-      `${process.env.CNAME_DOMAIN}\n`,
-      "utf8",
-    );
+  // The deploy replaces the whole Pages repository, so the custom domain has to come with every
+  // build: CNAME_DOMAIN, else the site URL's host when it isn't a github.io address.
+  const siteHost = new URL(getSiteUrl()).hostname;
+  const cname = process.env.CNAME_DOMAIN || (siteHost.endsWith("github.io") ? "" : siteHost);
+
+  if (cname) {
+    await writeFile(path.join(distDir, "CNAME"), `${cname}\n`, "utf8");
   }
 
   const movedPages = await listBlogPages();

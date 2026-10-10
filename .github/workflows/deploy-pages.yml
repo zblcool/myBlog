@@ -47,7 +47,8 @@ jobs:
           if [ -n "${SITE_URL:-}" ]; then
             FINAL_SITE_URL="${SITE_URL}"
           else
-            FINAL_SITE_URL="https://${TARGET_NAME}"
+            # The site's custom domain (the build writes the matching CNAME).
+            FINAL_SITE_URL="https://ashmartisan.com"
           fi
 
           if [ -n "${BASE_PATH:-}" ]; then
