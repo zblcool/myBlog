@@ -67,7 +67,11 @@ const base = getBasePath(site);
 export default defineConfig({
   site,
   base,
-  integrations: [react(), sitemap()],
+  integrations: [
+    react(),
+    // The Chinese copy at /zh/ is reachable by URL only, so it stays out of the sitemap.
+    sitemap({ filter: (page) => !new URL(page).pathname.startsWith(`${base}zh/`) }),
+  ],
   markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeKatex],

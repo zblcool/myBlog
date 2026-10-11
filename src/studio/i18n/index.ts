@@ -2,7 +2,8 @@ import { en, type Copy } from "./en";
 import { zh } from "./zh";
 import { withBase } from "@/lib/paths";
 
-// The site is published in English only; zh.ts is kept as a resource and has no pages.
+// English is the public site. Chinese is a hidden copy at /zh/: reachable by URL, but not
+// linked, not in the sitemap and marked noindex.
 export type Lang = "en" | "zh";
 export const copies: Record<Lang, Copy> = { en, zh };
 

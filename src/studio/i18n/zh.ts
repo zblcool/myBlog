@@ -242,15 +242,15 @@ export const zh: Copy = {
   },
   about: {
     label: "关于",
-    title: "Ashmartisan 是 Ash Zhang 的工作室。",
-    text: "我是悉尼的一名 3D 图形工程师，做 Web 开发 9 年以上，大部分时间在做 Babylon.js、Three.js、着色器和 Cesium 的实时 3D。Ashmartisan 专门为制造和销售设备的公司制作交互式原理展示。",
+    title: "Ashmartisan 是 Ash 的工作室。",
+    text: "我是澳大利亚的一名计算机图形工程师，做 Web 开发 9 年以上，大部分时间在做 Babylon.js、Three.js、着色器和 Cesium 的实时 3D。Ashmartisan 专门为制造和销售设备的公司制作交互式原理展示。",
     blog: "阅读我的博客 →",
     linkedin: "LinkedIn ↗",
   },
   contact: {
     label: "联系",
     title: "你的设备也很难<em>讲清楚？</em>",
-    lead: "告诉我们你做什么产品、想在哪里展示。Ash 会亲自回复你。",
+    lead: "告诉我们你做什么产品、想在哪里展示，我们会和你联系。",
     fields: {
       name: "姓名",
       email: "工作邮箱",
@@ -264,7 +264,7 @@ export const zh: Copy = {
     privacy: "隐私说明",
     submit: "发送询盘",
     sending: "发送中…",
-    sent: "谢谢，询盘已发送，我们会通过邮件回复你。",
+    sent: "谢谢，询盘已发送，我们会和你联系。",
     mailto: "你的邮件应用应该已经打开并填好了内容。如果没有，请发邮件到",
     failed: "发送失败。请直接发邮件到",
     subject: "Ashmartisan 询盘",

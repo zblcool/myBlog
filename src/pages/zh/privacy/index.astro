@@ -1,0 +1,9 @@
+---
+import Privacy from "@/studio/components/Privacy.astro";
+import StudioLayout from "@/studio/layouts/StudioLayout.astro";
+import { copies } from "@/studio/i18n";
+---
+
+<StudioLayout lang="zh" path="/privacy/" title={`${copies.zh.privacy.title} · Ashmartisan`}>
+  <Privacy t={copies.zh} />
+</StudioLayout>

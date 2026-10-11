@@ -1,0 +1,10 @@
+---
+// Hidden Chinese home page: reachable at /zh/, but not linked, not in the sitemap and noindex.
+import Home from "@/studio/components/Home.astro";
+import StudioLayout from "@/studio/layouts/StudioLayout.astro";
+import { copies } from "@/studio/i18n";
+---
+
+<StudioLayout lang="zh">
+  <Home t={copies.zh} />
+</StudioLayout>
