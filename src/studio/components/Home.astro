@@ -45,6 +45,27 @@ const modes = [
   </div>
 </section>
 
+<section class="section section--navy" id="evidence">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">{t.evidence.label}</p>
+      <h2>{t.evidence.title}</h2>
+    </div>
+    <ul class="stats">
+      {t.evidence.items.map((item) => (
+        <li>
+          <strong class="stats__value">{item.value}</strong>
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+          <a href={item.href} target="_blank" rel="noreferrer">{item.source} ↗</a>
+        </li>
+      ))}
+    </ul>
+    <p class="stats__note">{t.evidence.note}</p>
+    <a class="link-arrow" href="#contact">{t.evidence.cta} →</a>
+  </div>
+</section>
+
 <section class="section" id="product">
   <div class="wrap">
     <div class="section__head section__head--split">

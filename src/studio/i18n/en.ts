@@ -79,6 +79,42 @@ export const en = {
       },
     ],
   },
+  evidence: {
+    label: "Why interactive",
+    title: "Buyers want to explore on their own. 3D gives them something to explore.",
+    items: [
+      {
+        value: "61%",
+        title: "prefer a rep-free buying experience",
+        text: "Gartner's survey of 632 B2B buyers found most prefer to research and buy without a sales rep.",
+        source: "Gartner, 2025",
+        href: "https://www.gartner.com/en/newsroom/press-releases/2025-06-25-gartner-sales-survey-finds-61-percent-of-b2b-buyers-prefer-a-rep-free-buying-experience",
+      },
+      {
+        value: "46%",
+        title: "struggle to compare products online",
+        text: "In McKinsey's B2B buyer survey, 46% said it was hard to compare products accurately online.",
+        source: "McKinsey, 2017",
+        href: "https://www.mckinsey.com/capabilities/growth-marketing-and-sales/our-insights/when-b2b-buyers-want-to-go-digital-and-when-they-dont",
+      },
+      {
+        value: "+94%",
+        title: "average conversion lift with 3D",
+        text: "Shopify's platform data for online stores that added 3D content. This is e-commerce, not industrial equipment.",
+        source: "Shopify, 2022",
+        href: "https://changelog.shopify.com/posts/shop-adds-3d-and-augmented-reality-ar-previews",
+      },
+      {
+        value: "+65%",
+        title: "more call-to-action clicks, 3D vs 2D",
+        text: "From split tests of car configurators, which also showed 36% more time spent. Vendor-reported data, from automotive.",
+        source: "ZeroLight, 2023",
+        href: "https://zerolight.com/news/2d-or-3d-car-configurator",
+      },
+    ],
+    note: "Industry figures from the sources shown, not guaranteed results for your products. The two 3D figures come from e-commerce and automotive.",
+    cta: "See it on your own product",
+  },
   product: {
     label: "The product",
     title: "What a buyer would do with the real machine, in a browser tab.",

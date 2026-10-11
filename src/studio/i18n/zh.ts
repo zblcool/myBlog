@@ -80,6 +80,42 @@ export const zh: Copy = {
       },
     ],
   },
+  evidence: {
+    label: "为什么要交互",
+    title: "买家想自己了解产品，3D 给他们可以探索的东西。",
+    items: [
+      {
+        value: "61%",
+        title: "更偏好无需销售参与的购买体验",
+        text: "Gartner 对 632 名 B2B 买家的调查显示，多数人更愿意在没有销售代表的情况下自行了解和购买。",
+        source: "Gartner，2025",
+        href: "https://www.gartner.com/en/newsroom/press-releases/2025-06-25-gartner-sales-survey-finds-61-percent-of-b2b-buyers-prefer-a-rep-free-buying-experience",
+      },
+      {
+        value: "46%",
+        title: "觉得很难在线比较产品",
+        text: "在 McKinsey 的 B2B 买家调查中，46% 的人认为很难在线准确比较产品。",
+        source: "McKinsey，2017",
+        href: "https://www.mckinsey.com/capabilities/growth-marketing-and-sales/our-insights/when-b2b-buyers-want-to-go-digital-and-when-they-dont",
+      },
+      {
+        value: "+94%",
+        title: "添加 3D 内容后平均转化率提升",
+        text: "来自 Shopify 平台上添加了 3D 内容的网店数据。属于电商场景，不是工业设备。",
+        source: "Shopify，2022",
+        href: "https://changelog.shopify.com/posts/shop-adds-3d-and-augmented-reality-ar-previews",
+      },
+      {
+        value: "+65%",
+        title: "3D 比 2D 多出的行动按钮点击",
+        text: "来自汽车配置器的拆分测试，停留时间同时多 36%。数据由供应商发布，属于汽车行业。",
+        source: "ZeroLight，2023",
+        href: "https://zerolight.com/news/2d-or-3d-car-configurator",
+      },
+    ],
+    note: "以上为各来源公布的行业数据，并非对你产品的效果承诺。两项 3D 数据分别来自电商和汽车行业。",
+    cta: "用你的产品试一试",
+  },
   product: {
     label: "产品",
     title: "客户想对真机做的事，在浏览器里都能做。",
