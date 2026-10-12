@@ -2,6 +2,7 @@
 /** The four demo devices: tabs, view switching on captured renders, and live 3D on demand. */
 import { demoLink } from "@/studio/config";
 import { devices, shot } from "@/studio/data/devices";
+import { productById, productLabels } from "@/studio/data/products";
 import type { Copy } from "@/studio/i18n/en";
 import { withBase } from "@/lib/paths";
 
@@ -78,7 +79,15 @@ const s = t.showcase;
             </div>
             <div class="showcase__info">
               <h3>{text.name}</h3>
-              <p>{text.text}</p>
+              <p>
+                {text.text}
+                {t.lang === "en" && productById(device.id) && (
+                  <>
+                    {" "}
+                    <a class="showcase__page" href={withBase(`/showcase/${device.id}/`)}>{productLabels.pageLink} →</a>
+                  </>
+                )}
+              </p>
               {live && (
                 <div class="actions">
                   <button class="btn btn--orange btn--sm" type="button" data-go-live={live} data-close-label={s.close} data-open-label={s.load}>

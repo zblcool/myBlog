@@ -9,6 +9,7 @@ import { demoLink } from "@/studio/config";
 import { copies, localePath } from "@/studio/i18n";
 import { shot } from "@/studio/data/devices";
 import { solutionLabels as L, solutions, type Solution } from "@/studio/data/solutions";
+import { productLabels } from "@/studio/data/products";
 import { solutionStructuredData } from "@/studio/seo";
 import { withBase } from "@/lib/paths";
 
@@ -54,6 +55,10 @@ const structuredData = solutionStructuredData(s, absolute(localePath("en", path)
       </div>
       <figure class="solution-hero__shot">
         <img src={withBase(shot(s.device, s.view))} alt={L.shotAlt(deviceName, viewName)} width="1600" height="1000" />
+        <figcaption class="solution-hero__caption">
+          {deviceName} · {viewName}
+          <a href={withBase(`/showcase/${s.device}/`)}>{productLabels.pageLink} →</a>
+        </figcaption>
       </figure>
     </div>
   </section>

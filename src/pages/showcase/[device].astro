@@ -1,0 +1,147 @@
+---
+/**
+ * Product pages for the demo devices (studio/data/products.ts), laid out like a printed product
+ * brochure: diagonal navy title panel next to a structure diagram, the points the demo shows,
+ * technical data tables and a strip of views. Every part label opens the live 3D on that part.
+ */
+import Icon from "@/studio/components/Icon.astro";
+import SpecTable from "@/studio/components/SpecTable.astro";
+import StructureDiagram from "@/studio/components/StructureDiagram.astro";
+import StudioLayout from "@/studio/layouts/StudioLayout.astro";
+import { demoLink } from "@/studio/config";
+import { copies, localePath } from "@/studio/i18n";
+import { devices, shot } from "@/studio/data/devices";
+import { productLabels as L, products, type Product } from "@/studio/data/products";
+import { productStructuredData } from "@/studio/seo";
+import { withBase } from "@/lib/paths";
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { device: p.id }, props: { p } }));
+}
+
+interface Props {
+  p: Product;
+}
+
+const { p } = Astro.props;
+const t = copies.en;
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).toString() : path);
+const path = `/showcase/${p.id}/`;
+const home = localePath("en", "/");
+const showcase = `${home}#showcase`;
+const demo = demoLink(p.id, { lang: "en" });
+const device = devices.find((d) => d.id === p.id)!;
+const others = products.filter((o) => o.id !== p.id);
+const partRows = p.parts.flatMap((part) => part.specs.map(([k, v]) => [part.title, k, v]));
+const structuredData = productStructuredData(
+  p,
+  absolute(localePath("en", path)),
+  absolute(home),
+  absolute(showcase),
+  absolute(withBase(p.diagram.image)),
+);
+---
+
+<StudioLayout lang="en" path={path} title={p.title} description={p.description} structuredData={structuredData}>
+  <section class="product-hero">
+    <div class="wrap">
+      <div class="product-hero__head">
+        <div>
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href={home}>{L.home}</a> <span aria-hidden="true">/</span>
+            <a href={showcase}>{L.showcase}</a> <span aria-hidden="true">/</span>
+            <span>{p.name}</span>
+          </nav>
+          <h1>{p.name}</h1>
+          <p class="product-hero__tagline">{p.tagline}</p>
+        </div>
+        <div>
+          <p class="product-hero__intro">{p.intro}</p>
+          <div class="actions">
+            {demo && (
+              <a class="btn btn--orange" href={demo} target="_blank" rel="noreferrer">
+                {L.live} <span aria-hidden="true">↗</span>
+              </a>
+            )}
+            <a class="btn btn--ghost" href={`${home}#contact`}>{L.contact}</a>
+          </div>
+        </div>
+      </div>
+      <div class="product-hero__diagram">
+        <p class="product-label">{L.structure}</p>
+        <StructureDiagram product={p} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section product-body">
+    <div class="wrap product-body__grid">
+      <div class="selling-points">
+        <p class="product-label">{L.points}</p>
+        <ul>
+          {p.sellingPoints.map((point) => (
+            <li>
+              <span class="selling-points__icon"><Icon name={point.icon} size={22} /></span>
+              <span>
+                <strong>{point.title}</strong>
+                <span>{point.text}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="product-data">
+        <p class="product-label">{L.data}</p>
+        <div class="product-data__tables">
+          <SpecTable caption={L.product} head={[L.item, L.value]} rows={p.specs} />
+          <SpecTable caption={L.adjustable} head={[L.input, L.range]} rows={p.parameters.controls} />
+        </div>
+        <SpecTable caption={L.partsTable} head={[L.part, L.property, L.value]} rows={partRows} group />
+        <p class="product-data__readouts"><strong>{L.readouts}:</strong> {p.parameters.readouts.join(" · ")}</p>
+        <p class="product-data__note">{L.note}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="views-strip" aria-label={L.views}>
+    <div class="views-strip__grid" style={`--views:${device.views.length}`}>
+      {device.views.map((view) => (
+        <figure>
+          <img src={withBase(shot(p.id, view))} alt={`${p.name}: ${t.hero.views[view]}`} width="1600" height="1000" loading="lazy" />
+          <figcaption>{t.hero.views[view]}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+
+  <section class="section section--navy product-cta">
+    <div class="wrap">
+      <div class="solution-cta">
+        <h2 set:html={L.ctaTitle} />
+        <p class="section__lead">{L.ctaText}</p>
+        <div class="actions">
+          <a class="btn btn--orange" href={`${home}#contact`}>{L.ctaButton}</a>
+          {demo && (
+            <a class="btn btn--ghost" href={demo} target="_blank" rel="noreferrer">
+              {L.live} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+        </div>
+      </div>
+      <p class="eyebrow product-others__label">{L.others}</p>
+      <div class="solution-links solution-links--three">
+        {others.map((o) => (
+          <a class="solution-link" href={withBase(`/showcase/${o.id}/`)}>
+            <img src={withBase(o.diagram.image)} alt="" width={o.diagram.width} height={o.diagram.height} loading="lazy" />
+            <span>
+              <strong>{o.name}</strong>
+              <small>{o.tagline}</small>
+            </span>
+            <span aria-hidden="true">→</span>
+          </a>
+        ))}
+      </div>
+      <p class="product-credit">{L.credit}: {device.credit}</p>
+    </div>
+  </section>
+</StudioLayout>

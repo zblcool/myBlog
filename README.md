@@ -25,6 +25,16 @@ Ashmartisan wiring comes from optional `PUBLIC_*` variables (see `.env.example`;
 
 The product renders in `public/studio/shots/` are frames captured from the explainer's canvas, one per device and view (`<id>.webp`, `<id>-xray.webp`, …). Model credits are in `src/studio/data/devices.ts`.
 
+### Product pages (`/showcase/<device>/`)
+
+One brochure-style page per demo device (`src/pages/showcase/[device].astro`, content in `src/studio/data/products.ts`): a structure diagram whose numbered labels open the live demo on that part (`?part=<annotation id>`), what the demo shows, technical data tables and a strip of views. Part names, specs and parameters are copied from the explainer's `src/locales/en/devices/<id>.json`; re-sync them there when the demo copy changes.
+
+The diagram images in `public/studio/products/` are transparent cut-outs from the explainer's overview camera, with each annotation's anchor projected into them (`diagram.anchors`, % of the image). To re-capture one, run the explainer's dev server, open `?equipment=<id>`, and in the console use the dev handle `window.__viewer.controller`:
+1. Hide everything that isn't the model: disable `scene.meshes` that aren't in `session.shownMeshes` or one of their ancestors (the glTF `__root__` is a mesh too), disable `scene.layers`, and `scene.clearColor.set(0, 0, 0, 0)`.
+2. `engine.setHardwareScalingLevel(0.5); engine.resize()` for a 2× render.
+3. Project the model's bounding boxes and each `session.annotations.getWorldPoint(id)` with `scene.getTransformMatrix()` into canvas pixels.
+4. Crop the canvas to the model plus a 5 % margin, save it as WebP, and store the anchors as percentages of the crop.
+
 ## Local Development
 
 ```bash

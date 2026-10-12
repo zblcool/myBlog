@@ -2200,6 +2200,29 @@ p {
   height: auto;
 }
 
+.solution-hero__caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--d-line);
+  color: var(--d-muted);
+  font-size: 13px;
+}
+
+.solution-hero__caption a,
+.showcase__page {
+  color: var(--orange);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.solution-hero__caption a:hover,
+.showcase__page:hover {
+  text-decoration: underline;
+}
+
 .crumbs {
   margin-bottom: 22px;
   color: var(--d-muted);
@@ -2331,5 +2354,461 @@ p {
 @media (max-width: 640px) {
   .features--three {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Product pages (pages/showcase/[device].astro), brochure layout ---------- */
+
+.product-hero {
+  position: relative;
+  overflow: hidden;
+  padding: calc(var(--header) + clamp(28px, 4vw, 48px)) 0 clamp(48px, 6vw, 80px);
+  background:
+    radial-gradient(60% 50% at 80% 10%, rgba(116, 150, 183, 0.18), transparent 70%),
+    var(--navy);
+  color: var(--white);
+}
+
+/* Title on the left, intro and actions on the right; the diagram sheet spans below. */
+.product-hero__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
+  gap: 24px clamp(28px, 5vw, 72px);
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+
+.product-hero h1 {
+  margin: 4px 0 8px;
+  font-size: clamp(2rem, 3.6vw, 3rem);
+}
+
+/* In the slot a brochure gives the model number. */
+.product-hero__tagline {
+  color: var(--orange);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.product-hero__intro {
+  max-width: 60ch;
+  margin: 0 0 24px;
+  color: var(--d-muted);
+  line-height: 1.7;
+}
+
+.product-hero .btn--ghost {
+  border-color: rgba(255, 255, 255, 0.24);
+  color: var(--white);
+}
+
+.product-hero .btn--ghost:hover {
+  border-color: var(--white);
+}
+
+/* The white sheet, with the slanted edge of the brochure's navy panel. */
+.product-hero__diagram {
+  padding: 24px 24px 16px clamp(40px, 5vw, 64px);
+  background: var(--white);
+  color: var(--text);
+  clip-path: polygon(clamp(24px, 3vw, 44px) 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Section label with an orange bar, like the brochure's section heads. */
+.product-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--navy);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.product-label::before {
+  content: "";
+  width: 3px;
+  height: 16px;
+  background: var(--orange);
+}
+
+/* Structure diagram */
+
+.diagram {
+  margin: 14px 0 0;
+}
+
+.diagram__stage {
+  position: relative;
+  width: 100%;
+}
+
+.diagram__img {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  object-fit: contain;
+}
+
+.diagram__leaders {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.diagram__leaders polyline {
+  fill: none;
+  stroke: var(--steel);
+  stroke-width: 1.2;
+}
+
+.diagram__dot {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9);
+}
+
+.diagram__label {
+  position: absolute;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 23%;
+  color: var(--text);
+  text-decoration: none;
+  transform: translateY(-50%);
+}
+
+.diagram__label--left {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.diagram__num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--white);
+  font: 600 11px/1 var(--mono);
+}
+
+.diagram__text strong {
+  display: block;
+  color: var(--navy);
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.diagram__text small {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-2);
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+.diagram a:hover strong {
+  color: var(--orange-2);
+}
+
+.diagram a:hover .diagram__num {
+  background: var(--orange);
+  color: var(--navy);
+}
+
+.diagram figcaption {
+  margin-top: 12px;
+  color: var(--text-2);
+  font-size: 12px;
+  text-align: center;
+}
+
+.diagram__compact {
+  display: none;
+}
+
+.diagram__compact-img {
+  position: relative;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.diagram__compact-img img {
+  width: 100%;
+  height: auto;
+}
+
+.diagram__pin {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--navy);
+  box-shadow: 0 0 0 1.5px var(--white);
+  color: var(--white);
+  font: 600 10px/18px var(--mono);
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.diagram__list {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.diagram__list a {
+  display: flex;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Selling points + technical data */
+
+.product-body__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.45fr);
+  align-items: start;
+  gap: clamp(28px, 4vw, 56px);
+}
+
+.selling-points ul {
+  display: grid;
+  gap: 22px;
+  margin: 16px 0 0;
+  padding: 26px 24px;
+  border-radius: var(--radius);
+  background: var(--paper);
+  list-style: none;
+}
+
+.selling-points li {
+  display: flex;
+  gap: 14px;
+}
+
+.selling-points__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--white);
+}
+
+.selling-points strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--navy);
+  font-size: 15px;
+}
+
+.selling-points li > span:last-child > span {
+  display: block;
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.product-data__tables {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.spec-table {
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+.spec-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.spec-table caption {
+  padding-bottom: 8px;
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.spec-table thead th {
+  padding: 9px 12px;
+  background: var(--navy);
+  color: var(--white);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.spec-table tbody th,
+.spec-table tbody td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.spec-table tbody th {
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.spec-table tbody tr:nth-child(even) > * {
+  background: var(--paper);
+}
+
+/* Grouped tables (one part, several rows) use rules between parts instead of stripes. */
+.spec-table--grouped tbody tr:nth-child(even) > * {
+  background: none;
+}
+
+/* A new part starts: a heavier rule above it. */
+.spec-table__group > * {
+  border-top: 2px solid var(--line);
+}
+
+.product-data__readouts,
+.product-data__note {
+  margin-top: 12px;
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.product-data__readouts strong {
+  color: var(--navy);
+}
+
+/* Views strip, like the brochure's row of photos */
+
+.views-strip {
+  background: var(--navy);
+}
+
+.views-strip__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--views, 4), minmax(0, 1fr));
+  gap: 2px;
+}
+
+.views-strip figure {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+}
+
+.views-strip img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: 36% 55%;
+  transform: scale(1.25);
+  transform-origin: 36% 60%;
+}
+
+.views-strip figcaption {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(14, 21, 28, 0.85);
+  color: var(--white);
+  font: 500 11.5px var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* CTA band: the CTA comes first here, then the other machines. */
+.product-cta .solution-cta {
+  margin-top: 0;
+}
+
+.product-others__label {
+  margin-top: clamp(48px, 7vw, 80px);
+}
+
+.solution-links--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.solution-link img {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  padding: 4px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  object-fit: contain;
+}
+
+.product-credit {
+  margin-top: 28px;
+  color: var(--d-muted);
+  font: 12px var(--mono);
+}
+
+@media (max-width: 1100px) {
+  .product-body__grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Narrower label columns: names only (the list on phones keeps the role lines). */
+  .diagram__label small {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .product-hero__head {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .diagram__stage {
+    display: none;
+  }
+
+  .diagram__compact {
+    display: block;
+  }
+
+  .product-hero__diagram {
+    padding: 20px 16px 14px;
+    clip-path: none;
+    border-radius: var(--radius);
+  }
+}
+
+@media (max-width: 640px) {
+  .product-data__tables,
+  .solution-links--three {
+    grid-template-columns: 1fr;
+  }
+
+  .views-strip__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

@@ -1,0 +1,131 @@
+---
+/**
+ * Brochure-style structure diagram: a product cut-out with numbered parts, labels in a column on
+ * each side and leader lines to the parts. Each label opens the live 3D on its part. Laid out at
+ * build time; phones get numbered dots on the image and a list instead of the leaders.
+ */
+import type { Product } from "@/studio/data/products";
+import { productLabels as L } from "@/studio/data/products";
+import { demoLink } from "@/studio/config";
+import { withBase } from "@/lib/paths";
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const { diagram } = product;
+
+// Diagram coordinates: 1000 units wide, the image in the middle (tall ones narrower so the
+// diagram stays under 520 units high), a 230-unit label column on each side.
+const W = 1000;
+const IMG_W = Math.min(500, Math.round((520 * diagram.width) / diagram.height));
+const IMG_X = Math.round((W - IMG_W) / 2);
+const H = Math.round((IMG_W * diagram.height) / diagram.width);
+const LABEL_EDGE = { left: 230, right: 770 };
+/** Vertical room per label (units); about 70 px on a full-width desktop sheet. */
+const MIN_GAP = 64;
+
+const parts = product.parts
+  .map((part) => {
+    const [ax, ay] = diagram.anchors[part.id] ?? [50, 50];
+    return { ...part, ax: IMG_X + (ax / 100) * IMG_W, ay: (ay / 100) * H, px: ax, py: ay };
+  })
+  .sort((a, b) => a.ax - b.ax);
+
+// A part's label goes on the side of the image its anchor is on, but no side takes more than
+// half the labels plus one: the parts nearest the middle move across first.
+const cap = Math.ceil(parts.length / 2) + 1;
+const leftCount = Math.min(cap, Math.max(parts.length - cap, parts.filter((p) => p.px < 50).length));
+const sides = { left: parts.slice(0, leftCount), right: parts.slice(leftCount) };
+
+/** Label heights near their anchors, at least MIN_GAP apart and inside the diagram. */
+function place(column: typeof parts) {
+  const sorted = [...column].sort((a, b) => a.ay - b.ay);
+  const top = MIN_GAP * 0.6;
+  const bottom = H - MIN_GAP * 0.6;
+  const ys: number[] = [];
+  sorted.forEach((p, i) => (ys[i] = Math.max(p.ay, i ? ys[i - 1] + MIN_GAP : top)));
+  // Past the bottom: pin the last label there and push up only the ones it now crowds.
+  const last = ys.length - 1;
+  if (last >= 0 && ys[last] > bottom) {
+    ys[last] = bottom;
+    for (let i = last - 1; i >= 0; i--) ys[i] = Math.min(ys[i], ys[i + 1] - MIN_GAP);
+  }
+  return sorted.map((p, i) => ({ ...p, ly: Math.max(top, ys[i]) }));
+}
+
+// Numbered in reading order: left column top to bottom, then the right one.
+const labels = [
+  ...place(sides.left).map((p) => ({ ...p, side: "left" as const })),
+  ...place(sides.right).map((p) => ({ ...p, side: "right" as const })),
+].map((l, i) => ({ ...l, n: i + 1 }));
+
+const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(2)}%`;
+const leader = (l: (typeof labels)[number]) => {
+  const edge = LABEL_EDGE[l.side];
+  const elbow = edge + (l.side === "left" ? 28 : -28);
+  return `${edge},${l.ly} ${elbow},${l.ly} ${l.ax},${l.ay}`;
+};
+const ordered = [...labels].sort((a, b) => a.n - b.n);
+const alt = L.diagramAlt(product.name);
+---
+
+<figure class="diagram">
+  <div class="diagram__stage" style={`aspect-ratio:${W}/${H}`}>
+    <img
+      class="diagram__img"
+      src={withBase(diagram.image)}
+      alt={alt}
+      width={diagram.width}
+      height={diagram.height}
+      style={`left:${pct(IMG_X, W)};width:${pct(IMG_W, W)}`}
+    />
+    <svg class="diagram__leaders" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
+      {labels.map((l) => (
+        <polyline points={leader(l)} vector-effect="non-scaling-stroke" />
+      ))}
+    </svg>
+    {labels.map((l) => (
+      <span class="diagram__dot" style={`left:${pct(l.ax, W)};top:${pct(l.ay, H)}`} aria-hidden="true" />
+    ))}
+    {labels.map((l) => (
+      <a
+        class:list={["diagram__label", `diagram__label--${l.side}`]}
+        style={`top:${pct(l.ly, H)};${l.side === "left" ? `right:${pct(W - LABEL_EDGE.left, W)}` : `left:${pct(LABEL_EDGE.right, W)}`}`}
+        href={demoLink(product.id, { part: l.id, lang: "en" })}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <span class="diagram__num">{l.n}</span>
+        <span class="diagram__text">
+          <strong>{l.title}</strong>
+          <small>{l.role}</small>
+        </span>
+      </a>
+    ))}
+  </div>
+
+  <div class="diagram__compact">
+    <div class="diagram__compact-img">
+      <img src={withBase(diagram.image)} alt={alt} width={diagram.width} height={diagram.height} loading="lazy" />
+      {ordered.map((l) => (
+        <span class="diagram__pin" style={`left:${l.px}%;top:${l.py}%`} aria-hidden="true">{l.n}</span>
+      ))}
+    </div>
+    <ol class="diagram__list">
+      {ordered.map((l) => (
+        <li>
+          <a href={demoLink(product.id, { part: l.id, lang: "en" })} target="_blank" rel="noreferrer">
+            <span class="diagram__num">{l.n}</span>
+            <span class="diagram__text">
+              <strong>{l.title}</strong>
+              <small>{l.role}</small>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+  <figcaption>{L.structureLead}</figcaption>
+</figure>
