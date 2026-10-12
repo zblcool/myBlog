@@ -3,8 +3,9 @@ import Contact from "./Contact.astro";
 import Hero from "./Hero.astro";
 import Scenarios from "./Scenarios.astro";
 import Icon from "./Icon.astro";
+import Pricing from "./Pricing.astro";
 import Showcase from "./Showcase.astro";
-import { demoLink, socialLinks } from "@/studio/config";
+import { demoLink } from "@/studio/config";
 import { shot } from "@/studio/data/devices";
 import type { Copy } from "@/studio/i18n/en";
 import { withBase } from "@/lib/paths";
@@ -14,7 +15,6 @@ interface Props {
 }
 
 const { t } = Astro.props;
-const linkedin = socialLinks.find((l) => l.label === "LinkedIn")!.href;
 const kioskLink = demoLink(undefined, { scene: "tradeshow", lang: t.lang });
 const modes = [
   { device: "disk-brake", view: "xray" },
@@ -197,6 +197,8 @@ const modes = [
   </div>
 </section>
 
+<Pricing t={t} />
+
 <section class="section section--paper" id="faq">
   <div class="wrap split split--faq">
     <div>
@@ -210,18 +212,6 @@ const modes = [
           <p>{item.a}</p>
         </details>
       ))}
-    </div>
-  </div>
-</section>
-
-<section class="section about" id="about">
-  <div class="wrap about__inner">
-    <p class="eyebrow">{t.about.label}</p>
-    <h2>{t.about.title}</h2>
-    <p class="about__text">{t.about.text}</p>
-    <div class="actions">
-      <a class="link-arrow" href={withBase("/blog/")}>{t.about.blog}</a>
-      <a class="link-arrow" href={linkedin} target="_blank" rel="noreferrer">{t.about.linkedin}</a>
     </div>
   </div>
 </section>

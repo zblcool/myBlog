@@ -1,5 +1,6 @@
 import { brand, contactEmail, socialLinks } from "@/studio/config";
 import type { Copy } from "@/studio/i18n/en";
+import { currency, tiers } from "@/studio/data/pricing";
 import { solutions, type Solution } from "@/studio/data/solutions";
 import type { Product } from "@/studio/data/products";
 import { socialLinks as personalLinks } from "@/data/site";
@@ -45,16 +46,36 @@ export function homeStructuredData(t: Copy, siteUrl: string, asset: (path: strin
           "Babylon.js",
           "Three.js",
         ],
-        // The three ways the explainer is used, each with its own page.
-        makesOffer: solutions.map((s) => ({
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Service",
-            name: s.name,
-            description: s.description,
-            url: new URL(`${s.slug}/`, siteUrl).toString(),
-          },
-        })),
+        // The three ways the explainer is used, each with its own page, and the packages
+        // with a published starting price.
+        makesOffer: [
+          ...solutions.map((s) => ({
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: s.name,
+              description: s.description,
+              url: new URL(`${s.slug}/`, siteUrl).toString(),
+            },
+          })),
+          ...tiers
+            .filter((tier) => tier.from)
+            .map((tier) => ({
+              "@type": "Offer",
+              name: t.pricing.tiers[tier.id].name,
+              url: `${siteUrl}#pricing`,
+              priceSpecification: {
+                "@type": "PriceSpecification",
+                minPrice: tier.from,
+                priceCurrency: currency,
+              },
+              itemOffered: {
+                "@type": "Service",
+                name: t.pricing.tiers[tier.id].name,
+                description: t.pricing.tiers[tier.id].for,
+              },
+            })),
+        ],
       },
       {
         "@type": "WebSite",

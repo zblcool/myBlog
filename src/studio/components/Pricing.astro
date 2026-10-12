@@ -1,0 +1,129 @@
+---
+/**
+ * The three packages (studio/data/pricing.ts). Each card's button jumps to the enquiry form
+ * with the matching "What do you want to explain?" option selected.
+ */
+import { channels, embedSlug, formatPrice, tiers } from "@/studio/data/pricing";
+import { withBase } from "@/lib/paths";
+import type { Copy } from "@/studio/i18n/en";
+
+interface Props {
+  t: Copy;
+}
+
+const { t } = Astro.props;
+const p = t.pricing;
+const [fromBefore, fromAfter] = p.from.split("{price}");
+const r = p.runs;
+// The embedding page is English only, like the other landing pages.
+const embedHref = t.lang === "en" ? withBase(`/${embedSlug}/`) : undefined;
+---
+
+<section class="section section--navy pricing" id="pricing">
+  <div class="wrap">
+    <div class="section__head section__head--split">
+      <div>
+        <p class="eyebrow">{p.label}</p>
+        <h2>{p.title}</h2>
+      </div>
+      <p class="section__lead">{p.lead}</p>
+    </div>
+
+    <div class="tiers">
+      {tiers.map((tier) => {
+        const c = p.tiers[tier.id];
+        return (
+          <article class:list={["tier", { "tier--featured": tier.featured }]}>
+            {tier.featured && <span class="tier__badge">{p.featured}</span>}
+            <h3>{c.name}</h3>
+            <p class="tier__for">{c.for}</p>
+            <div class="tier__price">
+              {tier.from ? (
+                <p class="tier__value">
+                  {fromBefore && <small>{fromBefore}</small>}
+                  {formatPrice(tier.from)}
+                  {fromAfter && <small>{fromAfter}</small>}
+                </p>
+              ) : (
+                <p class="tier__value tier__value--text">{c.price}</p>
+              )}
+              <p class="tier__note">{c.note}</p>
+            </div>
+            <ul class="tier__list">
+              {c.items.map((item) => {
+                // "**x**" marks the words to emphasise; on the website embed it also links to the embed page.
+                const [before, bold, after] = item.split("**");
+                return (
+                  <li>
+                    <span>{bold === undefined ? item : <>{before}<strong>{embedHref ? <a href={embedHref}>{bold}</a> : bold}</strong>{after}</>}</span>
+                  </li>
+                );
+              })}
+            </ul>
+            <a class:list={["btn", tier.featured ? "btn--orange" : "btn--ghost"]} href="#contact" data-need={tier.need}>
+              {c.cta}
+            </a>
+          </article>
+        );
+      })}
+    </div>
+
+    <div class="runs">
+      <div class="runs__head">
+        <h3>{r.title}</h3>
+        <p>{r.lead}</p>
+      </div>
+      <table class="runs__table">
+        <thead>
+          <tr>
+            <th scope="col"><span class="sr-only">{r.corner}</span></th>
+            {tiers.map((tier) => <th scope="col" class:list={{ "is-featured": tier.featured }}>{r.short[tier.id]}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {channels.map((channel) => (
+            <tr>
+              <th scope="row">
+                <strong>{r.channels[channel.id].name}</strong>
+                <span>{r.channels[channel.id].text}</span>
+              </th>
+              {tiers.map((tier) => (
+                <td class:list={[`cover cover--${channel.cover[tier.id]}`, { "is-featured": tier.featured }]}>
+                  {channel.cover[tier.id] === "yes" && <span class="cover__tick" aria-hidden="true">✓</span>}
+                  <span class:list={{ "sr-only": channel.cover[tier.id] === "yes" }}>{r.cover[channel.cover[tier.id]]}</span>
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="runs__legend">
+        {r.legend}
+        {embedHref && <a class="link-arrow" href={embedHref}>{r.learn} →</a>}
+      </p>
+    </div>
+
+    <div class="pricing__foot">
+      <div class="pricing__credit">
+        <h3>{p.credit.title}</h3>
+        <p>{p.credit.text}</p>
+      </div>
+      <div>
+        <h3>{p.extras.title}</h3>
+        <ul class="chips">
+          {p.extras.items.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    </div>
+    <p class="pricing__note">{p.note}</p>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>("[data-need]").forEach((link) =>
+    link.addEventListener("click", () => {
+      const select = document.querySelector<HTMLSelectElement>("[data-enquiry] select[name=need]");
+      if (select) select.selectedIndex = Number(link.dataset.need);
+    }),
+  );
+</script>

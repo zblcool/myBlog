@@ -35,6 +35,7 @@ const nav = [
   { href: `${home}#showcase`, label: t.nav.showcase },
   { href: `${home}#shows`, label: t.nav.shows },
   { href: `${home}#process`, label: t.nav.process },
+  { href: `${home}#pricing`, label: t.nav.pricing },
   { href: `${home}#faq`, label: t.nav.faq },
 ];
 
@@ -107,6 +108,7 @@ const jsonLd = structuredData && JSON.stringify(structuredData).replace(/</g, "\
           <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
           {socialLinks.map((link) => <a href={link.href} target="_blank" rel="noreferrer">{link.label}</a>)}
           <a href={localePath(lang, "/privacy/")}>{t.footer.privacy}</a>
+          <a href={withBase("/blog/")}>{t.footer.blog}</a>
         </div>
         {lang === "en" && (
           <div class="footer__links">
