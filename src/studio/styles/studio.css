@@ -2056,8 +2056,8 @@ p {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 26px 24px 24px;
+  gap: 6px;
+  padding: 16px 16px 22px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--white);
@@ -2075,23 +2075,13 @@ p {
   transform: translateY(-3px);
 }
 
-.scenario__icon {
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 56px;
+/* The same pictures as the demo's own scenario card (ScenarioArt). */
+.scenario__art {
+  display: block;
+  width: 100%;
+  height: auto;
   margin-bottom: 10px;
-  border-radius: 14px;
-  background: var(--navy);
-  color: var(--orange);
-}
-
-.scenario__where {
-  color: var(--steel);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  border-radius: 10px;
 }
 
 .scenario h3 {
@@ -2099,10 +2089,36 @@ p {
   font-size: 21px;
 }
 
-.scenario p {
-  margin: 0;
+.scenario__where {
+  color: #6b7885;
+  font-size: 14px;
+}
+
+.scenario__points {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scenario__points li {
+  position: relative;
+  padding-left: 16px;
   color: #4a5866;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.scenario__points li::before {
+  content: "";
+  position: absolute;
+  top: 0.6em;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background: var(--orange);
 }
 
 .scenario__device {

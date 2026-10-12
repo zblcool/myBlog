@@ -3,7 +3,7 @@
  * Live demo entry: three scenarios, each opening the explainer set up for it (`?scene=` in the
  * explainer, see its src/app/demo/scenes.ts). The explainer shows the same choice when opened bare.
  */
-import Icon from "./Icon.astro";
+import ScenarioArt from "./ScenarioArt.astro";
 import { demoLink } from "@/studio/config";
 import { solutions } from "@/studio/data/solutions";
 import { withBase } from "@/lib/paths";
@@ -17,6 +17,7 @@ const { t } = Astro.props;
 const s = t.scenarios;
 // The device each scenario opens in the explainer.
 const devices = { website: "worm-gearbox", tradeshow: "jet-engine", embed: "hope-rotor" } as const;
+type Scene = keyof typeof devices;
 const chooser = demoLink(undefined, { lang: t.lang });
 // Each scenario's landing page (the published site is English only).
 const pageOf = (scene: string) => solutions.find((sol) => sol.scene === scene);
@@ -35,10 +36,12 @@ const pageOf = (scene: string) => solutions.find((sol) => sol.scene === scene);
       <div class="scenarios__grid">
         {s.items.map((item) => (
           <article class="scenario">
-            <span class="scenario__icon"><Icon name={item.icon} size={30} /></span>
-            <span class="scenario__where">{item.where}</span>
+            <ScenarioArt scene={item.id as Scene} class="scenario__art" />
             <h3>{item.title}</h3>
-            <p>{item.text}</p>
+            <span class="scenario__where">{item.where}</span>
+            <ul class="scenario__points">
+              {item.points.map((point) => <li>{point}</li>)}
+            </ul>
             <span class="scenario__device">
               {s.shownWith.replace("{name}", t.showcase.devices[devices[item.id as keyof typeof devices]].name)}
             </span>

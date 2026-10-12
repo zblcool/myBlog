@@ -1,0 +1,94 @@
+---
+/**
+ * Pictures of the three live demo scenarios: a product on a tablet (parts numbered), a big
+ * screen on a stand next to a visitor, a web page with one live block. Mirrors the explainer's
+ * src/components/ScenarioArt.tsx (same geometry and colours), so the site and the demo's
+ * "What do you want to show?" card look alike; change both together. Decorative.
+ */
+interface Props {
+  scene: "website" | "tradeshow" | "embed";
+  class?: string;
+}
+
+const { scene, class: className } = Astro.props;
+
+const NAVY = "#16202a";
+const STEEL = "#7496b7";
+const ORANGE = "#f2a250";
+
+/** Isometric box (the product): top, left and right faces. */
+function box(x: number, y: number, s: number) {
+  const h = s * 0.58;
+  const lip = s * 0.15;
+  return [
+    { fill: "#9fb6cc", d: `M${x} ${y - s} L${x + s} ${y - s + h} L${x} ${y - s + 2 * h} L${x - s} ${y - s + h}Z` },
+    { fill: STEEL, d: `M${x - s} ${y - s + h} L${x} ${y - s + 2 * h} L${x} ${y + 2 * h - lip} L${x - s} ${y + h - lip}Z` },
+    { fill: "#5b7a99", d: `M${x + s} ${y - s + h} L${x} ${y - s + 2 * h} L${x} ${y + 2 * h - lip} L${x + s} ${y + h - lip}Z` },
+  ];
+}
+
+const faces = { website: box(66, 44, 17), tradeshow: box(68, 33, 13), embed: box(53, 55, 11) }[scene];
+const hotspots = [
+  { x: 52, y: 36, n: 1 },
+  { x: 77, y: 33, n: 2 },
+  { x: 72, y: 62, n: 3 },
+];
+---
+
+<svg class={className} viewBox="0 0 160 100" aria-hidden="true" focusable="false">
+  <rect width="160" height="100" rx="10" fill="#e4e9ee" />
+
+  {scene === "website" && (
+    <g>
+      <rect x="22" y="12" width="116" height="76" rx="8" fill={NAVY} />
+      <rect x="27" y="17" width="106" height="66" rx="4" fill="#22313f" />
+      <g stroke-linejoin="round">{faces.map((f) => <path d={f.d} fill={f.fill} />)}</g>
+      {hotspots.map((h) => (
+        <g>
+          <circle cx={h.x} cy={h.y} r="5.2" fill={ORANGE} stroke={NAVY} stroke-width="1.4" />
+          <text x={h.x} y={h.y + 2.3} text-anchor="middle" font-size="6.5" font-weight="700" fill={NAVY} font-family="Montserrat, sans-serif">{h.n}</text>
+        </g>
+      ))}
+      <rect x="96" y="24" width="31" height="52" rx="3" fill="#2c3d4e" />
+      <rect x="100" y="29" width="20" height="3.5" rx="1.75" fill="#eef1f4" />
+      <rect x="100" y="36" width="23" height="2.5" rx="1.25" fill={STEEL} />
+      <rect x="100" y="41" width="17" height="2.5" rx="1.25" fill={STEEL} />
+      <rect x="100" y="64" width="23" height="7" rx="2" fill={ORANGE} />
+    </g>
+  )}
+
+  {scene === "tradeshow" && (
+    <g>
+      <rect x="40" y="86" width="56" height="4" rx="2" fill="#c3ccd5" />
+      <rect x="65" y="64" width="6" height="23" fill="#8a99a8" />
+      <rect x="24" y="8" width="88" height="58" rx="5" fill={NAVY} />
+      <rect x="28" y="12" width="80" height="50" rx="2.5" fill="#22313f" />
+      <g stroke-linejoin="round">{faces.map((f) => <path d={f.d} fill={f.fill} />)}</g>
+      <rect x="32" y="45" width="13" height="13" rx="1.5" fill="#eef1f4" />
+      <path d="M34 47h3v3h-3zM40 47h3v3h-3zM34 53h3v3h-3zM40.5 52.5h2v2h-2zM38 50h2v2h-2z" fill={NAVY} />
+      <rect x="84" y="15" width="20" height="3" rx="1.5" fill={ORANGE} />
+      <circle cx="130" cy="47" r="6" fill={STEEL} />
+      <path d="M120 90v-22a10 10 0 0 1 20 0v22z" fill={STEEL} />
+      <path d="M121 70l-9-8" stroke={STEEL} stroke-width="4" stroke-linecap="round" />
+    </g>
+  )}
+
+  {scene === "embed" && (
+    <g>
+      <rect x="16" y="10" width="128" height="80" rx="6" fill="#fff" />
+      <path d="M16 16a6 6 0 0 1 6-6h116a6 6 0 0 1 6 6v5H16z" fill="#d5dce3" />
+      <circle cx="23" cy="15.5" r="1.8" fill="#aab6c2" />
+      <circle cx="29" cy="15.5" r="1.8" fill="#aab6c2" />
+      <circle cx="35" cy="15.5" r="1.8" fill="#aab6c2" />
+      <rect x="24" y="27" width="22" height="4" rx="2" fill="#d5dce3" />
+      <rect x="104" y="27" width="32" height="4" rx="2" fill="#e6eaee" />
+      <rect x="24" y="37" width="58" height="44" rx="4" fill={NAVY} />
+      <rect x="21.5" y="34.5" width="63" height="49" rx="6" fill="none" stroke={ORANGE} stroke-width="1.6" stroke-dasharray="3.5 2.5" />
+      <g stroke-linejoin="round">{faces.map((f) => <path d={f.d} fill={f.fill} />)}</g>
+      <rect x="90" y="38" width="44" height="5" rx="2" fill="#cdd5dd" />
+      <rect x="90" y="47" width="30" height="4" rx="2" fill="#e1e6eb" />
+      <rect x="90" y="56" width="22" height="6" rx="2" fill="#cdd5dd" />
+      <rect x="90" y="69" width="44" height="10" rx="3" fill="#3a4856" />
+    </g>
+  )}
+</svg>
