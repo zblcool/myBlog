@@ -12,12 +12,15 @@ import { projects } from "@/data/projects";
 import { contactHref, contactLabel, facts, profile, services } from "@/data/site";
 import { sortEntriesByDateDesc } from "@/lib/content";
 import { withBase } from "@/lib/paths";
+import { profileStructuredData } from "@/lib/seo";
 
 const latestPosts = sortEntriesByDateDesc(await getCollection("posts")).slice(0, 4);
 const external = contactHref.startsWith("http");
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).toString() : path);
+const structuredData = profileStructuredData(absolute(withBase("/blog/")), absolute(withBase("/")));
 ---
 
-<BaseLayout>
+<BaseLayout structuredData={structuredData}>
   <section class="hero">
     <div class="hero__scene" aria-hidden="true">
       <HeroScene client:load />

@@ -2,6 +2,10 @@ import { brand, contactEmail, socialLinks } from "@/studio/config";
 import type { Copy } from "@/studio/i18n/en";
 import { solutions, type Solution } from "@/studio/data/solutions";
 import type { Product } from "@/studio/data/products";
+import { socialLinks as personalLinks } from "@/data/site";
+
+/** The founder's own profile; the LinkedIn link is the company page, so it stays on the Organization. */
+const founderGithub = personalLinks.find((link) => link.label === "GitHub")!.href;
 
 /**
  * schema.org data for the home page: the business, the site, and the FAQ section.
@@ -31,7 +35,7 @@ export function homeStructuredData(t: Copy, siteUrl: string, asset: (path: strin
           name: "Ash Zhang",
           jobTitle: "Computer graphics engineer",
           url: new URL("blog/", siteUrl).toString(),
-          sameAs: socialLinks.map((link) => link.href),
+          sameAs: [founderGithub],
         },
         knowsAbout: [
           "Interactive 3D product visualisation",

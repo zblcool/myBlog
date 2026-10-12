@@ -1,5 +1,6 @@
 ---
 title: Unity & C# notes
+description: "Unity and C# notes from a game development course: ClampMagnitude, properties, Invoke and coroutines, audio, scene loading, PlayerPrefs and Rigidbody."
 date: 2020-09-22
 tags:
   - Unity

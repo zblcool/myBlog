@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
@@ -64,13 +65,33 @@ function getBasePath(siteUrl) {
 const site = getSiteUrl();
 const base = getBasePath(site);
 
+/**
+ * lastmod for posts and notes: the publish date their built page already carries
+ * (sitemap entries are written after the pages, so the HTML is in dist/ by then).
+ */
+function publishedDate(pageUrl) {
+  const pathname = decodeURIComponent(new URL(pageUrl).pathname).slice(base.length);
+  try {
+    const html = readFileSync(new URL(`./dist/${pathname}index.html`, import.meta.url), "utf8");
+    return html.match(/<meta property="article:published_time" content="([^"]+)"/)?.[1];
+  } catch {
+    return undefined;
+  }
+}
+
 export default defineConfig({
   site,
   base,
   integrations: [
     react(),
     // The Chinese copy at /zh/ is reachable by URL only, so it stays out of the sitemap.
-    sitemap({ filter: (page) => !new URL(page).pathname.startsWith(`${base}zh/`) }),
+    sitemap({
+      filter: (page) => !new URL(page).pathname.startsWith(`${base}zh/`),
+      serialize(item) {
+        const lastmod = publishedDate(item.url);
+        return lastmod ? { ...item, lastmod } : item;
+      },
+    }),
   ],
   markdown: {
     remarkPlugins: [remarkMath],

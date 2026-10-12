@@ -1,5 +1,6 @@
 ---
 title: Divide and Conquer 
+description: "Divide and conquer from Stanford's algorithms course: why study algorithms, Karatsuba multiplication, recursion and sorting."
 date: 2020-06-14
 tags:
   - Algorithms

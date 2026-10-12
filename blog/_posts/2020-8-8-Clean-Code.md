@@ -1,6 +1,7 @@
 ---
 title: Clean Code
-date: 2020-08-8
+description: "Clean Code on naming: meaningful, searchable and pronounceable names, dropping Hungarian notation and member prefixes, and naming classes and methods."
+date: 2020-08-08
 tags:
   - Clean Code
   - Computer Science

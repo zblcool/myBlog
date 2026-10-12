@@ -1,5 +1,6 @@
 ---
 title: Functional programming in JS
+description: "Functional programming in JavaScript: pure functions, higher-order functions, immutable data and structural sharing, with further reading."
 date: 2020-06-16
 tags:
   - Functional Programming

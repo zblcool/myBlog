@@ -1,5 +1,6 @@
 ---
 title: Computer Graphics Notes
+description: "Study notes on Fundamentals of Computer Graphics: core classes, float vs double, dot and cross products, and view and camera transforms."
 date: 2020-06-21
 tags:
   - Computer Graphics

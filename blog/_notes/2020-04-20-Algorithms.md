@@ -1,5 +1,6 @@
 ---
 title: Algorithms Notes
+description: "Union-find algorithms: quick-find and quick-union, their data structures, find and union operations, problems and improvements."
 date: 2020-04-20
 tags:
   - Algorithms

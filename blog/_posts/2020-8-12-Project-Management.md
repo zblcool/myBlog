@@ -1,5 +1,6 @@
 ---
 title: Project Management
+description: "Project planning for software teams: work breakdown structures, time and cost estimates, schedule, budget, and risk, communication, quality and change management plans."
 date: 2020-08-12
 tags:
   - Project Management

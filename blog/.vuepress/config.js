@@ -46,7 +46,7 @@ module.exports = {
         },
         {
           type: "linkedin",
-          link: "https://www.linkedin.com/in/baolong-zhang-704062a1/",
+          link: "https://www.linkedin.com/company/ashmartisan-studio",
         },
       ],
       copyright: [

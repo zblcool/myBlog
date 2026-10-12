@@ -2,11 +2,14 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { about, profile, socialLinks } from "@/data/site";
 import { withBase } from "@/lib/paths";
+import { profileStructuredData } from "@/lib/seo";
 
 const pdf = withBase("/document/Ash-Zhang-CV.pdf");
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).toString() : path);
+const structuredData = profileStructuredData(absolute(withBase("/blog/cv/")), absolute(withBase("/")), true);
 ---
 
-<BaseLayout title="About | Ash Zhang" description={profile.description}>
+<BaseLayout title="About Ash Zhang | 3D Graphics & WebGL Engineer, Sydney" description={profile.description} structuredData={structuredData}>
   <div class="wrap">
     <header class="page-head">
       <span class="label">About</span>

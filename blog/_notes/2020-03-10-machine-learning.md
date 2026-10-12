@@ -1,5 +1,6 @@
 ---
 title: Machine learning
+description: "Machine learning fundamentals: weights, bias, cost functions, gradient descent, backpropagation and MNIST training material."
 date: 2020-03-10
 tags:
   - Machine Learning

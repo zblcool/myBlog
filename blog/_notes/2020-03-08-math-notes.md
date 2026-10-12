@@ -1,5 +1,6 @@
 ---
 title: Mathematics in CS
+description: "Discrete mathematics for computer science: what discrete means, discrete structures and probability, proofs, and proof by contradiction that root 2 is irrational."
 date: 2020-03-18
 tags:
   - Math

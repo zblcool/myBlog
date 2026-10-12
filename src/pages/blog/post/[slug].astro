@@ -6,11 +6,13 @@ import {
   getAdjacentEntries,
   getEntryCover,
   getEntryCoverAlt,
+  getEntrySummary,
   getEntryUrl,
   getTagUrl,
   sortEntriesByDateDesc,
 } from "@/lib/content";
 import { withBase } from "@/lib/paths";
+import { articleStructuredData } from "@/lib/seo";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -27,12 +29,27 @@ const posts = sortEntriesByDateDesc(await getCollection("posts"));
 const { newer, older } = getAdjacentEntries(posts, entry.id);
 const cover = getEntryCover(entry);
 const intro = entry.data.description ?? entry.data.summary;
+const description = entry.data.description ?? getEntrySummary(entry, 155);
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).toString() : path);
+// Relative image paths in old notes cannot be resolved for link previews, so only root and absolute ones are shared.
+const shareImage = cover && (cover.startsWith("/") || cover.startsWith("http")) ? cover : undefined;
+const structuredData = articleStructuredData(
+  entry,
+  { name: "Posts", url: absolute(withBase("/blog/post/")) },
+  absolute(withBase(getEntryUrl("post", entry))),
+  absolute(withBase("/")),
+  description,
+  shareImage && absolute(shareImage),
+);
 ---
 
 <BaseLayout
   cta={false}
   title={`${entry.data.title} | Ash Zhang`}
-  description={entry.data.description ?? entry.data.title}
+  description={description}
+  image={shareImage}
+  publishedTime={entry.data.date}
+  structuredData={structuredData}
 >
   <article class="article-shell">
     <div class="label">Post</div>

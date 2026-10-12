@@ -1,5 +1,6 @@
 ---
 title: Software testing
+description: "Software testing and quality assurance: why quality matters to the business, why tests must be planned, and the people in a QA team."
 date: 2021-05-25
 tags:
   - testing

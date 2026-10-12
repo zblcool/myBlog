@@ -7,12 +7,21 @@ interface Props {
   title?: string;
   description?: string;
   cta?: boolean;
+  /** Share image (already base-prefixed); defaults to the site image. */
+  image?: string;
+  /** Set on posts and notes: marks the page as an article with its publish date. */
+  publishedTime?: Date;
+  /** schema.org JSON-LD for this page. */
+  structuredData?: object;
 }
 
 const {
   title = `${profile.name} | ${profile.title}`,
   description = profile.description,
   cta = true,
+  image,
+  publishedTime,
+  structuredData,
 } = Astro.props;
 
 const pathname = stripBase(Astro.url.pathname);
@@ -22,7 +31,9 @@ const external = contactHref.startsWith("http");
 // Absolute addresses for search engines and link previews (the site URL is set in astro.config.mjs).
 const absolute = (p: string) => (Astro.site ? new URL(p, Astro.site).toString() : p);
 const canonical = absolute(Astro.url.pathname);
-const shareImage = absolute(withBase("/studio/og-image.jpg"));
+const shareImage = absolute(image ?? withBase("/studio/og-image.jpg"));
+// "</" inside JSON would close the script element early.
+const jsonLd = structuredData && JSON.stringify(structuredData).replace(/</g, "\\u003c");
 ---
 
 <!doctype html>
@@ -33,19 +44,23 @@ const shareImage = absolute(withBase("/studio/og-image.jpg"));
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta property="og:type" content="website" />
+    <meta name="author" content={profile.name} />
+    <meta property="og:type" content={publishedTime ? "article" : "website"} />
     <meta property="og:site_name" content={profile.name} />
+    <meta property="og:locale" content="en_AU" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={shareImage} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    {!image && <meta property="og:image:width" content="1200" />}
+    {!image && <meta property="og:image:height" content="630" />}
+    {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={shareImage} />
     <link rel="sitemap" href={withBase("/sitemap-index.xml")} />
+    {jsonLd && <script is:inline type="application/ld+json" set:html={jsonLd} />}
     <link rel="icon" type="image/png" href={withBase("/logo.png")} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
