@@ -253,8 +253,8 @@ export const en = {
     label: "How it works",
     title: "From your files to a live explainer.",
     steps: [
-      { title: "Send what you have", text: "CAD exports, an existing 3D model, or photos and drawings if there is no model yet." },
-      { title: "We build the model and the story", text: "We prepare the model for phones, name every part, and write the explanations and walkthroughs with your engineers." },
+      { title: "Send what you have", text: "an existing 3D model, or photos and drawings if there is no model yet." },
+      { title: "We build the model and the story", text: "We prepare the model for you, name every part, and write the explanations and walkthroughs with your engineers." },
       { title: "Review on a private link", text: "You check the content and the behaviour on your own devices and ask for changes." },
       { title: "Launch", text: "Embed it on your website, run it at shows and give sales the links. It can carry your brand instead of ours." },
     ],
@@ -280,7 +280,7 @@ export const en = {
         a: "It is a static web app: it can run on our hosting, on your server or on any CDN, and it can be embedded in your existing website.",
       },
       {
-        q: "What happens to our CAD data?",
+        q: "What happens to your models?",
         a: "Only an optimised display model reaches the browser, not your engineering files. Products that must not be public can be left out of the public build and shown only at shows or in sales meetings.",
       },
       {
