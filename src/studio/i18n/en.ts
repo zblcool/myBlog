@@ -9,6 +9,7 @@ export const en = {
   },
   tagline: "Interactive ideas for real world equipment",
   nav: {
+    platform: "Platform",
     product: "Product",
     showcase: "Showcase",
     shows: "Trade shows",
@@ -59,6 +60,37 @@ export const en = {
         title: "Housing",
         summary: "The cast casing supports both shafts and keeps the mesh accurate. It is filled with lubricating oil and also dissipates the heat.",
         specs: [["Material", "Cast iron / aluminium alloy"]],
+      },
+    },
+  },
+  platform: {
+    label: "The platform",
+    title: "Showcase. Configure. Support.",
+    lead: "One connected platform for industrial products. Start with the module you need: each can be bought on its own or bundled with the others.",
+    status: { available: "Available now", new: "New", future: "In discovery" },
+    modules: {
+      showcase: {
+        name: "Showcase",
+        text: "The interactive 3D explainer: buyers click parts, look inside, take the product apart and watch it run.",
+        points: ["Embedded in the website pages you have", "Sales presentations on a laptop or tablet", "Trade-show screens in kiosk mode, offline"],
+        note: "Website, sales and trade show are where Showcase runs, all from one build.",
+        cta: "Explore Live Demo",
+        more: "See packages",
+      },
+      configurator: {
+        name: "Configurator & RFQ",
+        text: "Buyers choose from the options you actually offer. Rules check every combination, and a structured request for quotation reaches your sales team.",
+        points: ["Only valid options, checked by your rules", "A model code built from the choices", "A complete RFQ instead of a vague enquiry"],
+        note: "Live example: an ISO 15552 pneumatic cylinder. The demo shows what sales would receive and sends nothing.",
+        cta: "Configure a Product",
+        more: "Request a Custom Demo",
+      },
+      service: {
+        name: "Parts & Service",
+        text: "After the sale: helping customers and technicians identify the right spare part from the 3D model.",
+        points: ["Not a finished product yet", "Shaped with manufacturers who need it", "Tell us how after-sales enquiries reach you today"],
+        note: "We are talking to manufacturers about this now.",
+        cta: "Discuss Your Requirements",
       },
     },
   },
@@ -346,6 +378,11 @@ export const en = {
         "On-site support at shows",
       ],
     },
+    modules: {
+      title: "Configurator & RFQ and Parts & Service",
+      text: "The packages above are Showcase. Configurator & RFQ depends on your product range and selection rules, so it is quoted once we understand them. Buy it on its own, or bundled with Showcase so buyers configure the product they have just explored. Parts & Service is still in discovery.",
+      cta: "Discuss Your Requirements",
+    },
     note: "All prices are in Australian dollars. No GST is charged. Final pricing depends on model complexity, interactions, deployment and support. The number of review rounds and the length and scope of support are set out in your agreement.",
   },
   faq: {
@@ -374,7 +411,7 @@ export const en = {
       },
       {
         q: "What does it cost?",
-        a: "An Exhibition Pilot starts from A$1,500 and covers up to 3 products for one show. A Product Experience starts from A$4,500 and covers up to 10 products. More products, extra modes and support are added to the quote, and larger projects are quoted to scope. Tell us what you want to show and we will come back with a quote.",
+        a: "An Exhibition Pilot starts from A$1,500 and covers up to 3 products for one show. A Product Experience starts from A$4,500 and covers up to 10 products. More products, extra modes and support are added to the quote, and larger projects are quoted to scope. Configurator & RFQ has no fixed price: it is quoted to your product range and rules. Tell us what you want to show and we will come back with a quote.",
       },
       {
         q: "Do we own what you build?",
@@ -402,7 +439,7 @@ export const en = {
       email: "Work email",
       company: "Company",
       need: "What do you want to explain?",
-      needOptions: ["A single product", "A product range", "A trade-show stand", "Not sure yet"],
+      needOptions: ["A single product", "A product range", "A trade-show stand", "A product configurator & RFQ", "Parts & service", "Not sure yet"],
       message: "Message",
       messagePlaceholder: "The equipment, what buyers find hard to understand, and any deadline",
     },
