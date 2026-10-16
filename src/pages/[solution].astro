@@ -4,6 +4,7 @@
  * live demo in its scenario and carries its own title, description, FAQ and structured data.
  */
 import Icon from "@/studio/components/Icon.astro";
+import Modules from "@/studio/components/Modules.astro";
 import StudioLayout from "@/studio/layouts/StudioLayout.astro";
 import { demoLink } from "@/studio/config";
 import { copies, localePath } from "@/studio/i18n";
@@ -119,6 +120,8 @@ const structuredData = solutionStructuredData(s, absolute(localePath("en", path)
       </div>
     </div>
   </section>
+
+  <Modules t={t} home={home} />
 
   <section class="section section--navy">
     <div class="wrap">

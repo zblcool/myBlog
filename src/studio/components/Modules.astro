@@ -1,0 +1,106 @@
+---
+/**
+ * The three platform modules: Showcase (the 3D explainer, available now), Configurator & RFQ
+ * (new, with a live example) and Parts & Service (in discovery, a conversation not a product).
+ * Website, sales and trade show are Showcase's channels, not modules. `home` is the home page
+ * path, so the landing pages can link back to its sections.
+ */
+import Icon from "./Icon.astro";
+import { demoLink } from "@/studio/config";
+import type { Copy } from "@/studio/i18n/en";
+
+interface Props {
+  t: Copy;
+  home?: string;
+}
+
+const { t, home = "" } = Astro.props;
+const p = t.platform;
+const m = p.modules;
+const lang = t.lang;
+const contact = `${home}#contact`;
+// Contact form "What do you want to explain?" options (contact.fields.needOptions).
+const NEED_CONFIGURATOR = 3;
+const NEED_SERVICE = 4;
+
+const cards = [
+  {
+    id: "showcase",
+    icon: "cube",
+    status: "available",
+    c: m.showcase,
+    primary: { href: demoLink(undefined, { lang }), label: m.showcase.cta, external: true },
+    secondary: { href: `${home}#pricing`, label: m.showcase.more },
+  },
+  {
+    id: "configurator",
+    icon: "sliders",
+    status: "new",
+    c: m.configurator,
+    primary: { href: demoLink("iso-cylinder", { view: "configure", lang }), label: m.configurator.cta, external: true },
+    secondary: { href: contact, label: m.configurator.more, need: NEED_CONFIGURATOR },
+  },
+  {
+    id: "service",
+    icon: "gear",
+    status: "future",
+    c: m.service,
+    primary: { href: contact, label: m.service.cta, need: NEED_SERVICE },
+  },
+] as const;
+---
+
+<section class="section section--paper" id="platform">
+  <div class="wrap">
+    <div class="section__head section__head--split">
+      <div>
+        <p class="eyebrow">{p.label}</p>
+        <h2>{p.title}</h2>
+      </div>
+      <p class="section__lead">{p.lead}</p>
+    </div>
+    <div class="modules">
+      {cards.map((card) => (
+        <article class:list={["module", `module--${card.status}`]}>
+          <div class="module__top">
+            <Icon name={card.icon} />
+            <span class="module__status">{p.status[card.status]}</span>
+          </div>
+          <h3>{card.c.name}</h3>
+          <p>{card.c.text}</p>
+          <ul class="module__points">
+            {card.c.points.map((point) => <li>{point}</li>)}
+          </ul>
+          <p class="module__note">{card.c.note}</p>
+          <div class="module__actions">
+            {card.primary.href && (
+              <a
+                class:list={["btn", card.status === "future" ? "btn--ghost" : "btn--orange"]}
+                href={card.primary.href}
+                data-need={"need" in card.primary ? card.primary.need : undefined}
+                {...("external" in card.primary ? { target: "_blank", rel: "noreferrer" } : {})}
+              >
+                {card.primary.label}
+                {"external" in card.primary && <span aria-hidden="true"> ↗</span>}
+              </a>
+            )}
+            {"secondary" in card && (
+              <a class="link-arrow" href={card.secondary.href} data-need={"need" in card.secondary ? card.secondary.need : undefined}>
+                {card.secondary.label} →
+              </a>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>(".module [data-need]").forEach((link) =>
+    link.addEventListener("click", () => {
+      const select = document.querySelector<HTMLSelectElement>("[data-enquiry] select[name=need]");
+      if (select) select.selectedIndex = Number(link.dataset.need);
+    }),
+  );
+</script>

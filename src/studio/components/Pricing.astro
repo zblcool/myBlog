@@ -115,6 +115,13 @@ const embedHref = t.lang === "en" ? withBase(`/${embedSlug}/`) : undefined;
         </ul>
       </div>
     </div>
+    <div class="pricing__modules">
+      <div>
+        <h3>{p.modules.title}</h3>
+        <p>{p.modules.text}</p>
+      </div>
+      <a class="btn btn--ghost" href="#contact" data-need="3">{p.modules.cta}</a>
+    </div>
     <p class="pricing__note">{p.note}</p>
   </div>
 </section>
