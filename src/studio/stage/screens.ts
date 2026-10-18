@@ -414,7 +414,7 @@ function drawBrochures(ctx: Ctx, modules: string[]) {
     ctx.fillRect(x, 0, w, H * 0.035);
     drawMark(ctx, x + pad, H * 0.11, H * 0.1, "onDark");
     // The title fills the width without breaking a word: shrink until the longest word fits.
-    const words = /[　-鿿]/.test(name) ? [...name] : name.split(/s+/);
+    const words = /[　-鿿]/.test(name) ? [...name] : name.split(/\s+/);
     let size = H * 0.13;
     ctx.font = font(700, size);
     while (size > H * 0.06 && Math.max(...words.map((word) => ctx.measureText(word).width)) > maxW) {

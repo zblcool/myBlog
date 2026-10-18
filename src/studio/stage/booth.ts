@@ -47,6 +47,8 @@ export interface SpotFrame {
   /** Where the marker sits, when not on the object itself (beside a screen, not over it). */
   marker?: Vector3;
   radius: number;
+  /** The object's width (m): a narrow screen backs off until it fits. */
+  width?: number;
   alpha: number;
   beta: number;
 }
@@ -624,17 +626,18 @@ export function buildBooth(scene: Scene, url: (path: string) => string) {
     return Vector3.TransformCoordinates(local, node.getWorldMatrix());
   };
   const spots: Record<Exclude<SpotId, "exhibit">, SpotFrame> = {
-    screen: { at: SCREEN.clone(), marker: SCREEN.add(new Vector3(1.12, 0.62, 0)), radius: 3.2, alpha: FRONT - 0.12, beta: 1.47 },
+    screen: { at: SCREEN.clone(), marker: SCREEN.add(new Vector3(1.12, 0.62, 0)), radius: 3.2, width: 2.08, alpha: FRONT - 0.12, beta: 1.47 },
     tablet: {
       at: world(head, new Vector3(0, 0.11, 0)),
       marker: world(head, new Vector3(0.27, 0.22, 0)),
       radius: 0.68,
+      width: TABLET.w,
       alpha: FRONT + 0.12,
       beta: 1.14,
     },
-    laptop: { at: world(lid, new Vector3(0, 0.1, 0)), radius: 1.05, alpha: FRONT - 0.42, beta: 1.2 },
-    brochures: { at: RACK.add(new Vector3(0, 0.9, 0)), radius: 1.75, alpha: FRONT - 0.9, beta: 1.3 },
-    contact: { at: world(deskSign, new Vector3(0, 0.08, 0)), radius: 1.0, alpha: FRONT - 0.22, beta: 1.26 },
+    laptop: { at: world(lid, new Vector3(0, 0.1, 0)), radius: 1.05, width: 0.36, alpha: FRONT - 0.42, beta: 1.2 },
+    brochures: { at: RACK.add(new Vector3(0, 0.9, 0)), radius: 1.75, width: 0.95, alpha: FRONT - 0.9, beta: 1.3 },
+    contact: { at: world(deskSign, new Vector3(0, 0.08, 0)), radius: 1.0, width: 0.32, alpha: FRONT - 0.22, beta: 1.26 },
   };
 
   return {

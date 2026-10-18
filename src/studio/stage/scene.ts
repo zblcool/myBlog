@@ -501,12 +501,15 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     let fy: number;
     if (rig.focus) {
       desiredTarget.copyFrom(rig.focus.at);
-      radius = rig.focus.radius * rig.zoom;
+      // Frames are composed for a wide screen; a tall one is narrower, so back off until the
+      // object spans ~88% of the width, and lift it above the card.
+      const fit = rig.focus.width ? rig.focus.width / 0.88 / (2 * tanH) : rig.focus.radius * (0.6 / aspect);
+      radius = (wide ? rig.focus.radius : Math.max(rig.focus.radius, fit)) * rig.zoom;
       fx = wide ? 0.15 : 0;
-      fy = wide ? 0 : 0.17;
+      fy = wide ? 0 : 0.14;
     } else {
       // Overview: fit the booth (wide: in the right ~60%; tall: full width, lower half).
-      const needW = wide ? 13.2 : 7.4;
+      const needW = wide ? 13.2 : 6.8;
       const needH = 6.2;
       const overview = Math.max(needW / 2 / tanH, needH / 2 / tanV);
       const product = Math.max(rig.productSpan / Math.min(tanV, tanH), 2.2) * (wide ? 1.55 : 1.35);
@@ -514,7 +517,7 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
       radius = Math.exp(lerp(Math.log(overview), Math.log(product), e)) * rig.zoom * rig.introZoom;
       fx = wide ? lerp(0.215, 0.2, e) : 0;
       // Tall screens: booth below the headline, then the exhibit above the exhibit card.
-      fy = wide ? lerp(0, -0.02, e) : lerp(-0.2, 0.21, e);
+      fy = wide ? lerp(0, -0.02, e) : lerp(-0.11, 0.21, e);
     }
 
     // Orbit offsets: an idle sway, and the pointer leaning the view (subtler when focused).
@@ -636,6 +639,7 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
   const exhibitFrame = (): SpotFrame => ({
     at: rig.productTarget.clone(),
     radius: Math.max(rig.productSpan, 0.75) * 3.1,
+    width: rig.productSpan * 2,
     alpha: REST_ALPHA + 0.2,
     beta: 1.26,
   });

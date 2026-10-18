@@ -1610,6 +1610,73 @@ p {
   .booth-hero.is-open .booth-hero__scrim {
     opacity: 0.2;
   }
+
+  /* The booth leads on a phone: headline and actions only, the lead is for the wide layout. */
+  .booth-hero .eyebrow:not(.booth-hero__card .eyebrow, .booth-hero__exhibit .eyebrow),
+  .booth-hero .hero__lead {
+    display: none;
+  }
+
+  .booth-hero h1 {
+    margin-bottom: 18px;
+    font-size: clamp(1.75rem, 7.4vw, 2.2rem);
+  }
+
+  .booth-hero__scrim {
+    background:
+      linear-gradient(180deg, rgba(var(--hall-rgb), 0.9) 0%, rgba(var(--hall-rgb), 0.55) 26%, rgba(var(--hall-rgb), 0) 40%),
+      linear-gradient(0deg, var(--navy) 0, rgba(22, 32, 42, 0) 12%);
+  }
+
+  /* In a close-up the object is the point: no shade over it, and a slim card under it. */
+  .booth-hero.is-focus .booth-hero__scrim {
+    opacity: 0;
+  }
+
+  .booth-hero__card {
+    margin-bottom: 76px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(14, 21, 28, 0.5);
+  }
+
+  .booth-hero__card .eyebrow {
+    margin-bottom: 6px;
+    font-size: 10px;
+  }
+
+  .booth-hero__card .booth-hero__exhibit-name {
+    margin-bottom: 4px;
+    font-size: 1.15rem;
+  }
+
+  .booth-hero__card .booth-hero__exhibit-text {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-bottom: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .booth-hero__card .actions {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .booth-hero__card .actions .btn {
+    flex: 0 1 auto;
+    width: auto;
+    min-width: 0;
+    padding: 9px 12px;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+
+  .booth-hero__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 /* ---------- App window (hero teaser) ---------- */
