@@ -4,9 +4,14 @@
  * behind the headline. Scrolling glides the camera from the whole booth to the exhibit while
  * the headline gives way to an exhibit card; the theme recolours the hero copy and header too.
  *
- * The poster is a render of the default booth and stays as the fallback. The scene loads once
- * the page is idle, only with WebGL, and not at all under Save-Data until asked. Reduced motion
- * keeps the camera still (no scroll-linked movement). The panel is plain HTML.
+ * On load the scene opens like a show floor: the poster is the booth in standby, the live
+ * scene takes over on that same frame, then the fixtures strike, the screens boot and the camera
+ * cranes in. Glowing markers on the stand (screen, tablet, laptop, exhibit, brochures, desk)
+ * frame each surface and link into the demo and the rest of the page.
+ *
+ * The poster stays as the fallback. The scene loads once the page is idle, only with WebGL, and
+ * not at all under Save-Data until asked. Reduced motion skips the opening, the sway and the
+ * scroll-linked camera. The markers, card and panel are plain HTML.
  */
 import {
   defaultConfig,
@@ -17,6 +22,8 @@ import {
   themeIds,
 } from "@/studio/stage/presets";
 import type { Copy } from "@/studio/i18n/en";
+import { heroHotspots, shot } from "@/studio/data/devices";
+import type { ScreenCopy } from "@/studio/stage/screens";
 import { withBase } from "@/lib/paths";
 
 interface Props {
@@ -25,9 +32,11 @@ interface Props {
   primaryHref: string;
   /** Explainer deep link per exhibit; empty when there is no demo deployment. */
   demoLinks: Record<string, string>;
+  /** The explainer in embed mode, run on the booth's tablet in its close-up (empty: a still). */
+  tabletApp: string;
 }
 
-const { t, primaryHref, demoLinks } = Astro.props;
+const { t, primaryHref, demoLinks, tabletApp } = Astro.props;
 const h = t.hero;
 const s = t.stage;
 const groups = [
@@ -37,6 +46,35 @@ const groups = [
 ] as const;
 const credits = Object.fromEntries(equipmentIds.map((id) => [id, equipmentModels[id].credit ?? ""]));
 const firstDemo = demoLinks[defaultConfig.equipment];
+
+// What the booth's screens show: the explainer, in this page's language.
+const views = ["solid", "xray", "section", "exploded"] as const;
+const screenCopy: ScreenCopy = {
+  device: h.device,
+  quote: h.quote,
+  hint: h.hint,
+  live: s.label,
+  ask: h.ask,
+  views: Object.fromEntries(views.map((v) => [v, h.views[v]])) as ScreenCopy["views"],
+  parts: heroHotspots.map(({ key }) => ({ key, ...h.parts[key], specs: h.parts[key].specs as [string, string][] })),
+  hotspots: heroHotspots.map(({ key, x, y }) => ({ key, x, y })),
+  shots: Object.fromEntries(views.map((v) => [v, shot("worm-gearbox", v)])) as ScreenCopy["shots"],
+  site: s.site,
+  modules: Object.values(t.platform.modules).map((module) => module.name),
+  desk: h.secondary,
+};
+
+// The clickable things on the stand and where each one leads.
+const spotIds = ["screen", "tablet", "laptop", "exhibit", "brochures", "contact"] as const;
+const spotHref = {
+  screen: "#shows",
+  tablet: demoLinks["worm-gearbox"] || "#demo",
+  laptop: "#showcase",
+  exhibit: "", // per exhibit, from data-demos
+  brochures: "#pricing",
+  contact: "#contact",
+};
+const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href: spotHref[id] }]));
 ---
 
 <section
@@ -47,6 +85,9 @@ const firstDemo = demoLinks[defaultConfig.equipment];
   data-names={JSON.stringify(s.equipmentNames)}
   data-credits={JSON.stringify(credits)}
   data-demos={JSON.stringify(demoLinks)}
+  data-screens={JSON.stringify(screenCopy)}
+  data-spots={JSON.stringify(spots)}
+  data-tablet-app={tabletApp}
 >
   <div class="booth-hero__sticky">
     <div class="booth-hero__scene">
@@ -93,6 +134,29 @@ const firstDemo = demoLinks[defaultConfig.equipment];
           <button class="btn btn--ghost btn--sm" type="button" data-stage-open>{s.customise}</button>
         </div>
       </aside>
+
+      <aside class="booth-hero__card" data-nosnippet aria-live="polite" data-spot-card>
+        <p class="eyebrow" data-card-label></p>
+        <p class="booth-hero__exhibit-name" data-card-title></p>
+        <p class="booth-hero__exhibit-text" data-card-text></p>
+        <div class="actions">
+          <a class="btn btn--orange btn--sm" href="#" data-card-cta></a>
+          <button class="btn btn--ghost btn--sm" type="button" data-card-back>← {s.back}</button>
+        </div>
+      </aside>
+    </div>
+
+    <div class="booth-hero__spots" role="group" aria-label={s.spotsLabel} data-nosnippet>
+      {spotIds.map((id) => (
+        <button class="booth-spot" type="button" data-spot={id} aria-label={s.spots[id].label}>
+          <span class="booth-spot__dot" aria-hidden="true"></span>
+          <span class="booth-spot__label">{s.spots[id].label}</span>
+        </button>
+      ))}
+    </div>
+
+    <div class="booth-hero__device" data-nosnippet>
+      <iframe data-tablet-app title={s.spots.tablet.label} allow="fullscreen" hidden></iframe>
     </div>
 
     <div class="booth-hero__hud" data-nosnippet>
@@ -167,7 +231,16 @@ const firstDemo = demoLinks[defaultConfig.equipment];
 
 <script>
   import { defaultConfig, type StageConfig } from "@/studio/stage/presets";
-  import type { StageController } from "@/studio/stage/scene";
+  import type { SpotId, SpotPosition, StageController } from "@/studio/stage/scene";
+  import type { ScreenCopy } from "@/studio/stage/screens";
+
+  interface Spot {
+    label: string;
+    title: string;
+    text: string;
+    cta: string;
+    href: string;
+  }
 
   const root = document.querySelector<HTMLElement>("[data-stage]");
   if (root) setUp(root);
@@ -193,6 +266,11 @@ const firstDemo = demoLinks[defaultConfig.equipment];
     const names = JSON.parse(root.dataset.names!) as Record<string, string>;
     const credits = JSON.parse(root.dataset.credits!) as Record<string, string>;
     const demos = JSON.parse(root.dataset.demos!) as Record<string, string>;
+    const screenCopy = JSON.parse(root.dataset.screens!) as ScreenCopy;
+    const spots = JSON.parse(root.dataset.spots!) as Record<SpotId, Spot>;
+    const spotButtons = [...root.querySelectorAll<HTMLButtonElement>("[data-spot]")];
+    const card = root.querySelector<HTMLElement>("[data-spot-card]")!;
+    const tabletFrame = root.querySelector<HTMLIFrameElement>("iframe[data-tablet-app]")!;
     const loadingText = status.dataset.loading || "";
 
     if (!webglAvailable()) {
@@ -277,7 +355,125 @@ const firstDemo = demoLinks[defaultConfig.equipment];
         },
         { passive: true },
       );
+      root.addEventListener("pointerleave", () => stage?.setPointer(null), { passive: true });
     }
+
+    // --- spots on the stand ---------------------------------------------------------
+    let focused: SpotId | null = null;
+    let focusScroll = 0;
+    const spotHref = (id: SpotId) =>
+      id === "exhibit" ? demos[readForm().equipment] || "#demo" : spots[id].href;
+
+    const placeSpots = (list: SpotPosition[]) => {
+      for (const { id, x, y, visible } of list) {
+        const button = spotButtons.find((b) => b.dataset.spot === id);
+        if (!button) continue;
+        button.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+        button.classList.toggle("is-off", !visible);
+      }
+    };
+
+    const openSpot = (id: SpotId) => {
+      const spot = spots[id];
+      const href = spotHref(id);
+      focused = id;
+      focusScroll = scrollY;
+      card.querySelector("[data-card-label]")!.textContent = spot.label;
+      card.querySelector("[data-card-title]")!.textContent = id === "exhibit" ? names[readForm().equipment] : spot.title;
+      card.querySelector("[data-card-text]")!.textContent = spot.text;
+      const cta = card.querySelector<HTMLAnchorElement>("[data-card-cta]")!;
+      const external = /^https?:/.test(href);
+      cta.href = href;
+      cta.textContent = `${spot.cta} ${external ? "↗" : "→"}`;
+      cta.target = external ? "_blank" : "";
+      cta.rel = external ? "noreferrer" : "";
+      root.classList.add("is-focus");
+      spotButtons.forEach((b) => b.setAttribute("aria-expanded", String(b.dataset.spot === id)));
+      stage?.focus(id);
+      stage?.hover(null);
+    };
+    const closeSpot = (returnFocus = false) => {
+      if (!focused) return;
+      const button = spotButtons.find((b) => b.dataset.spot === focused);
+      focused = null;
+      root.classList.remove("is-focus");
+      spotButtons.forEach((b) => b.setAttribute("aria-expanded", "false"));
+      stage?.focus(null);
+      if (returnFocus) button?.focus({ preventScroll: true });
+    };
+
+    for (const button of spotButtons) {
+      const id = button.dataset.spot as SpotId;
+      button.setAttribute("aria-expanded", "false");
+      button.addEventListener("click", () => (focused === id ? closeSpot() : openSpot(id)));
+      button.addEventListener("pointerenter", () => stage?.hover(id));
+      button.addEventListener("pointerleave", () => stage?.hover(null));
+      button.addEventListener("focus", () => stage?.hover(id));
+      button.addEventListener("blur", () => stage?.hover(null));
+    }
+    card.querySelector("[data-card-back]")!.addEventListener("click", () => closeSpot(true));
+    // Following a link on the page also leaves the close-up.
+    card.querySelector("[data-card-cta]")!.addEventListener("click", (event) => {
+      if (!(event.currentTarget as HTMLAnchorElement).target) closeSpot();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && focused) closeSpot(true);
+    });
+    // Scrolling on is a way out of the close-up too.
+    addEventListener(
+      "scroll",
+      () => {
+        if (focused && Math.abs(scrollY - focusScroll) > 80) closeSpot();
+      },
+      { passive: true },
+    );
+
+    // --- the live tablet --------------------------------------------------------------
+    // In the tablet close-up the real explainer (embed mode) is laid over the tablet's screen
+    // with a perspective transform; it loads when the tablet is framed and unloads when not.
+    const tabletSrc = root.dataset.tabletApp || "";
+    const TABLET = { width: 820, height: Math.round((820 * 0.227) / 0.322) };
+    tabletFrame.style.width = `${TABLET.width}px`;
+    tabletFrame.style.height = `${TABLET.height}px`;
+    let tabletOpen = false;
+    let tabletTimer = 0;
+
+    /** CSS matrix3d mapping the w × h element onto a quad (TL, TR, BR, BL). */
+    const quadTransform = (w: number, h: number, q: { x: number; y: number }[]) => {
+      const [p0, p1, p2, p3] = q;
+      const dx1 = p1.x - p2.x, dx2 = p3.x - p2.x, dx3 = p0.x - p1.x + p2.x - p3.x;
+      const dy1 = p1.y - p2.y, dy2 = p3.y - p2.y, dy3 = p0.y - p1.y + p2.y - p3.y;
+      const den = dx1 * dy2 - dx2 * dy1;
+      const g = (dx3 * dy2 - dx2 * dy3) / den;
+      const k = (dx1 * dy3 - dx3 * dy1) / den;
+      const a = p1.x - p0.x + g * p1.x, b = p3.x - p0.x + k * p3.x;
+      const d = p1.y - p0.y + g * p1.y, e = p3.y - p0.y + k * p3.y;
+      const m = [a / w, d / w, 0, g / w, b / h, e / h, 0, k / h, 0, 0, 1, 0, p0.x, p0.y, 0, 1];
+      return `matrix3d(${m.map((n) => n.toFixed(6)).join(",")})`;
+    };
+
+    const closeTablet = () => {
+      tabletOpen = false;
+      clearTimeout(tabletTimer);
+      root.classList.remove("is-tablet");
+      tabletFrame.hidden = true;
+      tabletFrame.removeAttribute("src");
+    };
+    const placeTablet = (corners: { x: number; y: number }[] | null) => {
+      if (!corners || !tabletSrc) {
+        if (tabletOpen) closeTablet();
+        return;
+      }
+      tabletFrame.style.transform = quadTransform(TABLET.width, TABLET.height, corners);
+      if (tabletOpen) return;
+      tabletOpen = true;
+      tabletFrame.hidden = false;
+      tabletFrame.onload = () => {
+        // Show it once the camera has landed on the tablet.
+        tabletTimer = window.setTimeout(() => tabletOpen && root.classList.add("is-tablet"), 500);
+      };
+      tabletFrame.src = tabletSrc;
+    };
 
     // --- engine ----------------------------------------------------------------
     const start = async () => {
@@ -297,10 +493,17 @@ const firstDemo = demoLinks[defaultConfig.equipment];
           },
           onWheelHint: flashWheelHint,
           onContextLost: (lost) => root.classList.toggle("is-lost", lost),
+          copy: screenCopy,
+          onSpots: placeSpots,
+          onTabletScreen: placeTablet,
+          onIntroDone: () => root.classList.add("is-live"),
         });
         stage.setProgress(cameraProgress());
         root.classList.add("is-ready");
-        stage.start();
+        // Dev only: ?poster holds the opening frame so it can be captured as the poster.
+        const holdForPoster = import.meta.env.DEV && new URLSearchParams(location.search).has("poster");
+        if (!holdForPoster) stage.start();
+        else Object.assign(window, { __booth: stage });
         new IntersectionObserver(([entry]) => stage?.setActive(entry.isIntersecting)).observe(root);
       } catch (error) {
         console.warn("3D booth unavailable", error);

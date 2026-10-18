@@ -102,54 +102,82 @@ export function carpetTexture(scene: Scene) {
   return texture;
 }
 
-/** The lockup (mark + "Ashmartisan"), centred, on a transparent canvas. */
-export function drawLockup(ctx: CanvasRenderingContext2D, variant: MarkVariant, scaleText = 0.4) {
-  const { width, height } = ctx.canvas;
-  ctx.clearRect(0, 0, width, height);
-  const markH = height * 0.62;
-  const scale = markH / markViewBox.height;
-  const markW = markViewBox.width * scale;
-  const ink = variant === "onDark" ? ["#ffffff", "#c9d0d6"] : ["#16202a", "#597592"];
-  const px = Math.round(height * scaleText);
-  const font = (weight: number) => `${weight} ${px}px Montserrat, system-ui, sans-serif`;
-
-  ctx.font = font(600);
-  const bold = ctx.measureText("Ash").width;
-  ctx.font = font(400);
-  const regular = ctx.measureText("martisan").width;
-  const gap = markH * 0.38;
-  const left = (width - (markW + gap + bold + regular)) / 2;
-  const top = (height - markH) / 2;
-
+/** The "A" mark, `h` tall, top-left at (x, y). */
+export function drawMark(ctx: CanvasRenderingContext2D, x: number, y: number, h: number, variant: MarkVariant, mono?: string) {
+  const scale = h / markViewBox.height;
   ctx.save();
-  ctx.translate(left, top);
+  ctx.translate(x, y);
   ctx.scale(scale, scale);
   ctx.translate(-markViewBox.x, -markViewBox.y);
   ctx.lineJoin = "round";
   ctx.lineWidth = 6;
   for (const { part, d } of markPaths) {
     const path = new Path2D(d);
-    const g = markGradients[part];
-    const [c0, c1] = markColors[variant][part];
-    const { x, y, width: w, height: h } = markViewBox;
-    const gradient = ctx.createLinearGradient(x + g.x1 * w, y, x + g.x2 * w, y + g.y2 * h);
-    gradient.addColorStop(0, c0);
-    gradient.addColorStop(1, c1);
-    ctx.fillStyle = gradient;
-    ctx.strokeStyle = gradient;
+    let paint: string | CanvasGradient = mono ?? "";
+    if (!mono) {
+      const g = markGradients[part];
+      const [c0, c1] = markColors[variant][part];
+      const { x: bx, y: by, width: w, height: bh } = markViewBox;
+      paint = ctx.createLinearGradient(bx + g.x1 * w, by, bx + g.x2 * w, by + g.y2 * bh);
+      paint.addColorStop(0, c0);
+      paint.addColorStop(1, c1);
+    }
+    ctx.fillStyle = paint;
+    ctx.strokeStyle = paint;
     ctx.fill(path);
     ctx.stroke(path);
   }
   ctx.restore();
+}
 
-  const baseline = height / 2 + px * 0.36;
+/** The lockup (mark + "Ashmartisan") from `left`, vertically centred on `centerY`. Returns its width. */
+export function drawLockupAt(
+  ctx: CanvasRenderingContext2D,
+  left: number,
+  centerY: number,
+  markH: number,
+  variant: MarkVariant,
+  textScale = 0.645,
+) {
+  const markW = (markViewBox.width / markViewBox.height) * markH;
+  const ink = variant === "onDark" ? ["#ffffff", "#c9d0d6"] : ["#16202a", "#597592"];
+  const px = Math.round(markH * textScale);
+  const font = (weight: number) => `${weight} ${px}px Montserrat, system-ui, sans-serif`;
+  const gap = markH * 0.38;
+  drawMark(ctx, left, centerY - markH / 2, markH, variant);
+  const baseline = centerY + px * 0.36;
   ctx.textBaseline = "alphabetic";
   ctx.font = font(600);
   ctx.fillStyle = ink[0];
   ctx.fillText("Ash", left + markW + gap, baseline);
+  const bold = ctx.measureText("Ash").width;
   ctx.font = font(400);
   ctx.fillStyle = ink[1];
   ctx.fillText("martisan", left + markW + gap + bold, baseline);
+  return markW + gap + bold + ctx.measureText("martisan").width;
+}
+
+/** The lockup, centred, on a transparent canvas. */
+export function drawLockup(ctx: CanvasRenderingContext2D, variant: MarkVariant) {
+  const { width, height } = ctx.canvas;
+  ctx.clearRect(0, 0, width, height);
+  const markH = height * 0.62;
+  // Measure off-canvas first, then centre.
+  ctx.save();
+  ctx.globalAlpha = 0;
+  const w = drawLockupAt(ctx, 0, height / 2, markH, variant);
+  ctx.restore();
+  drawLockupAt(ctx, (width - w) / 2, height / 2, markH, variant);
+}
+
+/** The mark alone in one flat colour, for an inlay (alpha from the shape). */
+export function markTexture(name: string, scene: Scene) {
+  return canvasTexture(name, 256, 256, scene, (ctx) => {
+    ctx.clearRect(0, 0, 256, 256);
+    const h = 200;
+    const w = (markViewBox.width / markViewBox.height) * h;
+    drawMark(ctx, (256 - w) / 2, 28, h, "onDark", "#ffffff");
+  });
 }
 
 /** A lockup texture that can be repainted for dark or light surfaces. */
@@ -167,4 +195,55 @@ export function lockupTexture(name: string, width: number, height: number, scene
       return true;
     },
   };
+}
+
+/** A laptop keyboard well: dark keys on a darker deck, function row, wide space bar. */
+export function keyboardTexture(scene: Scene) {
+  return canvasTexture("keyboard", 1024, 420, scene, (ctx) => {
+    ctx.fillStyle = "#1c2025";
+    ctx.fillRect(0, 0, 1024, 420);
+    const key = (x: number, y: number, w: number, h: number) => {
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, 7);
+      ctx.fillStyle = "#0c0e10";
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.05)";
+      ctx.fillRect(x + 3, y + 2, w - 6, 2);
+    };
+    const pad = 8;
+    const unit = (1024 - pad * 2) / 14.5;
+    const gap = 7;
+    // Function row (half height), then five full rows.
+    for (let i = 0; i < 14; i++) key(pad + i * (unit * 1.0357) + gap / 2, pad, unit - gap, unit * 0.5);
+    const rows: number[][] = [
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.5],
+      [1.5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1.8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.7],
+      [2.3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2.2],
+      [1, 1, 1, 1.25, 5.25, 1.25, 1, 1, 1],
+    ];
+    rows.forEach((row, r) => {
+      const total = row.reduce((a, b) => a + b, 0);
+      const scale = (1024 - pad * 2) / total;
+      let x = pad;
+      const y = pad + unit * 0.6 + r * unit * 0.92;
+      for (const w of row) {
+        key(x + gap / 2, y, w * scale - gap, unit * 0.92 - gap);
+        x += w * scale;
+      }
+    });
+  });
+}
+
+/** A black rounded rectangle on transparency: cover glass for a device of this aspect ratio. */
+export function roundedPanelTexture(name: string, scene: Scene, aspect: number, radius: number) {
+  const width = 512;
+  const height = Math.round(width / aspect);
+  return canvasTexture(name, width, height, scene, (ctx) => {
+    ctx.clearRect(0, 0, width, height);
+    ctx.beginPath();
+    ctx.roundRect(0, 0, width, height, radius * width);
+    ctx.fillStyle = "#08090b";
+    ctx.fill();
+  });
 }

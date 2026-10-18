@@ -97,4 +97,9 @@ export default defineConfig({
     remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeKatex],
   },
+  vite: {
+    // Dev only: pre-bundling Babylon splits its lazily imported shaders into chunks that register
+    // with a second copy of its shader store, and shaders then fail to load. Serve it unbundled.
+    optimizeDeps: { exclude: ["@babylonjs/core", "@babylonjs/loaders"] },
+  },
 });

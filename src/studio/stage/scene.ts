@@ -1,11 +1,12 @@
 /**
  * Hero exhibition booth: the Babylon.js scene behind the homepage headline. The booth itself
- * is built in booth.ts; this file owns the engine, hall, lights, looks, exhibits and the
- * camera rig that follows page scroll (wide booth shot → close-up of the exhibit) and the
- * pointer (a little parallax).
+ * is built in booth.ts and its screens in screens.ts; this file owns the engine, hall, lights,
+ * looks and exhibits, the opening sequence (the hall wakes, the fixtures strike one by one,
+ * the screens boot), and the camera rig: page scroll (wide booth shot → the exhibit), an idle
+ * sway, a pointer orbit, and focus shots when a visitor clicks something on the stand.
  *
- * Rendering is on demand: a frame is drawn only while the camera is settling, a transition
- * runs or something just changed, so an idle hero costs nothing.
+ * Rendering is on demand: frames are drawn while something moves, so a hero scrolled out of
+ * view costs nothing, and the idle sway alone runs at half rate.
  */
 import "@babylonjs/core/Materials/Textures/Loaders/envTextureLoader";
 import "@babylonjs/core/Shaders/rgbdDecode.fragment";
@@ -31,9 +32,19 @@ import type { AbstractMesh } from "@babylonjs/core/Meshes/abstractMesh";
 import { LoadAssetContainerAsync } from "@babylonjs/core/Loading/sceneLoader";
 import { Logger } from "@babylonjs/core/Misc/logger";
 import { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
-import { Vector2, Vector3 } from "@babylonjs/core/Maths/math.vector";
-import { buildBooth, lin, plinthTops, STAND } from "./booth";
+import { Matrix, Vector2, Vector3 } from "@babylonjs/core/Maths/math.vector";
+import { buildBooth, lin, plinthTops, STAND, type SpotFrame, type SpotId } from "./booth";
+import { createScreens, type ScreenCopy } from "./screens";
 import { equipmentModels, type BoothStyleId, type EquipmentId, type LightingId, type StageConfig, type ThemeId } from "./presets";
+
+export type { SpotId } from "./booth";
+
+export interface SpotPosition {
+  id: SpotId;
+  x: number;
+  y: number;
+  visible: boolean;
+}
 
 export interface StageOptions {
   /** Site base path ("/" or "/repo/"), prefixed to asset URLs. */
@@ -41,20 +52,35 @@ export interface StageOptions {
   reducedMotion: boolean;
   /** Small or touch-first screen: lower resolution and cheaper shadows. */
   lite: boolean;
+  /** Copy and renders for the booth's screens. */
+  copy: ScreenCopy;
   onLoading?(loading: boolean): void;
   /** Plain wheel over the canvas: the page scrolls, and the UI can say how to zoom. */
   onWheelHint?(): void;
   onContextLost?(lost: boolean): void;
+  /** Where the clickable things on the stand are on screen (CSS pixels), after each frame. */
+  onSpots?(spots: SpotPosition[]): void;
+  /** The opening sequence has finished. */
+  onIntroDone?(): void;
+  /**
+   * While the tablet is framed: its screen's corners on screen (TL, TR, BR, BL, CSS pixels),
+   * so the page can lay the live app over it; null otherwise.
+   */
+  onTabletScreen?(corners: { x: number; y: number }[] | null): void;
 }
 
 export interface StageController {
   apply(config: Partial<StageConfig>): void;
-  /** Camera intro after the canvas is revealed. */
+  /** The opening sequence: lights strike, screens boot, the camera settles. */
   start(): void;
   /** 0 = wide booth shot, 1 = close-up of the exhibit (driven by page scroll). */
   setProgress(progress: number): void;
-  /** Pointer position over the hero, -1…1 on each axis, for parallax. */
-  setPointer(x: number, y: number): void;
+  /** Pointer position over the hero, -1…1 on each axis (null when it leaves). */
+  setPointer(x: number | null, y?: number): void;
+  /** Frame something on the stand, or go back to the booth (null). */
+  focus(id: SpotId | null): void;
+  /** A marker is hovered: its object brightens. */
+  hover(id: SpotId | null): void;
   resetCamera(): void;
   zoom(direction: 1 | -1): void;
   setActive(active: boolean): void;
@@ -67,6 +93,7 @@ interface ThemeLook {
   hall: string;
   hallFloor: string;
   carpet: string;
+  inlay: string;
   wallPanel: string;
   panel: string;
   backer: string;
@@ -97,7 +124,8 @@ const themes: Record<ThemeId, ThemeLook> = {
     hall: "#0b0e12",
     hallFloor: "#2c323a",
     carpet: "#2b3037",
-    wallPanel: "#323941",
+    inlay: "#3c434c",
+    wallPanel: "#3d4550",
     panel: "#1d2228",
     backer: "#06080a",
     counterTop: "#e2e3e4",
@@ -123,6 +151,7 @@ const themes: Record<ThemeId, ThemeLook> = {
     hall: "#d8d5cf",
     hallFloor: "#bbb7b0",
     carpet: "#80868d",
+    inlay: "#9aa0a7",
     wallPanel: "#ecebe7",
     panel: "#f5f4f1",
     backer: "#8f8c87",
@@ -164,25 +193,55 @@ const lightings: Record<LightingId, LightLook> = {
 const KEY_POWER = 650;
 const WASH_POWER = 850;
 const RIM_POWER = 2.6;
-const PRODUCT_POWER = 80;
+const PRODUCT_POWER = 60;
 const ACCENT_POWER = 2.4;
 
-// ---------------------------------------------------------------------------- camera shots
+// ---------------------------------------------------------------------------- power
+
+/**
+ * How far each group of lights is switched on (0–1). Looks set the full-power values; the
+ * opening sequence animates these. Standby is "before the show opens": the hall's work lights
+ * and a little spill, enough to read the booth. The poster is a render of that state.
+ */
+interface Power {
+  hall: number;
+  arms: [number, number, number];
+  key: number;
+  product: number;
+  accent: number;
+  /** LED strips drawn along their length. */
+  led: number;
+  sign: number;
+  screens: number;
+  flash: number;
+}
+const standby = (): Power => ({ hall: 0.45, arms: [0, 0, 0], key: 0.3, product: 0, accent: 0, led: 0, sign: 0.22, screens: 0, flash: 0 });
+const lit = (): Power => ({ hall: 1, arms: [1, 1, 1], key: 1, product: 1, accent: 1, led: 1, sign: 1, screens: 1, flash: 0 });
+
+/** A lamp striking: on, a dip, on again, settle. */
+const strike = (t: number) => (t < 0.12 ? t / 0.12 : t < 0.22 ? 0.25 : t < 0.36 ? 0.95 : t < 0.46 ? 0.55 : 0.55 + 0.45 * Math.min((t - 0.46) / 0.3, 1));
+
+// ---------------------------------------------------------------------------- camera
 
 const REST_ALPHA = -Math.PI / 2 - 0.52;
 const REST_BETA = 1.3;
 const FOV = 0.62;
 /** The whole booth, framed to leave the headline room (wide screens: booth right). */
-const OVERVIEW_TARGET = new Vector3(0.2, 1.45, 0.2);
+const OVERVIEW_TARGET = new Vector3(0.2, 1.55, 0.2);
+/** Where the opening shot starts: higher, wider, swung round. The poster is this frame. */
+const INTRO = { alpha: REST_ALPHA - 0.42, beta: 1.14, zoom: 1.2 };
+const SWAY = { amplitude: 0.17, period: 18, resumeAfter: 2000 };
 
 // ---------------------------------------------------------------------------- easing
 
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 const easeOut = (t: number) => 1 - (1 - t) ** 3;
 const easeIn = (t: number) => t * t * t;
+const linear = (t: number) => t;
 const smooth = (t: number) => t * t * (3 - 2 * t);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const clamp01 = (t: number) => Math.min(Math.max(t, 0), 1);
+const damp = (rate: number, dt: number) => 1 - Math.exp(-dt * rate);
 
 interface Tween {
   start: number;
@@ -222,12 +281,12 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
   let disposed = false;
   // A change can need shaders or textures that are not ready yet; Babylon skips those meshes,
   // so keep drawing until the scene reports ready, then a couple more frames.
-  const invalidate = (frames = 2) => {
+  const invalidate = (frames = 2, checkReady = true) => {
     pendingFrames = Math.max(pendingFrames, frames);
-    waitingForReady = true;
+    if (checkReady) waitingForReady = true;
   };
 
-  const tween = (tag: string, duration: number, update: (t: number) => void, ease = easeInOut, done?: () => void) => {
+  const tween = (tag: string, duration: number, update: (t: number) => void, ease = easeInOut, done?: () => void, delay = 0) => {
     tweens.delete(tag);
     if (reducedMotion || duration <= 0) {
       update(1);
@@ -235,12 +294,18 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
       invalidate();
       return;
     }
-    tweens.set(tag, { start: performance.now(), duration, ease, update, done });
+    tweens.set(tag, { start: performance.now() + delay, duration, ease, update, done });
   };
 
-  // --- booth & lights -----------------------------------------------------------
+  // --- booth, screens & lights ---------------------------------------------------
   const booth = buildBooth(scene, url);
   const m = booth.materials;
+  const screens = await createScreens(scene, options.copy, url);
+  m.screen.emissiveTexture = screens.app;
+  m.tabletScreen.emissiveTexture = screens.tablet;
+  m.laptopScreen.emissiveTexture = screens.site;
+  m.brochures.albedoTexture = screens.brochures;
+  m.desk.albedoTexture = screens.desk;
 
   // A far hall wall inside the fog, so the sky never shows and the vignette stays even.
   const hallWall = CreateCylinder("hall-wall", { diameter: 90, height: 40, tessellation: 48, cap: Mesh.NO_CAP, sideOrientation: Mesh.BACKSIDE }, scene);
@@ -272,9 +337,9 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
 
   const fill = new HemisphericLight("fill", new Vector3(0, 1, 0), scene);
 
-  // Product spot: a tight pool on the exhibit and its plinth, so the eye lands there first.
-  const productLight = new SpotLight("product", STAND.add(new Vector3(-0.9, 4.4, -1.9)), Vector3.Zero(), 0.62, 2, scene);
-  productLight.setDirectionToTarget(STAND.add(new Vector3(0, 0.5, 0)));
+  // The drum's overhead spot: a tight pool on the exhibit and its plinth.
+  const productLight = new SpotLight("product", booth.productLightAt.clone(), Vector3.Zero(), 0.62, 2, scene);
+  productLight.setDirectionToTarget(booth.productAim);
   productLight.innerAngle = 0.25;
   const productLit = productLight.includedOnlyMeshes;
   for (const plinth of Object.values(booth.plinths)) productLit.push(...plinth.getChildMeshes());
@@ -301,15 +366,66 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
   ip.vignetteCameraFov = FOV;
   ip.vignetteBlendMode = ImageProcessingConfiguration.VIGNETTEMODE_MULTIPLY;
 
+  // --- power & composition ---------------------------------------------------------
+  /** Full-power values from the look (theme × lighting), tweened on change. */
+  const look = {
+    key: 0,
+    wash: 0,
+    product: 0,
+    screen: 1,
+    hallLights: new Color3(),
+    accent: new Color3(),
+    sign: new Color3(),
+    drum: new Color3(),
+    lens: new Color3(),
+    downwash: new Color3(),
+    spill: new Color3(),
+    pool: new Color3(),
+  };
+  const power: Power = reducedMotion ? lit() : standby();
+  /** Hover glow per clickable object, eased in the loop. */
+  const hoverLevel: Partial<Record<SpotId, number>> = {};
+  let hovered: SpotId | null = null;
+  const glowOf = (id: SpotId) => 1 + 0.45 * (hoverLevel[id] ?? 0);
+
+  const compose = () => {
+    const p = power;
+    keyLight.intensity = look.key * p.key;
+    washLight.intensity = look.wash * Math.max((p.arms[0] + p.arms[1] + p.arms[2]) / 3, 0.06);
+    productLight.intensity = look.product * p.product * glowOf("exhibit");
+    look.hallLights.scaleToRef(p.hall, m.hallLight.emissiveColor);
+    look.accent.scaleToRef(p.accent, m.accent.emissiveColor);
+    look.sign.scaleToRef(p.sign, m.sign.emissiveColor);
+    look.drum.scaleToRef(p.sign, m.fabric.emissiveColor);
+    m.armLenses.forEach((lens, i) => look.lens.scaleToRef(p.arms[i], lens.emissiveColor));
+    look.lens.scaleToRef(p.key, m.trussLens.emissiveColor);
+    look.lens.scaleToRef(p.product, m.drumLens.emissiveColor);
+    // A black additive surface speckles on some GPUs: off means off.
+    for (const glow of booth.spills) glow.setEnabled(p.accent > 0.002);
+    look.downwash.scaleToRef(p.accent, m.wallPanel.emissiveColor);
+    look.spill.scaleToRef(p.accent, m.spill.albedoColor);
+    look.pool.scaleToRef(p.key, m.pool.albedoColor);
+    const glass = look.screen * p.screens + p.flash;
+    m.screen.emissiveColor.setAll(glass * glowOf("screen"));
+    m.tabletScreen.emissiveColor.setAll(glass * glowOf("tablet"));
+    m.laptopScreen.emissiveColor.setAll(glass * glowOf("laptop"));
+    m.lightbox.emissiveColor.setAll(look.screen * 0.9 * Math.max(p.sign, 0.1));
+    const led = Math.max(p.led, 0.0001);
+    for (const strip of booth.leds) {
+      strip.scaling.x = led;
+      strip.setEnabled(p.led > 0.001);
+    }
+  };
+
   // --- camera -------------------------------------------------------------------
   const camera = new ArcRotateCamera("camera", REST_ALPHA, REST_BETA, 14, OVERVIEW_TARGET.clone(), scene);
   camera.fov = FOV;
   camera.minZ = 0.1;
   camera.maxZ = 120;
   camera.lowerBetaLimit = 0.98;
-  camera.upperBetaLimit = 1.48;
-  camera.lowerAlphaLimit = -Math.PI / 2 - 1.0;
-  camera.upperAlphaLimit = -Math.PI / 2 + 0.42;
+  camera.upperBetaLimit = 1.52;
+  camera.lowerAlphaLimit = -Math.PI / 2 - 1.15;
+  camera.upperAlphaLimit = -Math.PI / 2 + 0.45;
   camera.panningSensibility = 0;
   camera.pinchPrecision = 1e9; // radius follows the scroll; zoom is the buttons / Ctrl + wheel
   camera.angularSensibilityX = 1600;
@@ -329,35 +445,79 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     smoothPointer: new Vector2(0, 0),
     productTarget: STAND.add(new Vector3(0, 0.8, 0)),
     productSpan: 0.9,
+    focus: null as SpotFrame | null,
+    /** Idle sway weight (0–1) and phase. */
+    sway: 0,
+    phase: 0,
+    /** Orbit offsets (sway + pointer) applied on top of the visitor's own orbit last frame. */
+    applied: { alpha: 0, beta: 0 },
+    /** Offsets fade out while a scripted orbit runs and back in after it. */
+    offsetBlend: 1,
   };
   const desiredTarget = new Vector3();
+  let introDone = reducedMotion;
+  let dragging = false;
+  let lastInteraction = -Infinity;
+  const interact = () => (lastInteraction = performance.now());
 
-  const updateRig = (dt: number) => {
+  /** Advance the rig; returns 0 (settled), 1 (only the idle sway moved), 2 (anything else). */
+  const updateRig = (dt: number, now: number) => {
     const aspect = engine.getAspectRatio(camera);
     const tanV = Math.tan(FOV / 2);
     const tanH = tanV * aspect;
     const wide = aspect >= 1.05;
-    const k = reducedMotion ? 1 : 1 - Math.exp(-dt * 6);
+    const k = reducedMotion ? 1 : damp(6, dt);
 
-    rig.smoothProgress = lerp(rig.smoothProgress, rig.progress, reducedMotion ? 1 : 1 - Math.exp(-dt * 8));
-    Vector2.LerpToRef(rig.smoothPointer, rig.pointer, reducedMotion ? 0 : 1 - Math.exp(-dt * 4), rig.smoothPointer);
+    rig.smoothProgress = lerp(rig.smoothProgress, rig.progress, reducedMotion ? 1 : damp(8, dt));
+    const pointerBefore = rig.smoothPointer.x + rig.smoothPointer.y;
+    Vector2.LerpToRef(rig.smoothPointer, rig.pointer, reducedMotion ? 0 : damp(3.5, dt), rig.smoothPointer);
     const e = smooth(clamp01(rig.smoothProgress));
 
-    // Overview distance: fit the booth (wide: in the right ~60%; tall: full width, lower half).
-    const needW = wide ? 13.2 : 7.4;
-    const needH = 5.4;
-    const overview = Math.max(needW / 2 / tanH, needH / 2 / tanV);
-    const product = Math.max(rig.productSpan / Math.min(tanV, tanH), 2.2) * (wide ? 1.55 : 1.35);
-    Vector3.LerpToRef(OVERVIEW_TARGET, rig.productTarget, e, desiredTarget);
-    const radius = Math.exp(lerp(Math.log(overview), Math.log(product), e)) * rig.zoom * rig.introZoom;
+    let radius: number;
+    let fx: number;
+    let fy: number;
+    if (rig.focus) {
+      desiredTarget.copyFrom(rig.focus.at);
+      radius = rig.focus.radius * rig.zoom;
+      fx = wide ? 0.15 : 0;
+      fy = wide ? 0 : 0.17;
+    } else {
+      // Overview: fit the booth (wide: in the right ~60%; tall: full width, lower half).
+      const needW = wide ? 13.2 : 7.4;
+      const needH = 6.2;
+      const overview = Math.max(needW / 2 / tanH, needH / 2 / tanV);
+      const product = Math.max(rig.productSpan / Math.min(tanV, tanH), 2.2) * (wide ? 1.55 : 1.35);
+      Vector3.LerpToRef(OVERVIEW_TARGET, rig.productTarget, e, desiredTarget);
+      radius = Math.exp(lerp(Math.log(overview), Math.log(product), e)) * rig.zoom * rig.introZoom;
+      fx = wide ? lerp(0.215, 0.2, e) : 0;
+      // Tall screens: booth below the headline, then the exhibit above the exhibit card.
+      fy = wide ? lerp(0, -0.02, e) : lerp(-0.2, 0.21, e);
+    }
 
-    // Screen offset as a fraction of the frame, converted to view-space units at the target.
-    const fx = wide ? lerp(0.215, 0.2, e) : 0;
-    // Tall screens: booth below the headline, then the exhibit above the exhibit card.
-    const fy = wide ? lerp(0, -0.02, e) : lerp(-0.2, 0.21, e);
-    const ox = (fx + rig.smoothPointer.x * 0.012) * 2 * radius * tanH;
-    const oy = (fy - rig.smoothPointer.y * 0.01) * 2 * radius * tanV;
+    // Orbit offsets: an idle sway, and the pointer leaning the view (subtler when focused).
+    const orbiting = tweens.has("orbit");
+    const idle = introDone && !dragging && !rig.focus && !orbiting && now - lastInteraction > SWAY.resumeAfter;
+    rig.sway = lerp(rig.sway, idle && !reducedMotion ? 1 : 0, damp(idle ? 0.7 : 5, dt));
+    if (rig.sway > 0.001) rig.phase += (dt * Math.PI * 2) / SWAY.period;
+    rig.offsetBlend = orbiting || reducedMotion ? 0 : lerp(rig.offsetBlend, 1, damp(2.5, dt));
+    // The pointer leans the view, less in a close-up and not at all over the live tablet.
+    const lean = focusedId === "tablet" ? 0 : rig.focus ? 0.35 : 1;
+    const offAlpha = (Math.sin(rig.phase) * SWAY.amplitude * rig.sway + rig.smoothPointer.x * 0.13 * lean) * rig.offsetBlend;
+    const offBeta = rig.smoothPointer.y * 0.05 * lean * rig.offsetBlend;
+    let baseAlpha = camera.alpha - rig.applied.alpha;
+    let baseBeta = camera.beta - rig.applied.beta;
+    if (idle) {
+      // Drift home while idle, so the sway always swings around the composed view.
+      baseAlpha = lerp(baseAlpha, REST_ALPHA, damp(0.35, dt));
+      baseBeta = lerp(baseBeta, REST_BETA, damp(0.35, dt));
+    }
+    camera.alpha = baseAlpha + offAlpha;
+    camera.beta = baseBeta + offBeta;
+    rig.applied.alpha = offAlpha;
+    rig.applied.beta = offBeta;
 
+    const ox = (fx + rig.smoothPointer.x * 0.01) * 2 * radius * tanH;
+    const oy = (fy - rig.smoothPointer.y * 0.008) * 2 * radius * tanV;
     const t = camera.target;
     const o = camera.targetScreenOffset;
     const before = camera.radius + t.x + t.y + t.z + o.x + o.y;
@@ -365,12 +525,20 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     camera.radius = lerp(camera.radius, radius, k);
     o.x = lerp(o.x, ox, k);
     o.y = lerp(o.y, oy, k);
-    return Math.abs(camera.radius + t.x + t.y + t.z + o.x + o.y - before) > 1e-4;
+    const settling = Math.abs(camera.radius + t.x + t.y + t.z + o.x + o.y - before) > 1e-4;
+    const pointerMoving = Math.abs(rig.smoothPointer.x + rig.smoothPointer.y - pointerBefore) > 1e-4;
+    if (settling || pointerMoving || (orbiting && !idle)) return 2;
+    return rig.sway > 0.001 ? 1 : 0;
   };
 
   const cameraMoving = () => camera.inertialAlphaOffset !== 0 || camera.inertialBetaOffset !== 0;
 
-  const orbitTo = (alpha: number, beta: number, duration: number, ease = easeInOut) => {
+  const orbitTo = (alpha: number, beta: number, duration: number, ease = easeInOut, delay = 0) => {
+    // Hand the offsets back to the base orbit so the scripted move starts where the view is.
+    camera.alpha -= rig.applied.alpha;
+    camera.beta -= rig.applied.beta;
+    rig.applied.alpha = rig.applied.beta = 0;
+    rig.offsetBlend = 0;
     const from = { alpha: camera.alpha, beta: camera.beta };
     tween(
       "orbit",
@@ -380,11 +548,25 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
         camera.beta = lerp(from.beta, beta, t);
       },
       ease,
+      undefined,
+      delay,
     );
   };
-  // A drag takes over from any scripted orbit.
-  const stopOrbit = () => tweens.delete("orbit");
-  canvas.addEventListener("pointerdown", stopOrbit);
+
+  // A drag takes over from any scripted orbit and pauses the sway until 2 s after it ends.
+  const onPointerDown = () => {
+    tweens.delete("orbit");
+    dragging = true;
+    interact();
+  };
+  const onPointerUp = () => {
+    if (!dragging) return;
+    dragging = false;
+    interact();
+  };
+  canvas.addEventListener("pointerdown", onPointerDown);
+  window.addEventListener("pointerup", onPointerUp);
+  window.addEventListener("pointercancel", onPointerUp);
 
   // --- plinths & style -----------------------------------------------------------
   const plinthScale: Record<BoothStyleId, number> = { minimal: 0, industrial: 0 };
@@ -428,11 +610,20 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
   let shown: Mounted | null = null;
   let switchToken = 0;
 
+  const exhibitFrame = (): SpotFrame => ({
+    at: rig.productTarget.clone(),
+    radius: Math.max(rig.productSpan, 0.75) * 3.1,
+    alpha: REST_ALPHA + 0.2,
+    beta: 1.26,
+  });
+  let focusedId: SpotId | null = null;
+
   const updateProductFrame = () => {
     if (!shown) return;
     const top = plinthTops[config.style];
     rig.productTarget = STAND.add(new Vector3(0, top + shown.height * 0.48, 0));
     rig.productSpan = Math.max(shown.radius, 0.75);
+    if (focusedId === "exhibit") rig.focus = exhibitFrame();
     invalidate();
   };
 
@@ -583,10 +774,9 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     color(scene.fogColor, lin(theme.hall).scale(1 / theme.exposure));
     color(hallWallMat.albedoColor, lin(theme.hall));
     color(m.hallFloor.albedoColor, lin(theme.hallFloor));
-    color(m.hallLight.emissiveColor, key.scale(theme.hallLights));
     color(m.carpet.albedoColor, lin(theme.carpet));
+    color(m.inlay.albedoColor, lin(theme.inlay));
     color(m.wallPanel.albedoColor, lin(theme.wallPanel));
-    color(m.wallPanel.emissiveColor, accent.scale(theme.wash * lighting.accentIntensity));
     color(m.panel.albedoColor, lin(theme.panel));
     color(m.backer.albedoColor, lin(theme.backer));
     color(m.counterTop.albedoColor, lin(theme.counterTop));
@@ -594,26 +784,29 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     num(m.plinth, "roughness", theme.plinthRoughness);
     color(m.gap.albedoColor, lin(theme.gap));
     color(m.turntable.albedoColor, lin(theme.turntable));
-    color(m.accent.emissiveColor, accent.scale(ACCENT_POWER * lighting.accentIntensity));
-    color(m.lens.emissiveColor, key.scale(3));
-    color(m.spill.albedoColor, accent.scale(0.12 * lighting.accentIntensity));
-    color(m.sign.emissiveColor, white.scale(theme.signGlow));
-    for (const screen of [m.screen, m.kioskScreen]) color(screen.emissiveColor, white.scale(theme.screenGlow));
-    color(m.lightbox.emissiveColor, white.scale(theme.screenGlow * 0.9));
-    color(keyLight.diffuse, key);
-    num(keyLight, "intensity", KEY_POWER);
-    color(washLight.diffuse, key);
-    num(washLight, "intensity", WASH_POWER * theme.washLight);
     color(rimLight.diffuse, lin(lighting.rim));
     num(rimLight, "intensity", RIM_POWER * lighting.rimIntensity);
+    color(keyLight.diffuse, key);
+    color(washLight.diffuse, key);
     color(productLight.diffuse, key);
-    num(productLight, "intensity", PRODUCT_POWER);
-    color(m.pool.albedoColor, key.scale(theme.pool));
     num(fill, "intensity", theme.fill);
     color(fill.groundColor, lin(theme.fillGround));
     num(scene, "environmentIntensity", theme.environment);
     num(ip, "exposure", theme.exposure);
     num(ip, "vignetteWeight", theme.vignetteWeight);
+    // Full-power values; compose() scales them by the power state.
+    num(look, "key", KEY_POWER);
+    num(look, "wash", WASH_POWER * theme.washLight);
+    num(look, "product", PRODUCT_POWER);
+    num(look, "screen", theme.screenGlow);
+    color(look.hallLights, key.scale(theme.hallLights));
+    color(look.accent, accent.scale(ACCENT_POWER * lighting.accentIntensity));
+    color(look.sign, white.scale(theme.signGlow));
+    color(look.drum, white.scale(0.85));
+    color(look.lens, key.scale(3));
+    color(look.downwash, accent.scale(theme.wash * lighting.accentIntensity));
+    color(look.spill, accent.scale(0.12 * lighting.accentIntensity));
+    color(look.pool, key.scale(theme.pool));
     const vignette = Color3.FromHexString(theme.vignette);
     const vFrom = new Color3(ip.vignetteColor.r, ip.vignetteColor.g, ip.vignetteColor.b);
     tracks.push((t) => {
@@ -637,24 +830,125 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     });
   };
 
+  // --- opening sequence -----------------------------------------------------------
+  const playIntro = () => {
+    const at = (ms: number) => ms; // delays, for reading
+    camera.alpha = INTRO.alpha;
+    camera.beta = INTRO.beta;
+    rig.introZoom = INTRO.zoom;
+    // Camera: a slow crane down and round onto the composed view.
+    orbitTo(REST_ALPHA, REST_BETA, 4300, easeInOut, at(150));
+    tween("intro-zoom", 4300, (t) => (rig.introZoom = lerp(INTRO.zoom, 1, t)), easeInOut, undefined, at(150));
+    // The hall wakes.
+    tween("intro-hall", 900, (t) => (power.hall = lerp(0.45, 1, t)), easeOut, undefined, at(250));
+    // Arm lights strike one by one along the fascia (the wall wash builds with them).
+    for (const i of [0, 1, 2]) {
+      tween(`intro-arm-${i}`, 380, (t) => (power.arms[i] = strike(t)), linear, undefined, at(520 + i * 240));
+    }
+    // The downlights in the drum strike over the exhibit.
+    tween("intro-product", 460, (t) => (power.product = strike(t)), linear, undefined, at(1300));
+    // The house key light comes up.
+    tween("intro-key", 900, (t) => (power.key = lerp(0.3, 1, t)), easeInOut, undefined, at(1600));
+    // LED strips draw on, then the signs light.
+    tween("intro-led", 750, (t) => (power.led = power.accent = t), easeInOut, undefined, at(2000));
+    tween("intro-sign", 600, (t) => (power.sign = lerp(0.22, 1, t)), easeOut, undefined, at(2350));
+    // Screens power on: a flash, the splash, then the apps.
+    tween("intro-boot", 1, () => {}, linear, () => screens.boot(), at(2650));
+    tween(
+      "intro-screens",
+      320,
+      (t) => {
+        power.screens = t;
+        power.flash = Math.sin(t * Math.PI) * 0.7;
+      },
+      easeOut,
+      undefined,
+      at(2650),
+    );
+    tween(
+      "intro-done",
+      1,
+      () => {},
+      linear,
+      () => {
+        introDone = true;
+        // Start swaying shortly after the camera settles.
+        lastInteraction = performance.now() - SWAY.resumeAfter + 600;
+        options.onIntroDone?.();
+      },
+      at(4500),
+    );
+  };
+
   // --- loop & lifecycle ---------------------------------------------------------
+  const tmp = new Vector3();
+  const reportSpots = () => {
+    if (!options.onSpots && !options.onTabletScreen) return;
+    const width = engine.getRenderWidth();
+    const height = engine.getRenderHeight();
+    const scale = canvas.clientWidth / width;
+    const viewport = camera.viewport.toGlobal(width, height);
+    const transform = scene.getTransformMatrix();
+    const anchors: [SpotId, Vector3][] = (Object.keys(booth.spots) as (keyof typeof booth.spots)[]).map((id) => [id, booth.spots[id].at]);
+    if (shown) anchors.push(["exhibit", rig.productTarget.add(new Vector3(0, shown.height * 0.42, 0))]);
+    if (options.onTabletScreen) {
+      options.onTabletScreen(
+        focusedId === "tablet"
+          ? booth.tabletCorners.map((corner) => {
+              Vector3.ProjectToRef(corner, Matrix.IdentityReadOnly, transform, viewport, tmp);
+              return { x: tmp.x * scale, y: tmp.y * scale };
+            })
+          : null,
+      );
+    }
+    options.onSpots?.(
+      anchors.map(([id, at]) => {
+        Vector3.ProjectToRef(at, Matrix.IdentityReadOnly, transform, viewport, tmp);
+        const visible = tmp.z > 0 && tmp.z < 1 && tmp.x > 0 && tmp.x < width && tmp.y > 0 && tmp.y < height;
+        return { id, x: tmp.x * scale, y: tmp.y * scale, visible };
+      }),
+    );
+  };
+
   let last = performance.now();
+  let frameCount = 0;
   const frame = () => {
     const now = performance.now();
     const dt = Math.min((now - last) / 1000, 0.1);
     last = now;
+    let tweened = false;
     for (const [tag, tw] of tweens) {
+      if (now < tw.start) {
+        tweened = true;
+        continue;
+      }
       const t = Math.min((now - tw.start) / tw.duration, 1);
       tw.update(tw.ease(t));
+      tweened = true;
       if (t >= 1) {
         if (tweens.get(tag) === tw) tweens.delete(tag);
         tw.done?.();
         invalidate();
       }
     }
-    const settling = updateRig(dt);
-    if (waitingForReady || settling || tweens.size > 0 || cameraMoving() || pendingFrames > 0) {
+    let glowing = false;
+    for (const id of ["screen", "tablet", "laptop", "exhibit"] as SpotId[]) {
+      const target = hovered === id ? 1 : 0;
+      const value = hoverLevel[id] ?? 0;
+      if (Math.abs(target - value) > 0.002) {
+        hoverLevel[id] = lerp(value, target, damp(10, dt));
+        glowing = true;
+      } else hoverLevel[id] = target;
+    }
+    if (screens.tick(now)) invalidate(2, false);
+    const rigState = updateRig(dt, now);
+    const busy = waitingForReady || tweened || glowing || rigState === 2 || cameraMoving() || pendingFrames > 0;
+    // The idle sway on its own is slow: half rate is plenty.
+    frameCount++;
+    if (busy || (rigState === 1 && frameCount % 2 === 0)) {
+      compose();
       scene.render();
+      reportSpots();
       if (pendingFrames > 0) pendingFrames--;
       if (waitingForReady && scene.isReady()) {
         waitingForReady = false;
@@ -690,8 +984,9 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
       return;
     }
     event.preventDefault();
+    interact();
     rig.zoom = Math.min(Math.max(rig.zoom * (event.deltaY > 0 ? 1.06 : 0.94), 0.6), 1.3);
-    invalidate();
+    invalidate(2, false);
   };
   canvas.addEventListener("wheel", onWheel, { passive: false });
 
@@ -707,12 +1002,20 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
   applyLook(false);
   showStyle(config.style, false);
   await showEquipment(config.equipment, false);
-  updateRig(1);
+  if (reducedMotion) screens.boot(true);
+  else {
+    // Open on the first frame of the opening shot (the poster shows the same frame).
+    camera.alpha = INTRO.alpha;
+    camera.beta = INTRO.beta;
+    rig.introZoom = INTRO.zoom;
+  }
+  compose();
+  updateRig(1, performance.now());
   updateLoop();
   await new Promise<void>((resolve) => scene.executeWhenReady(() => resolve()));
   if (disposed) throw new Error("disposed");
   if (import.meta.env.DEV) {
-    Object.assign(window, { __stage: { scene, camera, keyLight, washLight, rimLight, fill, shadows, rig, booth, invalidate } });
+    Object.assign(window, { __stage: { scene, camera, keyLight, washLight, rimLight, productLight, fill, shadows, rig, power, booth, invalidate } });
   }
 
   return {
@@ -726,34 +1029,57 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
       if (prev.equipment !== config.equipment) {
         showEquipment(config.equipment, true).catch(() => options.onLoading?.(false));
       }
+      interact();
       invalidate();
     },
     start() {
-      if (reducedMotion) return;
-      // Swing in from a wider, higher view: says "this is live 3D" without a gimmick.
-      camera.alpha = REST_ALPHA - 0.5;
-      camera.beta = 1.08;
-      rig.introZoom = 1.25;
-      orbitTo(REST_ALPHA, REST_BETA, 2800, easeOut);
-      tween("intro-zoom", 2800, (t) => (rig.introZoom = lerp(1.25, 1, t)), easeOut);
+      if (reducedMotion) {
+        options.onIntroDone?.();
+        return;
+      }
+      playIntro();
     },
     setProgress(progress) {
       const p = clamp01(progress);
       if (Math.abs(p - rig.progress) < 1e-4) return;
       rig.progress = p;
+      invalidate(2, false);
+    },
+    setPointer(x, y = 0) {
+      if (x === null) rig.pointer.set(0, 0);
+      else {
+        rig.pointer.set(x, y);
+        interact();
+      }
+      invalidate(2, false);
+    },
+    focus(id) {
+      focusedId = id;
+      interact();
+      if (!id) {
+        rig.focus = null;
+        orbitTo(REST_ALPHA, REST_BETA, 1100);
+      } else {
+        const frame = id === "exhibit" ? exhibitFrame() : booth.spots[id];
+        rig.focus = frame;
+        rig.zoom = 1;
+        orbitTo(frame.alpha, frame.beta, 1200);
+      }
       invalidate();
     },
-    setPointer(x, y) {
-      rig.pointer.set(x, y);
-      invalidate();
+    hover(id) {
+      hovered = id;
+      invalidate(2, false);
     },
     resetCamera() {
       rig.zoom = 1;
+      interact();
       orbitTo(REST_ALPHA, REST_BETA, 900);
     },
     zoom(direction) {
       rig.zoom = Math.min(Math.max(rig.zoom * (direction > 0 ? 0.85 : 1.18), 0.6), 1.3);
-      invalidate();
+      interact();
+      invalidate(2, false);
     },
     setActive(value) {
       active = value;
@@ -765,7 +1091,9 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
       updateLoop();
       document.removeEventListener("visibilitychange", updateLoop);
       canvas.removeEventListener("wheel", onWheel);
-      canvas.removeEventListener("pointerdown", stopOrbit);
+      canvas.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
       resizeObserver.disconnect();
       scene.dispose();
       engine.dispose();

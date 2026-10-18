@@ -894,7 +894,7 @@ p {
   }
 }
 
-.booth-hero:not(.is-scrub) .booth-hero__scroll {
+.booth-hero:is(:not(.is-scrub), .is-focus) .booth-hero__scroll {
   display: none;
 }
 
@@ -925,7 +925,7 @@ p {
   opacity: 0;
 }
 
-.booth-hero.is-ready:not(.is-touched, .is-open, .is-busy, .is-exhibit) .booth-hero__hint {
+.booth-hero.is-live:not(.is-touched, .is-open, .is-busy, .is-exhibit, .is-focus) .booth-hero__hint {
   animation: booth-hint 6s 3s both;
 }
 
@@ -1231,6 +1231,268 @@ p {
 .stage-panel__list input:focus-visible + span {
   outline: 2px solid var(--orange);
   outline-offset: 1px;
+}
+
+/* Clickable things on the stand: a glowing point, the label on hover. */
+.booth-hero__spots {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: clamp(0, 1 - var(--p) * 3, 1);
+  transition:
+    opacity 0.5s ease,
+    visibility 0s;
+}
+
+.booth-hero:is(:not(.is-live), .is-focus) .booth-hero__spots {
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s 0.3s;
+}
+
+.booth-spot {
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--d-text);
+  font: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  transform: translate(-200px, -200px);
+  will-change: transform;
+}
+
+.booth-spot.is-off {
+  visibility: hidden;
+}
+
+.booth-hero.is-live .booth-spot {
+  animation: spot-in 0.5s ease both;
+}
+
+.booth-spot:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.booth-spot:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.booth-spot:nth-child(4) {
+  animation-delay: 0.24s;
+}
+.booth-spot:nth-child(5) {
+  animation-delay: 0.32s;
+}
+.booth-spot:nth-child(6) {
+  animation-delay: 0.4s;
+}
+
+@keyframes spot-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.booth-spot__dot {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(242, 162, 80, 0.65);
+  border-radius: 50%;
+  background: rgba(14, 21, 28, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
+}
+
+.booth-spot__dot::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 12px 2px rgba(242, 162, 80, 0.7);
+}
+
+.booth-spot__dot::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 1px solid rgba(242, 162, 80, 0.6);
+  border-radius: 50%;
+  animation: spot-ping 2.6s ease-out infinite;
+}
+
+@keyframes spot-ping {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(2.2);
+  }
+}
+
+.booth-spot__label {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(14, 21, 28, 0.8);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-6px);
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.booth-spot:is(:hover, :focus-visible) .booth-spot__dot {
+  border-color: var(--orange);
+  background: rgba(242, 162, 80, 0.22);
+  transform: scale(1.12);
+}
+
+.booth-spot:is(:hover, :focus-visible) .booth-spot__label {
+  opacity: 1;
+  transform: none;
+}
+
+.booth-spot:focus-visible {
+  outline: none;
+}
+
+.booth-spot:focus-visible .booth-spot__dot {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+}
+
+/* The live tablet: the real explainer laid over the tablet's screen in its close-up. */
+.booth-hero__device {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.booth-hero__device iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  border-radius: 12px;
+  background: #0e151c;
+  opacity: 0;
+  transform-origin: 0 0;
+  transition: opacity 0.5s ease;
+}
+
+.booth-hero.is-tablet .booth-hero__device iframe {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The close-up card: what this surface is, and where it leads. */
+.booth-hero__card {
+  grid-area: 1 / 1;
+  align-self: end;
+  max-width: 400px;
+  margin-bottom: clamp(96px, 14vh, 140px);
+  padding: 24px 24px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: rgba(14, 21, 28, 0.66);
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(16px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease,
+    visibility 0s 0.35s;
+}
+
+.booth-hero__card .eyebrow {
+  margin-bottom: 10px;
+  color: var(--orange);
+}
+
+.booth-hero.is-focus .booth-hero__card {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition:
+    opacity 0.45s ease 0.25s,
+    transform 0.45s ease 0.25s,
+    visibility 0s;
+}
+
+.booth-hero.is-focus :is(.booth-hero__copy, .booth-hero__exhibit) {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.booth-hero[data-theme="gallery"] .booth-hero__card {
+  border-color: rgba(22, 32, 42, 0.1);
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.booth-hero[data-theme="gallery"] .booth-hero__card .booth-hero__exhibit-name {
+  color: var(--navy);
+}
+
+.booth-hero[data-theme="gallery"] .booth-hero__card .booth-hero__exhibit-text {
+  color: var(--text-2);
+}
+
+/* The HUD arrives after the opening sequence, so the show opens clean. */
+.booth-hero :is(.booth-hero__tools, .booth-hero__caption, .booth-hero__credit, .booth-hero__scroll) {
+  transition:
+    opacity 0.6s ease,
+    visibility 0s;
+}
+
+.booth-hero:not(.is-live) :is(.booth-hero__tools, .booth-hero__caption, .booth-hero__credit, .booth-hero__scroll) {
+  visibility: hidden;
+  opacity: 0;
+}
+
+@media (max-width: 720px) {
+  .booth-spot__label {
+    display: none;
+  }
+
+  .booth-hero.is-open .booth-hero__spots {
+    visibility: hidden;
+  }
+
+  .booth-hero__card {
+    max-width: none;
+    margin-bottom: 84px;
+    padding: 16px 18px;
+  }
 }
 
 /* Header over a light booth: dark text until it gets its own background on scroll. */

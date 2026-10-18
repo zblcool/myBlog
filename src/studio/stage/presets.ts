@@ -6,7 +6,7 @@
 export type ThemeId = "graphite" | "gallery";
 export type LightingId = "amber" | "neutral";
 export type BoothStyleId = "minimal" | "industrial";
-export type EquipmentId = "worm-gearbox" | "hydraulic-cylinder" | "bagging-machine";
+export type EquipmentId = "pump-set" | "worm-gearbox" | "hydraulic-cylinder" | "bagging-machine";
 
 export interface StageConfig {
   theme: ThemeId;
@@ -19,13 +19,13 @@ export const defaultConfig: StageConfig = {
   theme: "graphite",
   lighting: "amber",
   style: "minimal",
-  equipment: "worm-gearbox",
+  equipment: "pump-set",
 };
 
 export const themeIds: ThemeId[] = ["graphite", "gallery"];
 export const lightingIds: LightingId[] = ["amber", "neutral"];
 export const styleIds: BoothStyleId[] = ["minimal", "industrial"];
-export const equipmentIds: EquipmentId[] = ["worm-gearbox", "hydraulic-cylinder", "bagging-machine"];
+export const equipmentIds: EquipmentId[] = ["pump-set", "worm-gearbox", "hydraulic-cylinder", "bagging-machine"];
 
 export interface EquipmentModel {
   /** Under public/, without the base path. */
@@ -40,8 +40,18 @@ export interface EquipmentModel {
   finish?: Record<string, { color: string; metallic: number; roughness: number }>;
 }
 
-/** Copied from the explainer's public/models (same licences; see its equipment configs). */
+/**
+ * The pump set is our own model (the explainer draws it from ISO 2858 / IEC 60072 dimensions;
+ * exported once to GLB, without its shipping skid). The others are copied from the explainer's
+ * public/models, under the licences noted in its equipment configs.
+ */
 export const equipmentModels: Record<EquipmentId, EquipmentModel> = {
+  "pump-set": {
+    file: "/studio/stage/models/pump-set.glb",
+    // About 1.3 m from suction flange to fan cowl; shown a touch larger so it reads from the aisle.
+    size: 1.55,
+    yaw: 0.25,
+  },
   "worm-gearbox": {
     file: "/studio/stage/models/worm-gearbox.glb",
     size: 1.35,

@@ -22,9 +22,11 @@ const views: ViewId[] = ["solid", "xray", "section", "exploded"];
 const live = demoLink("worm-gearbox", { lang: t.lang });
 const first = heroHotspots[1].key;
 const demoLinks = Object.fromEntries(equipmentIds.map((id) => [id, demoLink(id, { lang: t.lang })]));
+// The booth's tablet runs the real explainer in embed mode when a visitor opens it.
+const tabletApp = demoLink("pump-set", { lang: t.lang, embed: "1" });
 ---
 
-<HeroStage t={t} primaryHref={live ? "#demo" : "#showcase"} demoLinks={demoLinks} />
+<HeroStage t={t} primaryHref={live ? "#demo" : "#showcase"} demoLinks={demoLinks} tabletApp={tabletApp} />
 
 <section class="hero hero--teaser" aria-label={h.device}>
   <div class="hero__grid-bg" aria-hidden="true"></div>
