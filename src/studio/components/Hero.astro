@@ -1,12 +1,15 @@
 ---
 /**
- * Hero with a teaser of the explainer: real renders of the worm gearbox, numbered parts that
- * open the part panel, view switching, and a button that swaps in the live 3D.
+ * Hero: the headline over the live 3D exhibition booth (HeroStage), then a teaser of the
+ * explainer: real renders of the worm gearbox, numbered parts that open the part panel, view
+ * switching, and a button that swaps in the live 3D.
  */
+import HeroStage from "./HeroStage.astro";
 import Lockup from "./Lockup.astro";
 import { demoLink } from "@/studio/config";
 import { heroHotspots, shot, type ViewId } from "@/studio/data/devices";
 import type { Copy } from "@/studio/i18n/en";
+import { equipmentIds } from "@/studio/stage/presets";
 import { withBase } from "@/lib/paths";
 
 interface Props {
@@ -18,26 +21,13 @@ const h = t.hero;
 const views: ViewId[] = ["solid", "xray", "section", "exploded"];
 const live = demoLink("worm-gearbox", { lang: t.lang });
 const first = heroHotspots[1].key;
+const demoLinks = Object.fromEntries(equipmentIds.map((id) => [id, demoLink(id, { lang: t.lang })]));
 ---
 
-<section class="hero">
+<HeroStage t={t} primaryHref={live ? "#demo" : "#showcase"} demoLinks={demoLinks} />
+
+<section class="hero hero--teaser" aria-label={h.device}>
   <div class="hero__grid-bg" aria-hidden="true"></div>
-  <div class="wrap hero__intro">
-    <div>
-      <p class="eyebrow">{h.eyebrow}</p>
-      <h1 set:html={h.title} />
-    </div>
-    <div class="hero__side">
-      <p class="hero__lead">{h.lead}</p>
-      <div class="actions">
-        <a class="btn btn--orange" href={live ? "#demo" : "#showcase"}>
-          {h.primary}
-          <span aria-hidden="true">↓</span>
-        </a>
-        <a class="btn btn--ghost" href="#contact">{h.secondary}</a>
-      </div>
-    </div>
-  </div>
 
   <div class="wrap">
     <div class="app" data-hero-viewer>

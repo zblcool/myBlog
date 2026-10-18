@@ -1,0 +1,375 @@
+---
+/**
+ * Immersive hero: a live Babylon.js exhibition booth (src/studio/stage) fills the first screen
+ * behind the headline. Scrolling glides the camera from the whole booth to the exhibit while
+ * the headline gives way to an exhibit card; the theme recolours the hero copy and header too.
+ *
+ * The poster is a render of the default booth and stays as the fallback. The scene loads once
+ * the page is idle, only with WebGL, and not at all under Save-Data until asked. Reduced motion
+ * keeps the camera still (no scroll-linked movement). The panel is plain HTML.
+ */
+import {
+  defaultConfig,
+  equipmentIds,
+  equipmentModels,
+  lightingIds,
+  styleIds,
+  themeIds,
+} from "@/studio/stage/presets";
+import type { Copy } from "@/studio/i18n/en";
+import { withBase } from "@/lib/paths";
+
+interface Props {
+  t: Copy;
+  /** Primary CTA target (the live demo section, or the showcase without a demo). */
+  primaryHref: string;
+  /** Explainer deep link per exhibit; empty when there is no demo deployment. */
+  demoLinks: Record<string, string>;
+}
+
+const { t, primaryHref, demoLinks } = Astro.props;
+const h = t.hero;
+const s = t.stage;
+const groups = [
+  { name: "theme", legend: s.theme, ids: themeIds, labels: s.themes as Record<string, string> },
+  { name: "lighting", legend: s.lighting, ids: lightingIds, labels: s.lightings as Record<string, string> },
+  { name: "style", legend: s.style, ids: styleIds, labels: s.styles as Record<string, string> },
+] as const;
+const credits = Object.fromEntries(equipmentIds.map((id) => [id, equipmentModels[id].credit ?? ""]));
+const firstDemo = demoLinks[defaultConfig.equipment];
+---
+
+<section
+  class="booth-hero"
+  data-stage
+  data-theme={defaultConfig.theme}
+  data-base={import.meta.env.BASE_URL}
+  data-names={JSON.stringify(s.equipmentNames)}
+  data-credits={JSON.stringify(credits)}
+  data-demos={JSON.stringify(demoLinks)}
+>
+  <div class="booth-hero__sticky">
+    <div class="booth-hero__scene">
+      <picture>
+        <source media="(max-aspect-ratio: 1/1)" srcset={withBase("/studio/stage/poster-tall.webp")} width="900" height="1600" />
+        <img
+          class="booth-hero__poster"
+          src={withBase("/studio/stage/poster-wide.webp")}
+          alt=""
+          width="1920"
+          height="1090"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </picture>
+      <canvas class="booth-hero__canvas" data-stage-canvas role="img" aria-label={s.canvas}></canvas>
+    </div>
+    <div class="booth-hero__scrim" aria-hidden="true"></div>
+
+    <div class="wrap booth-hero__layout">
+      <div class="booth-hero__copy">
+        <p class="eyebrow">{h.eyebrow}</p>
+        <h1 set:html={h.title} />
+        <p class="hero__lead">{h.lead}</p>
+        <div class="actions">
+          <a class="btn btn--orange" href={primaryHref}>
+            {h.primary}
+            <span aria-hidden="true">↓</span>
+          </a>
+          <a class="btn btn--ghost" href="#contact">{h.secondary}</a>
+        </div>
+      </div>
+
+      <aside class="booth-hero__exhibit" data-nosnippet aria-label={s.exhibitLabel}>
+        <p class="eyebrow">{s.exhibitLabel}</p>
+        <p class="booth-hero__exhibit-name" data-stage-name>{s.equipmentNames[defaultConfig.equipment]}</p>
+        <p class="booth-hero__exhibit-text">{s.exhibitText}</p>
+        <div class="actions">
+          {firstDemo && (
+            <a class="btn btn--orange btn--sm" href={firstDemo} target="_blank" rel="noreferrer" data-stage-demo>
+              {s.exhibitCta} ↗
+            </a>
+          )}
+          <button class="btn btn--ghost btn--sm" type="button" data-stage-open>{s.customise}</button>
+        </div>
+      </aside>
+    </div>
+
+    <div class="booth-hero__hud" data-nosnippet>
+      <p class="booth-hero__caption">
+        <span class="booth-hero__live"><span class="app__dot" aria-hidden="true"></span>{s.label}</span>
+        <span data-stage-name>{s.equipmentNames[defaultConfig.equipment]}</span>
+      </p>
+      <p class="booth-hero__scroll" aria-hidden="true"><span></span>{s.scroll}</p>
+      <p class="booth-hero__hint" data-stage-hint aria-hidden="true" data-wheel={s.wheelHint}>{s.hint}</p>
+      <p class="booth-hero__status" role="status" data-stage-status data-loading={s.loading}></p>
+      <button class="booth-hero__load btn btn--ghost btn--sm" type="button" data-stage-load hidden>{s.load}</button>
+
+      <div class="booth-hero__dock">
+        <p class="booth-hero__credit" data-stage-credit>{credits[defaultConfig.equipment]}</p>
+
+        <form class="stage-panel" id="stage-panel" data-stage-panel hidden>
+          <div class="stage-panel__head">
+            <strong>{s.customise}</strong>
+            <button class="stage-panel__reset" type="reset">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.2 6.2A5 5 0 1 1 3 9.5M3 2.8v3.6h3.6" /></svg>
+              {s.reset}
+            </button>
+            <button class="stage-icon stage-icon--plain" type="button" data-stage-close aria-label={s.close} title={s.close}>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" /></svg>
+            </button>
+          </div>
+          {groups.map((group) => (
+            <fieldset class="stage-panel__field">
+              <legend>{group.legend}</legend>
+              <div class="stage-panel__seg">
+                {group.ids.map((id) => (
+                  <label>
+                    <input type="radio" name={group.name} value={id} checked={defaultConfig[group.name] === id} />
+                    <span>{group.labels[id]}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ))}
+          <fieldset class="stage-panel__field">
+            <legend>{s.equipment}</legend>
+            <div class="stage-panel__list">
+              {equipmentIds.map((id) => (
+                <label>
+                  <input type="radio" name="equipment" value={id} checked={defaultConfig.equipment === id} />
+                  <span>{s.equipmentNames[id]}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </form>
+
+        <div class="booth-hero__tools">
+          <button class="stage-icon" type="button" data-stage-zoom="1" aria-label={s.zoomIn} title={s.zoomIn}>
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" /></svg>
+          </button>
+          <button class="stage-icon" type="button" data-stage-zoom="-1" aria-label={s.zoomOut} title={s.zoomOut}>
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10" /></svg>
+          </button>
+          <button class="stage-icon" type="button" data-stage-view aria-label={s.resetView} title={s.resetView}>
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.2 6.2A5 5 0 1 1 3 9.5M3 2.8v3.6h3.6" /></svg>
+          </button>
+          <button class="stage-toggle" type="button" aria-expanded="false" aria-controls="stage-panel" data-stage-toggle>
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4.5h7M12 4.5h2M2 11.5h2M7 11.5h7" /><circle cx="10.5" cy="4.5" r="1.5" /><circle cx="5.5" cy="11.5" r="1.5" /></svg>
+            {s.customise}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { defaultConfig, type StageConfig } from "@/studio/stage/presets";
+  import type { StageController } from "@/studio/stage/scene";
+
+  const root = document.querySelector<HTMLElement>("[data-stage]");
+  if (root) setUp(root);
+
+  function webglAvailable() {
+    try {
+      const probe = document.createElement("canvas");
+      return Boolean(probe.getContext("webgl2") || probe.getContext("webgl"));
+    } catch {
+      return false;
+    }
+  }
+
+  function setUp(root: HTMLElement) {
+    const canvas = root.querySelector<HTMLCanvasElement>("[data-stage-canvas]")!;
+    const form = root.querySelector<HTMLFormElement>("[data-stage-panel]")!;
+    const toggle = root.querySelector<HTMLButtonElement>("[data-stage-toggle]")!;
+    const status = root.querySelector<HTMLElement>("[data-stage-status]")!;
+    const hint = root.querySelector<HTMLElement>("[data-stage-hint]")!;
+    const creditEl = root.querySelector<HTMLElement>("[data-stage-credit]")!;
+    const demoEl = root.querySelector<HTMLAnchorElement>("[data-stage-demo]");
+    const loadButton = root.querySelector<HTMLButtonElement>("[data-stage-load]")!;
+    const names = JSON.parse(root.dataset.names!) as Record<string, string>;
+    const credits = JSON.parse(root.dataset.credits!) as Record<string, string>;
+    const demos = JSON.parse(root.dataset.demos!) as Record<string, string>;
+    const loadingText = status.dataset.loading || "";
+
+    if (!webglAvailable()) {
+      root.classList.add("is-fallback");
+      return;
+    }
+
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const lite = matchMedia("(max-width: 720px), (pointer: coarse)").matches;
+    const saveData = Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData);
+    let stage: StageController | null = null;
+    let started = false;
+
+    // Scroll-linked camera: the hero gets taller and its scene sticks while you scroll through.
+    if (!reducedMotion) root.classList.add("is-scrub");
+
+    const readForm = (): StageConfig => {
+      const data = new FormData(form);
+      return {
+        theme: (data.get("theme") as StageConfig["theme"]) ?? defaultConfig.theme,
+        lighting: (data.get("lighting") as StageConfig["lighting"]) ?? defaultConfig.lighting,
+        style: (data.get("style") as StageConfig["style"]) ?? defaultConfig.style,
+        equipment: (data.get("equipment") as StageConfig["equipment"]) ?? defaultConfig.equipment,
+      };
+    };
+
+    // The theme recolours the hero copy and, while it sits over the hero, the header.
+    const showConfig = (config: StageConfig) => {
+      root.dataset.theme = config.theme;
+      document.documentElement.dataset.heroTone = config.theme === "gallery" ? "light" : "dark";
+      root.querySelectorAll<HTMLElement>("[data-stage-name]").forEach((el) => (el.textContent = names[config.equipment] ?? ""));
+      creditEl.textContent = credits[config.equipment] ?? "";
+      if (demoEl && demos[config.equipment]) demoEl.href = demos[config.equipment];
+    };
+
+    let hintTimer = 0;
+    const isMac = /Mac|iPhone|iPad/.test(navigator.userAgent);
+    const flashWheelHint = () => {
+      hint.textContent = hint.dataset.wheel!.replace("{key}", isMac ? "⌘" : "Ctrl");
+      root.classList.add("is-hinting");
+      clearTimeout(hintTimer);
+      hintTimer = window.setTimeout(() => root.classList.remove("is-hinting"), 1600);
+    };
+    canvas.addEventListener("pointerdown", () => root.classList.add("is-touched"), { once: true });
+
+    // --- scroll & pointer ----------------------------------------------------
+    let progress = 0;
+    let scrollQueued = false;
+    // On a phone the open panel covers the lower half, so the camera frames the exhibit up top.
+    const narrow = matchMedia("(max-width: 720px)");
+    const cameraProgress = () => (narrow.matches && !form.hidden ? Math.max(progress, 1) : progress);
+    const readScroll = () => {
+      scrollQueued = false;
+      const rect = root.getBoundingClientRect();
+      const travel = rect.height - innerHeight;
+      progress = travel > 0 ? Math.min(Math.max(-rect.top / travel, 0), 1) : 0;
+      root.style.setProperty("--p", progress.toFixed(4));
+      root.classList.toggle("is-exhibit", progress > 0.5);
+      stage?.setProgress(cameraProgress());
+    };
+    if (!reducedMotion) {
+      addEventListener(
+        "scroll",
+        () => {
+          if (!scrollQueued) {
+            scrollQueued = true;
+            requestAnimationFrame(readScroll);
+          }
+        },
+        { passive: true },
+      );
+      addEventListener("resize", readScroll, { passive: true });
+      readScroll();
+    }
+
+    if (!reducedMotion && matchMedia("(pointer: fine)").matches) {
+      root.addEventListener(
+        "pointermove",
+        (event) => {
+          const rect = root.getBoundingClientRect();
+          stage?.setPointer((event.clientX / rect.width) * 2 - 1, (event.clientY / innerHeight) * 2 - 1);
+        },
+        { passive: true },
+      );
+    }
+
+    // --- engine ----------------------------------------------------------------
+    const start = async () => {
+      if (started) return;
+      started = true;
+      loadButton.hidden = true;
+      root.classList.add("is-loading");
+      try {
+        const { createStage } = await import("@/studio/stage/scene");
+        stage = await createStage(canvas, readForm(), {
+          base: root.dataset.base || "/",
+          reducedMotion,
+          lite,
+          onLoading: (loading) => {
+            status.textContent = loading ? loadingText : "";
+            root.classList.toggle("is-busy", loading);
+          },
+          onWheelHint: flashWheelHint,
+          onContextLost: (lost) => root.classList.toggle("is-lost", lost),
+        });
+        stage.setProgress(cameraProgress());
+        root.classList.add("is-ready");
+        stage.start();
+        new IntersectionObserver(([entry]) => stage?.setActive(entry.isIntersecting)).observe(root);
+      } catch (error) {
+        console.warn("3D booth unavailable", error);
+        root.classList.add("is-fallback");
+        stage?.dispose();
+        stage = null;
+      } finally {
+        root.classList.remove("is-loading");
+      }
+    };
+
+    // The poster is the LCP; the engine comes after it, while the browser is idle.
+    const whenIdle = (fn: () => void) =>
+      "requestIdleCallback" in window ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 600);
+    if (saveData) {
+      loadButton.hidden = false;
+      loadButton.addEventListener("click", start);
+    } else {
+      const seen = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) return;
+        seen.disconnect();
+        whenIdle(start);
+      });
+      seen.observe(root);
+    }
+
+    // --- panel -------------------------------------------------------------------
+    const setOpen = (open: boolean) => {
+      form.hidden = !open;
+      toggle.setAttribute("aria-expanded", String(open));
+      root.classList.toggle("is-open", open);
+      stage?.setProgress(cameraProgress());
+      if (open) form.querySelector<HTMLInputElement>("input:checked")?.focus({ preventScroll: true });
+    };
+    toggle.addEventListener("click", () => setOpen(form.hidden));
+    root.querySelector("[data-stage-open]")?.addEventListener("click", () => setOpen(true));
+    root.querySelector("[data-stage-close]")!.addEventListener("click", () => {
+      setOpen(false);
+      toggle.focus({ preventScroll: true });
+    });
+    form.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        toggle.focus({ preventScroll: true });
+      }
+    });
+
+    form.addEventListener("change", () => {
+      const config = readForm();
+      showConfig(config);
+      stage?.apply(config);
+    });
+    // type="reset" restores the default radios; apply them once the form has reset.
+    form.addEventListener("reset", () =>
+      setTimeout(() => {
+        const config = readForm();
+        showConfig(config);
+        stage?.apply(config);
+        stage?.resetCamera();
+      }),
+    );
+
+    root.querySelectorAll<HTMLButtonElement>("[data-stage-zoom]").forEach((button) =>
+      button.addEventListener("click", () => stage?.zoom(Number(button.dataset.stageZoom) as 1 | -1)),
+    );
+    root.querySelector("[data-stage-view]")!.addEventListener("click", () => stage?.resetCamera());
+
+    addEventListener("pagehide", (event) => {
+      if (!event.persisted) stage?.dispose();
+    });
+  }
+</script>
