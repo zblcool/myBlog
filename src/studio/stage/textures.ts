@@ -3,6 +3,7 @@
  * files beyond the screen renders it borrows from /studio/shots.
  */
 import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
+import { RawTexture } from "@babylonjs/core/Materials/Textures/rawTexture";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import type { Scene } from "@babylonjs/core/scene";
 import { markColors, markGradients, markPaths, markViewBox, type MarkVariant } from "@/studio/data/brandMark";
@@ -21,29 +22,56 @@ export function canvasTexture(
   return texture;
 }
 
+/**
+ * A tiling grey texture built from pixel values, not a canvas: Safari's fingerprinting protection
+ * adds coloured noise to canvas pixels, which shows up as confetti on a tiled floor.
+ */
+function rawTexture(name: string, width: number, height: number, scene: Scene, grey: (index: number) => number, alpha?: (index: number) => number) {
+  const data = new Uint8Array(width * height * 4);
+  for (let k = 0; k < width * height; k++) {
+    const v = Math.round(grey(k));
+    data[k * 4] = data[k * 4 + 1] = data[k * 4 + 2] = v;
+    data[k * 4 + 3] = alpha ? Math.round(alpha(k)) : 255;
+  }
+  const texture = RawTexture.CreateRGBATexture(data, width, height, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
+  texture.name = name;
+  texture.hasAlpha = !!alpha;
+  texture.wrapU = texture.wrapV = Texture.WRAP_ADDRESSMODE;
+  return texture;
+}
+
+/** Piecewise-linear lookup through gradient stops [at, value]. */
+function ramp(stops: [number, number][], t: number) {
+  if (t <= stops[0][0]) return stops[0][1];
+  for (let i = 1; i < stops.length; i++) {
+    const [a, va] = stops[i - 1];
+    const [b, vb] = stops[i];
+    if (t <= b) return va + ((vb - va) * (t - a)) / (b - a || 1);
+  }
+  return stops[stops.length - 1][1];
+}
+
 /** Soft radial falloff (white, alpha by stop): contact shadows, light spill. */
 export function radialTexture(name: string, scene: Scene, stops: [number, number][]) {
-  return canvasTexture(name, 256, 256, scene, (ctx) => {
-    const g = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-    for (const [at, alpha] of stops) g.addColorStop(at, `rgba(255,255,255,${alpha})`);
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 256, 256);
+  const size = 256;
+  const texture = rawTexture(name, size, size, scene, () => 255, (k) => {
+    const t = Math.hypot((k % size) + 0.5 - size / 2, Math.floor(k / size) + 0.5 - size / 2) / (size / 2);
+    return 255 * ramp(stops, t);
   });
+  texture.wrapU = texture.wrapV = Texture.CLAMP_ADDRESSMODE;
+  return texture;
 }
 
 /** Vertical LED wash: from a floor cove (bright at the bottom) or a fascia strip (`fromTop`). */
 export function washTexture(name: string, scene: Scene, fromTop = false) {
-  return canvasTexture(name, 8, 256, scene, (ctx) => {
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, 8, 256);
-    const g = fromTop ? ctx.createLinearGradient(0, 0, 0, 256) : ctx.createLinearGradient(0, 256, 0, 0);
-    g.addColorStop(0, "rgba(255,255,255,1)");
-    g.addColorStop(0.06, "rgba(255,255,255,0.4)");
-    g.addColorStop(0.3, "rgba(255,255,255,0.06)");
-    g.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 8, 256);
+  const stops: [number, number][] = [[0, 1], [0.06, 0.4], [0.3, 0.06], [1, 0]];
+  // Row 0 is the bottom of the texture (v = 0): a fascia strip is bright at the top.
+  const texture = rawTexture(name, 8, 256, scene, (k) => {
+    const row = Math.floor(k / 8) + 0.5;
+    return 255 * ramp(stops, (fromTop ? 256 - row : row) / 256);
   });
+  texture.wrapU = texture.wrapV = Texture.CLAMP_ADDRESSMODE;
+  return texture;
 }
 
 /** Seeded, so the floor looks the same on every visit (and in the poster). */
@@ -60,26 +88,32 @@ function random(seed: number) {
  */
 export function concreteTexture(scene: Scene) {
   const rnd = random(7);
-  const texture = canvasTexture("concrete", 512, 512, scene, (ctx) => {
-    ctx.fillStyle = "#e6e6e6";
-    ctx.fillRect(0, 0, 512, 512);
-    for (let i = 0; i < 90; i++) {
-      const x = rnd() * 512;
-      const y = rnd() * 512;
-      const r = 30 + rnd() * 120;
-      const shade = rnd() < 0.5 ? "255,255,255" : "190,190,190";
-      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-      g.addColorStop(0, `rgba(${shade},${0.05 + rnd() * 0.08})`);
-      g.addColorStop(1, `rgba(${shade},0)`);
-      ctx.fillStyle = g;
-      ctx.fillRect(x - r, y - r, r * 2, r * 2);
+  const size = 512;
+  const px = new Float32Array(size * size).fill(230);
+  // Soft light and dark blotches (radial falloff, composited "over").
+  for (let i = 0; i < 90; i++) {
+    const x = rnd() * size;
+    const y = rnd() * size;
+    const r = 30 + rnd() * 120;
+    const shade = rnd() < 0.5 ? 255 : 190;
+    const peak = 0.05 + rnd() * 0.08;
+    for (let py = Math.max(0, Math.floor(y - r)); py < Math.min(size, Math.ceil(y + r)); py++) {
+      for (let pxl = Math.max(0, Math.floor(x - r)); pxl < Math.min(size, Math.ceil(x + r)); pxl++) {
+        const t = Math.hypot(pxl + 0.5 - x, py + 0.5 - y) / r;
+        if (t >= 1) continue;
+        const a = peak * (1 - t);
+        const k = py * size + pxl;
+        px[k] += (shade - px[k]) * a;
+      }
     }
-    ctx.fillStyle = "rgba(60,60,60,0.55)";
-    ctx.fillRect(0, 0, 512, 2);
-    ctx.fillRect(0, 0, 2, 512);
-  });
-  texture.hasAlpha = false;
-  texture.wrapU = texture.wrapV = Texture.WRAP_ADDRESSMODE;
+  }
+  // Slab joints along two edges.
+  for (let k = 0; k < size * 2; k++) {
+    const top = k, left = (k % size) * size + Math.floor(k / size);
+    px[top] += (60 - px[top]) * 0.55;
+    px[left] += (60 - px[left]) * 0.55;
+  }
+  const texture = rawTexture("concrete", size, size, scene, (k) => px[k]);
   texture.anisotropicFilteringLevel = 8;
   return texture;
 }
@@ -87,17 +121,7 @@ export function concreteTexture(scene: Scene) {
 /** Booth carpet: fine fibre noise. */
 export function carpetTexture(scene: Scene) {
   const rnd = random(11);
-  const texture = canvasTexture("carpet", 256, 256, scene, (ctx) => {
-    const image = ctx.createImageData(256, 256);
-    for (let i = 0; i < image.data.length; i += 4) {
-      const v = 205 + rnd() * 50;
-      image.data[i] = image.data[i + 1] = image.data[i + 2] = v;
-      image.data[i + 3] = 255;
-    }
-    ctx.putImageData(image, 0, 0);
-  });
-  texture.hasAlpha = false;
-  texture.wrapU = texture.wrapV = Texture.WRAP_ADDRESSMODE;
+  const texture = rawTexture("carpet", 256, 256, scene, () => 205 + rnd() * 50);
   texture.anisotropicFilteringLevel = 8;
   return texture;
 }
