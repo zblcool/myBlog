@@ -1677,6 +1677,49 @@ p {
   .booth-hero__layout {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  /* A way past the booth: a button by the tools, and an invisible strip down the right edge
+     that scrolls natively (the canvas isn't under it) and steps a screen on tap. */
+  .booth-hero__next {
+    display: inline-flex;
+    position: absolute;
+    bottom: 22px;
+    left: var(--gutter);
+    pointer-events: auto;
+  }
+
+  .booth-hero__edge {
+    display: block;
+    position: absolute;
+    top: var(--header);
+    right: 0;
+    bottom: 84px;
+    z-index: 4;
+    width: 28px;
+    padding: 0;
+    border: 0;
+    background: none;
+    touch-action: pan-y;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .booth-hero:is(.is-focus, .is-open) :is(.booth-hero__next, .booth-hero__edge) {
+    display: none;
+  }
+}
+
+@media (min-width: 721px) {
+  .booth-hero__next,
+  .booth-hero__edge {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .booth-hero:not(.is-live) .booth-hero__next {
+    visibility: hidden;
+  }
 }
 
 /* ---------- App window (hero teaser) ---------- */

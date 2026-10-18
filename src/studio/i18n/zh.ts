@@ -72,6 +72,7 @@ export const zh: Copy = {
     hint: "拖动环顾展位 · 点击发光点",
     wheelHint: "按住 {key} 滚动以缩放",
     scroll: "向下滚动，走近展台",
+    next: "向下滚动",
     zoomIn: "放大",
     zoomOut: "缩小",
     resetView: "重置视角",

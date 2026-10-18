@@ -71,6 +71,7 @@ export const en = {
     hint: "Drag to look around · click a glowing point",
     wheelHint: "Hold {key} and scroll to zoom",
     scroll: "Scroll to step onto the stand",
+    next: "Scroll down",
     zoomIn: "Zoom in",
     zoomOut: "Zoom out",
     resetView: "Reset view",

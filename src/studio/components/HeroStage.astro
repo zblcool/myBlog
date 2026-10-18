@@ -165,6 +165,11 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
         <span data-stage-name>{s.equipmentNames[defaultConfig.equipment]}</span>
       </p>
       <p class="booth-hero__scroll" aria-hidden="true"><span></span>{s.scroll}</p>
+      <!-- Phones: the booth fills the screen, so give the page an easy way on (one screen at a time). -->
+      <button class="booth-hero__next stage-icon" type="button" data-stage-next aria-label={s.next} title={s.next}>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5" /></svg>
+      </button>
+      <button class="booth-hero__edge" type="button" data-stage-next tabindex="-1" aria-hidden="true"></button>
       <p class="booth-hero__hint" data-stage-hint aria-hidden="true" data-wheel={s.wheelHint}>{s.hint}</p>
       <p class="booth-hero__status" role="status" data-stage-status data-loading={s.loading}></p>
       <button class="booth-hero__load btn btn--ghost btn--sm" type="button" data-stage-load hidden>{s.load}</button>
@@ -571,6 +576,21 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
       button.addEventListener("click", () => stage?.zoom(Number(button.dataset.stageZoom) as 1 | -1)),
     );
     root.querySelector("[data-stage-view]")!.addEventListener("click", () => stage?.resetCamera());
+    // One screen down. Eased by hand: the browser's smooth scroll gets cut short while the
+    // sticky stage re-renders on every scroll step.
+    const scrollNext = () => {
+      const from = window.scrollY;
+      const to = from + window.innerHeight;
+      if (reducedMotion) return window.scrollTo(0, to);
+      const begin = performance.now();
+      const step = (now: number) => {
+        const t = Math.min((now - begin) / 650, 1);
+        window.scrollTo({ top: from + (to - from) * (1 - Math.pow(1 - t, 3)), behavior: "instant" });
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    for (const next of root.querySelectorAll("[data-stage-next]")) next.addEventListener("click", scrollNext);
 
     addEventListener("pagehide", (event) => {
       if (!event.persisted) stage?.dispose();
