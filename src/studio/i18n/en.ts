@@ -84,7 +84,7 @@ export const en = {
     style: "Booth",
     styles: { minimal: "Minimal", industrial: "Industrial" },
     equipment: "Exhibit",
-    equipmentNames: { "pump-set": "ISO centrifugal pump set", "worm-gearbox": "Worm gear reducer", "hydraulic-cylinder": "Hydraulic cylinder", "bagging-machine": "Bagging machine" },
+    equipmentNames: { "pump-set": "ISO centrifugal pump set", "worm-gearbox": "Worm gear reducer", "hydraulic-cylinder": "Hydraulic cylinder" },
     exhibitLabel: "On the stand",
     exhibitText: "This booth is a live Babylon.js scene, the same engine behind every explainer we build. Turn it, relight it, swap the exhibit, then open the real thing.",
     exhibitCta: "Open the explainer",

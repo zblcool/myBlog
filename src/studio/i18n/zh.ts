@@ -85,7 +85,7 @@ export const zh: Copy = {
     style: "展位",
     styles: { minimal: "极简", industrial: "工业" },
     equipment: "展品",
-    equipmentNames: { "pump-set": "ISO 离心泵组", "worm-gearbox": "蜗轮蜗杆减速器", "hydraulic-cylinder": "液压油缸", "bagging-machine": "自动包装机" },
+    equipmentNames: { "pump-set": "ISO 离心泵组", "worm-gearbox": "蜗轮蜗杆减速器", "hydraulic-cylinder": "液压油缸" },
     exhibitLabel: "展台上",
     exhibitText: "这个展位本身就是一个实时 Babylon.js 场景，和我们交付的每个原理展示器用的是同一套引擎。转动它、换灯光、换展品，然后打开真正的展示器。",
     exhibitCta: "打开展示器",

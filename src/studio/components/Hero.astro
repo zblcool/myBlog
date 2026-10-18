@@ -22,8 +22,9 @@ const views: ViewId[] = ["solid", "xray", "section", "exploded"];
 const live = demoLink("worm-gearbox", { lang: t.lang });
 const first = heroHotspots[1].key;
 const demoLinks = Object.fromEntries(equipmentIds.map((id) => [id, demoLink(id, { lang: t.lang })]));
-// The booth's tablet runs the real explainer in embed mode when a visitor opens it.
-const tabletApp = demoLink("pump-set", { lang: t.lang, embed: "1" });
+// The booth's tablet runs the real explainer in embed mode when a visitor opens it; they have
+// already asked for it, so it skips the explainer's click-to-load cover.
+const tabletApp = demoLink("pump-set", { lang: t.lang, embed: "1", autostart: "1" });
 ---
 
 <HeroStage t={t} primaryHref={live ? "#demo" : "#showcase"} demoLinks={demoLinks} tabletApp={tabletApp} />

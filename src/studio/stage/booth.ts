@@ -11,7 +11,6 @@
  */
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import { PBRMaterial } from "@babylonjs/core/Materials/PBR/pbrMaterial";
-import { Constants } from "@babylonjs/core/Engines/constants";
 import { CreateBox } from "@babylonjs/core/Meshes/Builders/boxBuilder";
 import { CreateCylinder } from "@babylonjs/core/Meshes/Builders/cylinderBuilder";
 import { CreateDisc } from "@babylonjs/core/Meshes/Builders/discBuilder";
@@ -27,7 +26,7 @@ import { Quaternion, Vector2, Vector3, Vector4 } from "@babylonjs/core/Maths/mat
 import type { Scene } from "@babylonjs/core/scene";
 import type { BoothStyleId } from "./presets";
 import { boothMedia } from "./presets";
-import { canvasTexture, carpetTexture, concreteTexture, keyboardTexture, lockupTexture, markTexture, radialTexture, roundedPanelTexture, washTexture } from "./textures";
+import { carpetTexture, concreteTexture, keyboardTexture, lockupTexture, markTexture, radialTexture, roundedPanelTexture, washTexture } from "./textures";
 
 /** Top of the raised booth floor. */
 export const FLOOR = 0.07;
@@ -190,8 +189,10 @@ export function buildBooth(scene: Scene, url: (path: string) => string) {
   drumPrint.paint("onDark");
   drumPrint.texture.wrapU = Texture.WRAP_ADDRESSMODE;
   drumPrint.texture.uScale = -2;
+  drumPrint.texture.uOffset = 0.3; // a whole lockup faces the aisle
   fabric.emissiveTexture = drumPrint.texture;
 
+  // Floor glows are alpha-blended: additive ones speckle on some GPUs (iOS especially).
   const spill = pbr("spill", (m) => {
     m.unlit = true;
     m.albedoTexture = radialTexture("spill", scene, [
@@ -203,7 +204,6 @@ export function buildBooth(scene: Scene, url: (path: string) => string) {
     ]);
     m.useAlphaFromAlbedoTexture = true;
     m.transparencyMode = PBRMaterial.PBRMATERIAL_ALPHABLEND;
-    m.alphaMode = Constants.ALPHA_ADD;
   });
   const pool = pbr("pool", (m) => {
     m.unlit = true;
@@ -214,7 +214,6 @@ export function buildBooth(scene: Scene, url: (path: string) => string) {
     ]);
     m.useAlphaFromAlbedoTexture = true;
     m.transparencyMode = PBRMaterial.PBRMATERIAL_ALPHABLEND;
-    m.alphaMode = Constants.ALPHA_ADD;
   });
   const contact = pbr("contact", (m) => {
     m.unlit = true;

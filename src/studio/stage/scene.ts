@@ -229,7 +229,8 @@ const FOV = 0.62;
 /** The whole booth, framed to leave the headline room (wide screens: booth right). */
 const OVERVIEW_TARGET = new Vector3(0.2, 1.55, 0.2);
 /** Where the opening shot starts: higher, wider, swung round. The poster is this frame. */
-const INTRO = { alpha: REST_ALPHA - 0.42, beta: 1.14, zoom: 1.2 };
+// Close to the composed view, so the (lit) poster hands over to the live scene without a jump.
+const INTRO = { alpha: REST_ALPHA - 0.16, beta: 1.24, zoom: 1.1 };
 const SWAY = { amplitude: 0.17, period: 18, resumeAfter: 2000 };
 
 // ---------------------------------------------------------------------------- easing
@@ -379,8 +380,11 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     drum: new Color3(),
     lens: new Color3(),
     downwash: new Color3(),
+    /** Floor glows: a colour and a strength (alpha-blended, not additive). */
     spill: new Color3(),
+    spillAlpha: 0,
     pool: new Color3(),
+    poolAlpha: 0,
   };
   const power: Power = reducedMotion ? lit() : standby();
   /** Hover glow per clickable object, eased in the loop. */
@@ -403,8 +407,10 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     // A black additive surface speckles on some GPUs: off means off.
     for (const glow of booth.spills) glow.setEnabled(p.accent > 0.002);
     look.downwash.scaleToRef(p.accent, m.wallPanel.emissiveColor);
-    look.spill.scaleToRef(p.accent, m.spill.albedoColor);
-    look.pool.scaleToRef(p.key, m.pool.albedoColor);
+    m.spill.albedoColor.copyFrom(look.spill);
+    m.spill.alpha = look.spillAlpha * p.accent;
+    m.pool.albedoColor.copyFrom(look.pool);
+    m.pool.alpha = look.poolAlpha * p.key;
     const glass = look.screen * p.screens + p.flash;
     m.screen.emissiveColor.setAll(glass * glowOf("screen"));
     m.tabletScreen.emissiveColor.setAll(glass * glowOf("tablet"));
@@ -689,12 +695,24 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
       node.position.set(-((min.x + max.x) / 2) * s, -min.y * s, -((min.z + max.z) / 2) * s);
       node.parent = pivot;
       node.setEnabled(false);
+      // Models exported from the explainer's surface system carry its settings in extras: keep its
+      // normal-map convention (the geometry round-trips to Babylon's space) and, off phones, the
+      // brushed and clear-coat lobes, as the explainer does. The booth's lights do the rest.
       for (const material of container.materials) {
-        const paint = model.finish?.[material.name];
-        if (paint && material instanceof PBRMaterial) {
-          material.albedoColor = lin(paint.color);
-          material.metallic = paint.metallic;
-          material.roughness = paint.roughness;
+        const extras = material.metadata?.gltf?.extras as { surface?: boolean; anisotropy?: number; clearCoat?: number; clearCoatRoughness?: number } | undefined;
+        if (!extras?.surface || !(material instanceof PBRMaterial)) continue;
+        material.invertNormalMapX = false;
+        material.invertNormalMapY = false;
+        if (lite) continue;
+        if (extras.anisotropy) {
+          material.anisotropy.isEnabled = true;
+          material.anisotropy.intensity = extras.anisotropy;
+          material.anisotropy.direction = new Vector2(1, 0);
+        }
+        if (extras.clearCoat) {
+          material.clearCoat.isEnabled = true;
+          material.clearCoat.intensity = extras.clearCoat;
+          material.clearCoat.roughness = extras.clearCoatRoughness ?? 0.08;
         }
       }
       for (const mesh of meshes) {
@@ -805,8 +823,10 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     color(look.drum, white.scale(0.85));
     color(look.lens, key.scale(3));
     color(look.downwash, accent.scale(theme.wash * lighting.accentIntensity));
-    color(look.spill, accent.scale(0.12 * lighting.accentIntensity));
-    color(look.pool, key.scale(theme.pool));
+    color(look.spill, accent);
+    num(look, "spillAlpha", 0.35 * lighting.accentIntensity);
+    color(look.pool, key);
+    num(look, "poolAlpha", theme.pool * 2.2);
     const vignette = Color3.FromHexString(theme.vignette);
     const vFrom = new Color3(ip.vignetteColor.r, ip.vignetteColor.g, ip.vignetteColor.b);
     tracks.push((t) => {
@@ -1015,7 +1035,7 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
   await new Promise<void>((resolve) => scene.executeWhenReady(() => resolve()));
   if (disposed) throw new Error("disposed");
   if (import.meta.env.DEV) {
-    Object.assign(window, { __stage: { scene, camera, keyLight, washLight, rimLight, productLight, fill, shadows, rig, power, booth, invalidate } });
+    Object.assign(window, { __stage: { scene, camera, keyLight, washLight, rimLight, productLight, fill, shadows, rig, power, booth, screens, invalidate } });
   }
 
   return {
