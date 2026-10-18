@@ -194,6 +194,7 @@ const KEY_POWER = 650;
 const WASH_POWER = 850;
 const RIM_POWER = 2.6;
 const PRODUCT_POWER = 60;
+const FEATURE_POWER = 2600;
 const ACCENT_POWER = 2.4;
 
 // ---------------------------------------------------------------------------- power
@@ -343,6 +344,17 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
   productLight.setDirectionToTarget(booth.productAim);
   productLight.innerAngle = 0.25;
   const productLit = productLight.includedOnlyMeshes;
+
+  // The products on the stand, the wall screen and the tablet, each get a hidden spot: no
+  // fixture in view, just a soft pool of attention that comes up when the screens power on.
+  const featureLights = (Object.keys(booth.feature) as (keyof typeof booth.feature)[]).map((id) => {
+    const f = booth.feature[id];
+    const light = new SpotLight(`feature-${id}`, f.at.clone(), Vector3.Zero(), id === "screen" ? 0.72 : 0.42, 2, scene);
+    light.setDirectionToTarget(f.aim);
+    light.innerAngle = id === "screen" ? 0.38 : 0.2;
+    light.includedOnlyMeshes.push(...f.lit);
+    return light;
+  });
   for (const plinth of Object.values(booth.plinths)) productLit.push(...plinth.getChildMeshes());
 
   const shadows = new ShadowGenerator(lite ? 1024 : 2048, keyLight);
@@ -373,6 +385,7 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     key: 0,
     wash: 0,
     product: 0,
+    feature: 0,
     screen: 1,
     hallLights: new Color3(),
     accent: new Color3(),
@@ -397,6 +410,8 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     keyLight.intensity = look.key * p.key;
     washLight.intensity = look.wash * Math.max((p.arms[0] + p.arms[1] + p.arms[2]) / 3, 0.06);
     productLight.intensity = look.product * p.product * glowOf("exhibit");
+    featureLights[0].intensity = look.feature * p.screens * glowOf("screen");
+    featureLights[1].intensity = look.feature * 1.1 * p.screens * glowOf("tablet");
     look.hallLights.scaleToRef(p.hall, m.hallLight.emissiveColor);
     look.accent.scaleToRef(p.accent, m.accent.emissiveColor);
     look.sign.scaleToRef(p.sign, m.sign.emissiveColor);
@@ -816,6 +831,8 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     num(look, "key", KEY_POWER);
     num(look, "wash", WASH_POWER * theme.washLight);
     num(look, "product", PRODUCT_POWER);
+    num(look, "feature", FEATURE_POWER * theme.washLight);
+    for (const light of featureLights) color(light.diffuse, key);
     num(look, "screen", theme.screenGlow);
     color(look.hallLights, key.scale(theme.hallLights));
     color(look.accent, accent.scale(ACCENT_POWER * lighting.accentIntensity));
@@ -909,7 +926,7 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     const scale = canvas.clientWidth / width;
     const viewport = camera.viewport.toGlobal(width, height);
     const transform = scene.getTransformMatrix();
-    const anchors: [SpotId, Vector3][] = (Object.keys(booth.spots) as (keyof typeof booth.spots)[]).map((id) => [id, booth.spots[id].at]);
+    const anchors: [SpotId, Vector3][] = (Object.keys(booth.spots) as (keyof typeof booth.spots)[]).map((id) => [id, booth.spots[id].marker ?? booth.spots[id].at]);
     if (shown) anchors.push(["exhibit", rig.productTarget.add(new Vector3(0, shown.height * 0.42, 0))]);
     if (options.onTabletScreen) {
       options.onTabletScreen(

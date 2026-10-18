@@ -44,6 +44,8 @@ export const lin = (hex: string) => Color3.FromHexString(hex).toLinearSpace();
 export type SpotId = "screen" | "tablet" | "laptop" | "exhibit" | "brochures" | "contact";
 export interface SpotFrame {
   at: Vector3;
+  /** Where the marker sits, when not on the object itself (beside a screen, not over it). */
+  marker?: Vector3;
   radius: number;
   alpha: number;
   beta: number;
@@ -341,7 +343,7 @@ export function buildBooth(scene: Scene, url: (path: string) => string) {
   }
 
   // ------------------------------------------------------------------ floor
-  box("platform", 6, FLOOR, 4, 0, 0, 0, carpet, root, { cast: false });
+  const platform = box("platform", 6, FLOOR, 4, 0, 0, 0, carpet, root, { cast: false });
   box("trim-front", 6.04, FLOOR + 0.004, 0.02, 0, 0, -2.01, aluminium, root, { cast: false });
   box("trim-left", 0.02, FLOOR + 0.004, 4.04, -3.01, 0, 0, aluminium, root, { cast: false });
   box("trim-right", 0.02, FLOOR + 0.004, 1.42, 3.01, 0, -1.31, aluminium, root, { cast: false });
@@ -364,7 +366,7 @@ export function buildBooth(scene: Scene, url: (path: string) => string) {
 
   // Wall screen running the explainer, left of the exhibit so it stays in view.
   const SCREEN = new Vector3(-1.32, FLOOR + 1.56, BACK_Z - 0.052);
-  box("bezel", 2.08, 1.32, 0.05, SCREEN.x, FLOOR + 0.9, BACK_Z - 0.025, blackGloss, root, { cast: false });
+  const bezel = box("bezel", 2.08, 1.32, 0.05, SCREEN.x, FLOOR + 0.9, BACK_Z - 0.025, blackGloss, root, { cast: false });
   plane("screen", 2.0, 1.25, screen).position.copyFrom(SCREEN);
 
   // Lightbox on the side wall, facing into the booth.
@@ -622,8 +624,14 @@ export function buildBooth(scene: Scene, url: (path: string) => string) {
     return Vector3.TransformCoordinates(local, node.getWorldMatrix());
   };
   const spots: Record<Exclude<SpotId, "exhibit">, SpotFrame> = {
-    screen: { at: SCREEN.clone(), radius: 3.2, alpha: FRONT - 0.12, beta: 1.47 },
-    tablet: { at: world(head, new Vector3(0, 0.11, 0)), radius: 0.95, alpha: FRONT + 0.12, beta: 1.14 },
+    screen: { at: SCREEN.clone(), marker: SCREEN.add(new Vector3(1.12, 0.62, 0)), radius: 3.2, alpha: FRONT - 0.12, beta: 1.47 },
+    tablet: {
+      at: world(head, new Vector3(0, 0.11, 0)),
+      marker: world(head, new Vector3(0.27, 0.22, 0)),
+      radius: 0.68,
+      alpha: FRONT + 0.12,
+      beta: 1.14,
+    },
     laptop: { at: world(lid, new Vector3(0, 0.1, 0)), radius: 1.05, alpha: FRONT - 0.42, beta: 1.2 },
     brochures: { at: RACK.add(new Vector3(0, 0.9, 0)), radius: 1.75, alpha: FRONT - 0.9, beta: 1.3 },
     contact: { at: world(deskSign, new Vector3(0, 0.08, 0)), radius: 1.0, alpha: FRONT - 0.22, beta: 1.26 },
@@ -644,6 +652,11 @@ export function buildBooth(scene: Scene, url: (path: string) => string) {
     spots,
     lockup,
     productLightAt,
+    /** The two products on the stand get their own hidden spots: the wall screen and the tablet. */
+    feature: {
+      screen: { at: SCREEN.add(new Vector3(0.15, 2.1, -2.3)), aim: SCREEN.clone(), lit: [bezel, ...washLit.slice(0, 3)] },
+      tablet: { at: KIOSK.add(new Vector3(-0.2, 3.4, -0.35)), aim: world(head, new Vector3(0, 0.05, 0)), lit: [platform, hall, ...kiosk.getChildMeshes()] },
+    },
     /** The tablet screen's corners (TL, TR, BR, BL), for laying the live app over it. */
     tabletCorners: [
       [-1, 1],

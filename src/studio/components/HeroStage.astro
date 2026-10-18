@@ -472,7 +472,8 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
         // Show it once the camera has landed on the tablet.
         tabletTimer = window.setTimeout(() => tabletOpen && root.classList.add("is-tablet"), 500);
       };
-      tabletFrame.src = tabletSrc;
+      // Hold the still screen for a beat before booting the real app.
+      tabletTimer = window.setTimeout(() => tabletOpen && (tabletFrame.src = tabletSrc), 2000);
     };
 
     // --- engine ----------------------------------------------------------------

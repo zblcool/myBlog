@@ -401,6 +401,8 @@ function drawSplash(ctx: Ctx) {
 function drawBrochures(ctx: Ctx, modules: string[]) {
   const { height: H } = ctx.canvas;
   const w = Math.round(H * 0.707);
+  const pad = Math.round(w * 0.1);
+  const maxW = w - pad * 2;
   modules.forEach((name, i) => {
     const x = i * w;
     const g = ctx.createLinearGradient(x, 0, x + w, H);
@@ -409,14 +411,32 @@ function drawBrochures(ctx: Ctx, modules: string[]) {
     ctx.fillStyle = g;
     ctx.fillRect(x, 0, w, H);
     ctx.fillStyle = [ORANGE, STEEL, "#c9d0d6"][i % 3];
-    ctx.fillRect(x, 0, w, 10);
-    drawMark(ctx, x + 18, 30, 26, "onDark");
-    ctx.fillStyle = "#ffffff";
-    ctx.font = font(700, 30);
-    wrap(ctx, name, x + 18, H - 70, w - 36, 34, 2);
+    ctx.fillRect(x, 0, w, H * 0.035);
+    drawMark(ctx, x + pad, H * 0.11, H * 0.1, "onDark");
+    // The title fills the width without breaking a word: shrink until the longest word fits.
+    const words = /[　-鿿]/.test(name) ? [...name] : name.split(/s+/);
+    let size = H * 0.13;
+    ctx.font = font(700, size);
+    while (size > H * 0.06 && Math.max(...words.map((word) => ctx.measureText(word).width)) > maxW) {
+      size *= 0.94;
+      ctx.font = font(700, size);
+    }
+    const lines: string[] = [];
+    for (const word of words) {
+      const joiner = /[　-鿿]/.test(word) ? "" : " ";
+      const last = lines[lines.length - 1];
+      if (last !== undefined && ctx.measureText(last + joiner + word).width <= maxW) lines[lines.length - 1] = last + joiner + word;
+      else lines.push(word);
+    }
+    const lineH = size * 1.12;
+    const footer = H - pad * 0.9;
     ctx.fillStyle = MUTED;
-    ctx.font = font(500, 14);
-    ctx.fillText("Ashmartisan", x + 18, H - 22);
+    ctx.font = font(500, H * 0.05);
+    ctx.fillText("Ashmartisan", x + pad, footer);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = font(700, size);
+    const top = footer - H * 0.09 - (lines.length - 1) * lineH;
+    lines.forEach((line, n) => ctx.fillText(line, x + pad, top + n * lineH));
   });
 }
 
@@ -458,7 +478,7 @@ export async function createScreens(scene: Scene, copy: ScreenCopy, url: (path: 
   const app = texture("app-screen", 1600, 1000, scene);
   const tablet = texture("tablet-screen", 1024, 768, scene);
   const site = texture("site-screen", 1280, 800, scene);
-  const brochures = texture("brochures", Math.round(256 * 0.707) * copy.modules.length, 256, scene);
+  const brochures = texture("brochures", Math.round(512 * 0.707) * copy.modules.length, 512, scene);
   const desk = texture("desk-sign", 512, 256, scene);
   const ctx = (t: DynamicTexture) => t.getContext() as unknown as Ctx;
 
