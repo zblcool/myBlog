@@ -329,7 +329,7 @@ export function buildBooth(scene: Scene, url: (path: string) => string) {
   // ------------------------------------------------------------------ hall
   const hall = place(CreateGround("hall-floor", { width: 80, height: 80 }, scene), hallFloor, root, { cast: false });
   hall.position.z = 10;
-  flat(plane("hall-pool", 22, 22, pool), 0.3, 0.003, -0.5);
+  flat(plane("hall-pool", 22, 22, pool), 0.3, 0.01, -0.5);
 
   // Far-off hall lights, lost in the haze: depth, not decoration.
   const hallLight = emissive("hall-light");

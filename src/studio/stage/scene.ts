@@ -261,7 +261,9 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
   MeshoptCompression.Configuration = { decoder: { url: url("/studio/stage/meshopt_decoder.js") } };
   Logger.LogLevels = Logger.WarningLogLevel | Logger.ErrorLogLevel; // no version banner on the public site
 
-  const engine = new Engine(canvas, true, { preserveDrawingBuffer: false, stencil: false, powerPreference: "high-performance" }, false);
+  // stencil: iOS Safari falls back to a 16-bit depth buffer without one, and the floor decals
+  // then z-fight with the floor as coloured speckles.
+  const engine = new Engine(canvas, true, { preserveDrawingBuffer: false, stencil: true, powerPreference: "high-performance" }, false);
   // Full-bleed canvas: cap the pixel ratio, the hero is big.
   engine.setHardwareScalingLevel(1 / Math.min(window.devicePixelRatio || 1, lite ? 1.25 : 1.5));
 
@@ -441,7 +443,7 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
   // --- camera -------------------------------------------------------------------
   const camera = new ArcRotateCamera("camera", REST_ALPHA, REST_BETA, 14, OVERVIEW_TARGET.clone(), scene);
   camera.fov = FOV;
-  camera.minZ = 0.1;
+  camera.minZ = 0.2;
   camera.maxZ = 120;
   camera.lowerBetaLimit = 0.98;
   camera.upperBetaLimit = 1.52;
