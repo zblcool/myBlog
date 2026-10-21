@@ -11,7 +11,9 @@ export async function getStaticPaths() {
 }
 
 const { project, next } = Astro.props;
-const extra = project.gallery.filter((src) => src !== project.cover);
+const gallery = project.gallery
+  .map((item) => (typeof item === "string" ? { src: item } : item))
+  .filter((item) => project.banner || item.src !== project.cover);
 ---
 
 <BaseLayout title={`${project.title} | Ash Zhang`} description={project.headline}>
@@ -40,7 +42,11 @@ const extra = project.gallery.filter((src) => src !== project.cover);
       <div><span class="label">Stack</span><strong>{project.stack.join(", ")}</strong></div>
     </div>
 
-    <img class="case-cover" src={withBase(project.cover)} alt={project.title} />
+    {project.banner ? (
+      <img class="case-banner" src={withBase(project.banner)} alt={project.title} />
+    ) : (
+      <img class="case-cover" src={withBase(project.cover)} alt={project.title} />
+    )}
 
     <div class="case-story">
       <section><h2>Challenge</h2><p>{project.challenge}</p></section>
@@ -48,9 +54,28 @@ const extra = project.gallery.filter((src) => src !== project.cover);
       <section><h2>Outcome</h2><p>{project.outcome}</p></section>
     </div>
 
-    {extra.length > 0 && (
+    {project.demo && (
+      <section class="case-demo">
+        <div class="case-demo__head">
+          <h2>Live demo</h2>
+          <a class="link-arrow" href={project.demo.src} target="_blank" rel="noreferrer">Open full screen ↗</a>
+        </div>
+        <div class="case-demo__frame" data-demo-src={project.demo.src}>
+          <img src={withBase(project.demo.poster)} alt="" loading="lazy" />
+          <button class="btn btn--solid" type="button">Start the demo</button>
+        </div>
+        {project.demo.note && <p class="case-demo__note">{project.demo.note}</p>}
+      </section>
+    )}
+
+    {gallery.length > 0 && (
       <div class="case-gallery">
-        {extra.map((src) => <img src={withBase(src)} alt={project.title} loading="lazy" />)}
+        {gallery.map((item) => (
+          <figure class:list={[item.size && `case-gallery--${item.size}`]}>
+            <img src={withBase(item.src)} alt={item.caption ?? project.title} loading="lazy" />
+            {item.caption && <figcaption>{item.caption}</figcaption>}
+          </figure>
+        ))}
       </div>
     )}
 
@@ -60,3 +85,32 @@ const extra = project.gallery.filter((src) => src !== project.cover);
     </a>
   </article>
 </BaseLayout>
+
+<script>
+  // The demo is a full 3D scene with sound: load it only once the visitor asks for it.
+  document.querySelectorAll<HTMLElement>("[data-demo-src]").forEach((frame) => {
+    frame.querySelector("button")?.addEventListener("click", () => {
+      const iframe = document.createElement("iframe");
+      iframe.src = frame.dataset.demoSrc!;
+      iframe.title = "Live demo";
+      iframe.allow = "autoplay; fullscreen";
+      iframe.allowFullscreen = true;
+      frame.replaceChildren(iframe);
+
+      // Wheel zoom inside the demo would otherwise also scroll the page, and a
+      // cross-origin frame can't be stopped from here: freeze the page instead
+      // while the pointer is over it.
+      const root = document.documentElement;
+      const lock = () => {
+        root.style.paddingRight = `${window.innerWidth - root.clientWidth}px`;
+        root.style.overflow = "hidden";
+      };
+      frame.addEventListener("pointerenter", lock);
+      frame.addEventListener("pointerleave", () => {
+        root.style.overflow = "";
+        root.style.paddingRight = "";
+      });
+      lock();
+    });
+  });
+</script>

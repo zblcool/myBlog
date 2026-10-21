@@ -4,6 +4,13 @@ export type ProjectLink = {
   external?: boolean;
 };
 
+export type GalleryImage = {
+  src: string;
+  caption?: string;
+  /** "wide" spans the full row, "third" sits three to a row; default is two to a row. */
+  size?: "wide" | "third";
+};
+
 export type Project = {
   slug: string;
   title: string;
@@ -13,7 +20,11 @@ export type Project = {
   role: string;
   stack: string[];
   cover: string;
-  gallery: string[];
+  /** Shown at its own aspect ratio in place of the cover on the project page. */
+  banner?: string;
+  /** A live build embedded on the project page, loaded only when the visitor starts it. */
+  demo?: { src: string; poster: string; note?: string };
+  gallery: (string | GalleryImage)[];
   challenge: string;
   approach: string;
   outcome: string;
@@ -21,6 +32,69 @@ export type Project = {
 };
 
 export const projects: Project[] = [
+  {
+    slug: "my-little-universe",
+    title: "My Little Universe 我的小宇宙",
+    year: "2026",
+    kind: "Interactive 3D diorama",
+    headline:
+      "Real memories with friends rebuilt as tiny low-poly dioramas, where everyone lives on: they wander, chat, rehearse their lines and stop to wave when you tap them.",
+    role: "Concept, 3D, character behaviour, sound, front-end",
+    stack: ["Babylon.js", "React", "TypeScript", "Web Audio API"],
+    cover: "/pics/portfolios/little-universe/courtyard-still.webp",
+    banner: "/pics/portfolios/little-universe/poster.webp",
+    demo: {
+      src: "https://friend-little-universe.vercel.app/",
+      poster: "/pics/portfolios/little-universe/courtyard-still.webp",
+      note: "Drag to look around, tap people and the things that carry a story. Long-press someone to pick them up.",
+    },
+    gallery: [
+      {
+        src: "/pics/portfolios/little-universe/courtyard.webp",
+        caption: "The drama club rehearsing 《小院》 on the rehearsal-room floor, the play's courtyard standing as scenery.",
+      },
+      {
+        src: "/pics/portfolios/little-universe/stage-film.webp",
+        caption: "From the title card to 《青春禁忌游戏》 on the 成电会堂 stage, then the film camera cutting into close-ups.",
+      },
+      {
+        src: "/pics/portfolios/little-universe/auditorium.webp",
+        caption: "《青春禁忌游戏》 under the stage lights, with the crew at the lighting desk.",
+      },
+      {
+        src: "/pics/portfolios/little-universe/phone.webp",
+        caption: "Running on a phone in landscape.",
+      },
+      {
+        src: "/pics/portfolios/little-universe/card-rooftop.webp",
+        caption: "Concept: Friday on the roof.",
+        size: "third",
+      },
+      {
+        src: "/pics/portfolios/little-universe/card-courtyard.webp",
+        caption: "Concept: the courtyard rehearsal.",
+        size: "third",
+      },
+      {
+        src: "/pics/portfolios/little-universe/card-stage.webp",
+        caption: "Concept: Elena's flat on stage.",
+        size: "third",
+      },
+    ],
+    challenge:
+      "Turn a handful of photos into places you can step back into. A memory should feel alive rather than frozen: friends who behave like themselves, recognisable details, and a mood that matches the night it was taken. And it all has to run in a phone browser.",
+    approach:
+      "Each memory starts from a photo: pick the two or three objects that make the moment recognisable, simplify the rest into reusable procedural props, and cast friends as chibi actors with their own hair, height, pace and chattiness. A small behaviour engine has them wander round the scenery, pair up for conversations, take breaks, pose for group selfies and react to each other's lines. The original photo lies somewhere on the set as a Polaroid you can pick up. A film-camera mode plays wide, sliding and close-up shots with letterbox subtitles, and everything you hear, from each actor's babble voice to the music-box waltz, is synthesized live with the Web Audio API.",
+    outcome:
+      "Live in the browser with four memories: 排练室里的《小院》, 《青春禁忌游戏》 in the rehearsal room or on the 成电会堂 stage, 可怜的树 from two photos taken four years apart, and 某次无关未来的录音, a recording session with a tiny auditorium beside it that people jump across to. Merging static geometry and caching the mirror's reflection took a scene from about 2,000 draw calls to about 370 per frame. Visitors can leave messages that, once approved, become part of what a character says.",
+    links: [
+      {
+        label: "Open the live demo",
+        href: "https://friend-little-universe.vercel.app/",
+        external: true,
+      },
+    ],
+  },
   {
     slug: "hanzi-hero",
     title: "Hanzi Hero 字海残卷",

@@ -509,6 +509,13 @@ a.tag:hover {
   object-fit: cover;
 }
 
+.case-banner {
+  display: block;
+  width: 100%;
+  margin-top: 2rem;
+  border-radius: 6px;
+}
+
 .case-story {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -526,16 +533,93 @@ a.tag:hover {
   color: var(--accent);
 }
 
+.case-demo {
+  margin-bottom: clamp(3rem, 7vw, 5rem);
+}
+
+.case-demo__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.case-demo__head h2 {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.case-demo__frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-radius: 6px;
+  background: #1d1b2a;
+}
+
+.case-demo__frame img,
+.case-demo__frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.case-demo__frame img {
+  object-fit: cover;
+  filter: brightness(0.7);
+}
+
+.case-demo__frame .btn {
+  position: relative;
+  cursor: pointer;
+  font: inherit;
+}
+
+.case-demo__note {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
 .case-gallery {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1.5rem 1rem;
+}
+
+.case-gallery figure {
+  grid-column: span 3;
+  margin: 0;
+}
+
+.case-gallery .case-gallery--wide {
+  grid-column: 1 / -1;
+}
+
+.case-gallery .case-gallery--third {
+  grid-column: span 2;
 }
 
 .case-gallery img {
+  display: block;
   width: 100%;
   border-radius: 6px;
   border: 1px solid var(--line);
+}
+
+.case-gallery figcaption {
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.875rem;
 }
 
 .case-next {
@@ -758,9 +842,17 @@ a.tag:hover {
 }
 
 @media (max-width: 640px) {
-  .work-grid,
-  .case-gallery {
+  .work-grid {
     grid-template-columns: 1fr;
+  }
+
+  .case-gallery figure,
+  .case-gallery .case-gallery--third {
+    grid-column: 1 / -1;
+  }
+
+  .case-demo__frame {
+    aspect-ratio: 4 / 5;
   }
 
   .work-card--lead .work-card__media {
