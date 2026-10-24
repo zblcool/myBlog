@@ -33,6 +33,74 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    slug: "vibe-coding-simulator",
+    title: "Vibe Coding Simulator: Ship It!",
+    year: "2026",
+    kind: "Game in development",
+    headline:
+      "Quit your job, let the AI write your code, and try not to go bankrupt before Investor Demo Day: a cozy startup simulator in a low-poly 3D office, where every product is built in a card-combo roguelite.",
+    role: "Concept, game design, 3D, systems, UI, front-end",
+    stack: ["Babylon.js", "React", "TypeScript", "Zustand", "Vitest", "Blender"],
+    cover: "/pics/portfolios/vibe-coding-simulator/ui-title.webp",
+    gallery: [
+      {
+        src: "/pics/portfolios/vibe-coding-simulator/harbour.webp",
+        caption: "Two worlds outside the window: the office tower by the harbour bridge at sunset...",
+      },
+      {
+        src: "/pics/portfolios/vibe-coding-simulator/railway.webp",
+        caption: "...and a railway apartment at blue hour, with trains passing through the towers.",
+      },
+      {
+        src: "/pics/portfolios/vibe-coding-simulator/vibeos-combo.webp",
+        caption: "Vibe OS: chain one to three cards, in order, into Chips × Mult. Prompt + Architecture + Modifier makes a Full Stack combo.",
+      },
+      {
+        src: "/pics/portfolios/vibe-coding-simulator/vibeos-quarter.webp",
+        caption: "An Engineering Quarter: the Archivist as the AI Hero, a Sprint KPI to hit and a Release Day crisis waiting.",
+      },
+      {
+        src: "/pics/portfolios/vibe-coding-simulator/vibeos-score.webp",
+        caption: "A Brute Force hand landing against the Alpha Sprint KPI.",
+      },
+      {
+        src: "/pics/portfolios/vibe-coding-simulator/vibeos-event.webp",
+        caption: "A major decision between Sprints: cut the MVP to the bone, or give everybody their button.",
+      },
+      {
+        src: "/pics/portfolios/vibe-coding-simulator/ui-loadout.webp",
+        caption: "Quarter loadout in the studio: focus, AI Hero, deck and studio bonuses before entering Vibe OS.",
+      },
+      {
+        src: "/pics/portfolios/vibe-coding-simulator/ui-event.webp",
+        caption: "Development events, with skill checks and their odds shown up front.",
+      },
+      {
+        src: "/pics/portfolios/vibe-coding-simulator/dive-into-monitor.webp",
+        caption: "Resuming a Quarter dives the camera into the monitor.",
+      },
+      {
+        src: "/pics/portfolios/vibe-coding-simulator/first-person-door.webp",
+        caption: "First person: walk the room as the founder, past the Master Plan.",
+      },
+      {
+        src: "/pics/portfolios/vibe-coding-simulator/ui-shop.webp",
+        caption: "Office upgrades: each piece buys a bonus in every Quarter.",
+      },
+      {
+        src: "/pics/portfolios/vibe-coding-simulator/first-person-desk.webp",
+        caption: "Sit down at the desk to work, or talk to the Archivist at hers.",
+      },
+    ],
+    challenge:
+      "Make a management sim about building software with AI that is actually funny and actually a game: the choice between doing it yourself, with the AI or both has to matter, shortcuts have to come back to bite you later, and the office should be a place you like spending time in.",
+    approach:
+      "Two layers. The studio is the persistent one: founder, products, office, AI plan and money. Each product is built in Vibe OS, a Balatro-inspired card roguelite where cards like Furious Pseudocode, Monolith and It's a Feature combine in order and leftover Bugs become tech debt. The simulation is deterministic TypeScript, so balance bots replay hundreds of runs per strategy on every test. The AI companion, the Archivist, does the AI work, spends your credits and grows across runs, and outside the glass wall sits a whole low-poly city with synthesized ambience.",
+    outcome:
+      "In active development. The studio loop, the Vibe OS card game and the hand-off between them are playable, with two exteriors, first-person walking and the companion in place. Next up are real models in place of the procedural placeholders, more content and a public build.",
+    links: [],
+  },
+  {
     slug: "my-little-universe",
     title: "My Little Universe 我的小宇宙",
     year: "2026",
