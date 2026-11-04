@@ -4,6 +4,7 @@
  * explainer, see its src/app/demo/scenes.ts). The explainer shows the same choice when opened bare.
  */
 import ScenarioArt from "./ScenarioArt.astro";
+import Tip from "./Tip.astro";
 import { demoLink } from "@/studio/config";
 import { solutions } from "@/studio/data/solutions";
 import { withBase } from "@/lib/paths";
@@ -26,25 +27,15 @@ const pageOf = (scene: string) => solutions.find((sol) => sol.scene === scene);
 {chooser && (
   <section class="section scenarios" id="demo">
     <div class="wrap">
-      <div class="section__head section__head--split">
-        <div>
-          <p class="eyebrow">{s.label}</p>
-          <h2>{s.title}</h2>
-        </div>
-        <p class="section__lead">{s.lead}</p>
-      </div>
+      <h2 class="section__title">{s.title}</h2>
       <div class="scenarios__grid">
         {s.items.map((item) => (
           <article class="scenario">
             <ScenarioArt scene={item.id as Scene} class="scenario__art" />
-            <h3>{item.title}</h3>
-            <span class="scenario__where">{item.where}</span>
-            <ul class="scenario__points">
-              {item.points.map((point) => <li>{point}</li>)}
-            </ul>
-            <span class="scenario__device">
-              {s.shownWith.replace("{name}", t.showcase.devices[devices[item.id as keyof typeof devices]].name)}
-            </span>
+            <h3>
+              {item.title}
+              <Tip text={`${item.where}: ${item.points.join(" · ")}. ${s.shownWith.replace("{name}", t.showcase.devices[devices[item.id as Scene]].name)}`} />
+            </h3>
             <span class="scenario__actions">
               <a class="scenario__go" href={demoLink(undefined, { scene: item.id, lang: t.lang })} target="_blank" rel="noreferrer">{s.open} ↗</a>
               {t.lang === "en" && pageOf(item.id) && (

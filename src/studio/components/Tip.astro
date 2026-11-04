@@ -1,0 +1,27 @@
+---
+/**
+ * A small ⓘ that shows a short explanation on hover, keyboard focus or tap. Descriptions that
+ * must exist go here instead of into the page (site rule: don't explain the UI with text).
+ * `links` adds source links inside the bubble.
+ */
+interface Props {
+  text: string;
+  label?: string;
+  links?: { href: string; label: string }[];
+}
+
+const { text, label = "More information", links = [] } = Astro.props;
+const id = `tip-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<span class="tip">
+  <button class="tip__btn" type="button" aria-label={label} aria-describedby={id}>
+    <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" /><path d="M8 7.2v4M8 4.8v.01" /></svg>
+  </button>
+  <span class="tip__bubble" role="tooltip" id={id}>
+    {text}
+    {links.map((link) => (
+      <a href={link.href} target="_blank" rel="noreferrer">{link.label} ↗</a>
+    ))}
+  </span>
+</span>

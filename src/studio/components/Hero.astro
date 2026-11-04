@@ -103,19 +103,14 @@ const tabletApp = demoLink("pump-set", { lang: t.lang, embed: "1", autostart: "1
             </button>
           ))}
         </div>
-        <span class="app__hint" data-hint>{h.hint}</span>
         {live && (
-          <button class="app__go-live" type="button" data-go-live={live}>
+          <button class="app__go-live" type="button" data-go-live={live} title={h.liveNote}>
             <span class="app__dot" aria-hidden="true"></span>
-            {h.live} <small>{h.liveNote}</small>
+            {h.live}
           </button>
         )}
       </div>
     </div>
-
-    <ul class="hero__points">
-      {h.points.map((point) => <li>{point}</li>)}
-    </ul>
   </div>
 </section>
 

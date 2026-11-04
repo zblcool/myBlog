@@ -6,6 +6,7 @@
  * path, so the landing pages can link back to its sections.
  */
 import Icon from "./Icon.astro";
+import Tip from "./Tip.astro";
 import { demoLink } from "@/studio/config";
 import type { Copy } from "@/studio/i18n/en";
 
@@ -52,13 +53,10 @@ const cards = [
 
 <section class="section section--paper" id="platform">
   <div class="wrap">
-    <div class="section__head section__head--split">
-      <div>
-        <p class="eyebrow">{p.label}</p>
-        <h2>{p.title}</h2>
-      </div>
-      <p class="section__lead">{p.lead}</p>
-    </div>
+    <h2 class="section__title">
+      {p.title}
+      <Tip text={p.lead} />
+    </h2>
     <div class="modules">
       {cards.map((card) => (
         <article class:list={["module", `module--${card.status}`]}>
@@ -66,12 +64,16 @@ const cards = [
             <Icon name={card.icon} />
             <span class="module__status">{p.status[card.status]}</span>
           </div>
-          <h3>{card.c.name}</h3>
-          <p>{card.c.text}</p>
-          <ul class="module__points">
-            {card.c.points.map((point) => <li>{point}</li>)}
-          </ul>
-          <p class="module__note">{card.c.note}</p>
+          <h3>
+            {card.c.name}
+            <Tip text={card.status === "future" ? `${card.c.text} ${card.c.points.join(". ")}.` : `${card.c.text} ${card.c.note}`} />
+          </h3>
+          {/* "In discovery" says it all; that card's points live in its tip. */}
+          {card.status !== "future" && (
+            <ul class="module__points">
+              {card.c.points.map((point) => <li>{point}</li>)}
+            </ul>
+          )}
           <div class="module__actions">
             {card.primary.href && (
               <a

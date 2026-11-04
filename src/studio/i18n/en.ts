@@ -10,10 +10,7 @@ export const en = {
   tagline: "Interactive ideas for real world equipment",
   nav: {
     platform: "Platform",
-    product: "Product",
     showcase: "Showcase",
-    shows: "Trade shows",
-    process: "How it works",
     pricing: "Pricing",
     faq: "FAQ",
     cta: "Book a demo",
@@ -24,10 +21,8 @@ export const en = {
   hero: {
     eyebrow: "Interactive Equipment Explainer",
     title: "Show buyers how your equipment <em>works</em>, not just how it looks.",
-    lead: "We turn your CAD or product model into a 3D explainer that runs in any browser. Buyers click a part to learn what it does, look inside with X-ray and section views, take it apart and watch it run. The same build works on your website, a sales rep's tablet and your trade-show screen.",
     primary: "Try the live demo",
     secondary: "Book a demo",
-    points: ["Runs in the browser, no app to install", "From phones to 4K stand screens", "Works offline at trade shows", "Multilingual: Spanish and more"],
     device: "Worm Gear Reducer",
     quote: "Get a quote",
     hint: "Click a numbered part",
@@ -70,7 +65,6 @@ export const en = {
     close: "Close",
     hint: "Drag to look around · click a glowing point",
     wheelHint: "Hold {key} and scroll to zoom",
-    scroll: "Scroll to step onto the stand",
     next: "Scroll down",
     zoomIn: "Zoom in",
     zoomOut: "Zoom out",
@@ -169,24 +163,6 @@ export const en = {
       },
     },
   },
-  problem: {
-    label: "The problem",
-    title: "A spec sheet can't show a buyer how a gearbox works.",
-    items: [
-      {
-        title: "Specs don't explain function",
-        text: "Buyers who don't understand the mechanism end up comparing on price. Datasheets list numbers; they rarely show why your design is better.",
-      },
-      {
-        title: "Videos only go one way",
-        text: "A video plays the same for everyone. A buyer can't stop at the part they care about, look inside it or ask about it.",
-      },
-      {
-        title: "Stand visitors disappear",
-        text: "Visitors take a flyer and walk on. You don't know what caught their interest, and most never get in touch.",
-      },
-    ],
-  },
   evidence: {
     label: "Why interactive",
     title: "Buyers want to explore on their own. 3D gives them something to explore.",
@@ -223,21 +199,6 @@ export const en = {
     note: "Industry figures from the sources shown, not guaranteed results for your products. The two 3D figures come from e-commerce and automotive.",
     cta: "See it on your own product",
   },
-  product: {
-    label: "The product",
-    title: "What a buyer would do with the real machine, in a browser tab.",
-    lead: "The Interactive Equipment Explainer is built for mechanical products: assemblies with parts that move, mesh, clamp or spin.",
-    features: [
-      { icon: "target", title: "Click any part", text: "The camera flies to it and a panel explains what it does, with specs and a button to ask about it." },
-      { icon: "xray", title: "X-ray, section, blueprint", text: "See through the housing, cut it open or switch to a technical-drawing look." },
-      { icon: "explode", title: "Exploded view and assembly", text: "Pull the assembly apart along its real axes, then put it back together step by step." },
-      { icon: "play", title: "Guided walkthroughs", text: "A captioned sequence shows the working cycle: how the brake clamps, how the reduction works." },
-      { icon: "sliders", title: "Live parameters", text: "Sliders for speed or load, with read-outs that update while the model runs." },
-      { icon: "swatch", title: "Colours and finishes", text: "Switch RAL colours and finishes so buyers see the configuration they would order." },
-      { icon: "link", title: "Shareable views", text: "Every product and part has its own link. Sales can send a buyer straight to the right detail." },
-      { icon: "globe", title: "Multilingual", text: "Speak your buyers' language: Spanish and more. Adding a language means adding text, not code." },
-    ],
-  },
   showcase: {
     label: "Showcase",
     title: "Four machines you can take apart right now.",
@@ -273,7 +234,6 @@ export const en = {
   scenarios: {
     label: "Live demo",
     title: "Try it the way you would use it.",
-    lead: "Pick a scenario and the live demo opens a product set up for it. Everything runs in your browser, nothing to install.",
     open: "Open this demo",
     more: "Learn more",
     shownWith: "Shown with: {name}",
@@ -312,20 +272,6 @@ export const en = {
       },
     ],
   },
-  shows: {
-    label: "Trade shows",
-    title: "The same build runs your stand.",
-    lead: "Switch on kiosk mode and the screen plays the walkthroughs by itself. When someone touches it, it stops and hands over control. When they walk away, it starts again.",
-    items: [
-      { title: "Attract loop", text: "Cycles through every product's walkthrough and stops the moment someone touches the screen." },
-      { title: "Take-home QR code", text: "The code on screen follows the product and part on display. Visitors scan it and the same view opens on their phone." },
-      { title: "Runs offline", text: "The offline build carries its models, lighting and fonts. A poor venue connection doesn't stop the demo." },
-      { title: "Counts stand visitors", text: "Each visitor session is recorded: how long they stayed and which products and parts they looked at." },
-    ],
-    qrTitle: "Take it home",
-    qrText: "Scan to open this view on your phone",
-    kiosk: "Kiosk mode",
-  },
   leads: {
     label: "Enquiries",
     title: "Enquiries arrive with context.",
@@ -348,20 +294,11 @@ export const en = {
       link: "Open the exact view ↗",
     },
   },
-  services: {
-    label: "What we make",
-    items: [
-      { icon: "cube", title: "3D visualisation", text: "Accurate, lightweight models of your products, optimised to load fast on any device." },
-      { icon: "gear", title: "Interactive demos", text: "Parts that move the way the real ones do, controlled by the buyer." },
-      { icon: "box", title: "Product explainers", text: "The story of how it works, told part by part, in your buyers' language." },
-      { icon: "screens", title: "Web and exhibition", text: "One build for your website, your sales team and your stand." },
-    ],
-  },
   process: {
     label: "How it works",
     title: "From your files to a live explainer.",
     steps: [
-      { title: "Send what you have", text: "an existing 3D model, or photos and drawings if there is no model yet." },
+      { title: "Send what you have", text: "An existing 3D model, or photos and drawings if there is no model yet." },
       { title: "We build the model and the story", text: "We prepare the model for you, name every part, and write the explanations and walkthroughs with your engineers." },
       { title: "Review on a private link", text: "You check the content and the behaviour on your own devices and ask for changes." },
       { title: "Launch", text: "Embed it on your website, run it at shows and give sales the links. It can carry your brand instead of ours." },
@@ -508,7 +445,6 @@ export const en = {
   contact: {
     label: "Contact",
     title: "Have a machine that's hard to <em>explain?</em>",
-    lead: "Tell us what you make and where you want to show it, and we'll be in touch.",
     fields: {
       name: "Name",
       email: "Work email",

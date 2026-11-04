@@ -1,13 +1,15 @@
 ---
+/**
+ * The business home page. Rule: show, don't explain. Each section is a heading plus something
+ * to look at or use; any explanation that has to exist sits in a Tip, off the main view.
+ */
 import Contact from "./Contact.astro";
 import Hero from "./Hero.astro";
-import Scenarios from "./Scenarios.astro";
-import Icon from "./Icon.astro";
 import Modules from "./Modules.astro";
 import Pricing from "./Pricing.astro";
-import Showcase from "./Showcase.astro";
-import { demoLink } from "@/studio/config";
-import { shot } from "@/studio/data/devices";
+import Scenarios from "./Scenarios.astro";
+import Tip from "./Tip.astro";
+import { products } from "@/studio/data/products";
 import type { Copy } from "@/studio/i18n/en";
 import { withBase } from "@/lib/paths";
 
@@ -16,141 +18,63 @@ interface Props {
 }
 
 const { t } = Astro.props;
-const kioskLink = demoLink(undefined, { scene: "tradeshow", lang: t.lang });
-const modes = [
-  { device: "disk-brake", view: "xray" },
-  { device: "hope-rotor", view: "exploded" },
-  { device: "worm-gearbox", view: "section" },
-] as const;
+// Product pages are English only, like the other landing pages.
+const productPages = t.lang === "en";
 ---
 
 <Hero t={t} />
 
-<Modules t={t} />
-
-<Scenarios t={t} />
-
-<section class="section section--paper" id="problem">
-  <div class="wrap">
-    <div class="section__head">
-      <p class="eyebrow">{t.problem.label}</p>
-      <h2>{t.problem.title}</h2>
-    </div>
-    <ol class="problems">
-      {t.problem.items.map((item, i) => (
-        <li>
-          <span class="problems__num">0{i + 1}</span>
-          <h3>{item.title}</h3>
-          <p>{item.text}</p>
-        </li>
-      ))}
-    </ol>
-  </div>
-</section>
-
 <section class="section section--navy" id="evidence">
   <div class="wrap">
-    <div class="section__head">
-      <p class="eyebrow">{t.evidence.label}</p>
-      <h2>{t.evidence.title}</h2>
-    </div>
+    <h2 class="section__title">
+      {t.evidence.title}
+      <Tip text={t.evidence.note} />
+    </h2>
     <ul class="stats">
       {t.evidence.items.map((item) => (
         <li>
           <strong class="stats__value">{item.value}</strong>
-          <h3>{item.title}</h3>
-          <p>{item.text}</p>
-          <a href={item.href} target="_blank" rel="noreferrer">{item.source} ↗</a>
+          <h3>
+            {item.title}
+            <Tip text={item.text} links={[{ href: item.href, label: item.source }]} />
+          </h3>
         </li>
       ))}
     </ul>
-    <p class="stats__note">{t.evidence.note}</p>
-    <a class="link-arrow" href="#contact">{t.evidence.cta} →</a>
   </div>
 </section>
 
-<section class="section" id="product">
+<section class="section section--paper" id="showcase">
   <div class="wrap">
-    <div class="section__head section__head--split">
-      <div>
-        <p class="eyebrow">{t.product.label}</p>
-        <h2>{t.product.title}</h2>
-      </div>
-      <p class="section__lead">{t.product.lead}</p>
-    </div>
-    <div class="features">
-      {t.product.features.map((feature) => (
-        <article class="feature">
-          <Icon name={feature.icon} />
-          <h3>{feature.title}</h3>
-          <p>{feature.text}</p>
-        </article>
-      ))}
-    </div>
-    <div class="modes">
-      {modes.map(({ device, view }) => (
-        <figure>
-          <div class="modes__img">
-            <img src={withBase(shot(device, view))} alt={`${t.showcase.devices[device].name}: ${t.hero.views[view]}`} width="1600" height="1000" loading="lazy" />
-          </div>
-          <figcaption>{t.hero.views[view]} · {t.showcase.devices[device].name}</figcaption>
-        </figure>
-      ))}
+    <h2 class="section__title">{t.showcase.title}</h2>
+    <div class="machines">
+      {products.map((p) => {
+        const card = (
+          <>
+            <img src={withBase(p.diagram.image)} alt="" width={p.diagram.width} height={p.diagram.height} loading="lazy" />
+            <strong>{t.showcase.devices[p.id].name}</strong>
+          </>
+        );
+        return productPages ? (
+          <a class="machine" href={withBase(`/showcase/${p.id}/`)}>{card}</a>
+        ) : (
+          <div class="machine">{card}</div>
+        );
+      })}
     </div>
   </div>
 </section>
 
-<Showcase t={t} />
+<Scenarios t={t} />
 
-<section class="section" id="shows">
-  <div class="wrap split">
-    <div>
-      <p class="eyebrow">{t.shows.label}</p>
-      <h2>{t.shows.title}</h2>
-      <p class="section__lead">{t.shows.lead}</p>
-      <ul class="checklist">
-        {t.shows.items.map((item) => (
-          <li>
-            <h3>{item.title}</h3>
-            <p>{item.text}</p>
-          </li>
-        ))}
-      </ul>
-      {kioskLink && (
-        <a class="link-arrow" href={kioskLink} target="_blank" rel="noreferrer">{t.shows.kiosk} ↗</a>
-      )}
-    </div>
-    <div class="kiosk" aria-hidden="true">
-      <div class="kiosk__screen">
-        <img src={withBase(shot("jet-engine", "scan"))} alt="" width="1600" height="1000" loading="lazy" />
-        <span class="kiosk__badge"><span class="app__dot"></span>{t.shows.kiosk}</span>
-        <div class="kiosk__caption">
-          <span>02 / 05</span>
-          {t.showcase.devices["jet-engine"].tagline}
-        </div>
-        <div class="kiosk__qr">
-          <span class="qr"></span>
-          <span>
-            <strong>{t.shows.qrTitle}</strong>
-            {t.shows.qrText}
-          </span>
-        </div>
-      </div>
-      <div class="kiosk__stand"></div>
-    </div>
-  </div>
-</section>
+<Modules t={t} />
 
 <section class="section section--navy-2" id="leads">
   <div class="wrap split split--reverse">
-    <div>
-      <p class="eyebrow">{t.leads.label}</p>
-      <h2>{t.leads.title}</h2>
-      <p class="section__lead">{t.leads.lead}</p>
-      <ul class="ticks">
-        {t.leads.points.map((point) => <li>{point}</li>)}
-      </ul>
-    </div>
+    <h2 class="section__title">
+      {t.leads.title}
+      <Tip text={t.leads.lead} />
+    </h2>
     <div class="enquiry-card" aria-label={t.leads.card.header}>
       <div class="enquiry-card__head">
         <span class="enquiry-card__dot"></span>
@@ -170,30 +94,17 @@ const modes = [
   </div>
 </section>
 
-<section class="services" aria-label={t.services.label}>
-  <div class="wrap services__grid">
-    {t.services.items.map((item) => (
-      <div class="service">
-        <Icon name={item.icon} size={40} />
-        <h3>{item.title}</h3>
-        <p>{item.text}</p>
-      </div>
-    ))}
-  </div>
-</section>
-
 <section class="section" id="process">
   <div class="wrap">
-    <div class="section__head">
-      <p class="eyebrow">{t.process.label}</p>
-      <h2>{t.process.title}</h2>
-    </div>
+    <h2 class="section__title">{t.process.title}</h2>
     <ol class="steps">
       {t.process.steps.map((step, i) => (
         <li>
           <span class="steps__num">{i + 1}</span>
-          <h3>{step.title}</h3>
-          <p>{step.text}</p>
+          <h3>
+            {step.title}
+            <Tip text={step.text} />
+          </h3>
         </li>
       ))}
     </ol>
@@ -204,13 +115,10 @@ const modes = [
 
 <section class="section section--paper" id="faq">
   <div class="wrap split split--faq">
-    <div>
-      <p class="eyebrow">{t.faq.label}</p>
-      <h2>{t.faq.title}</h2>
-    </div>
+    <h2 class="section__title">{t.faq.title}</h2>
     <div class="faq">
-      {t.faq.items.map((item, i) => (
-        <details open={i === 0}>
+      {t.faq.items.map((item) => (
+        <details>
           <summary>{item.q}</summary>
           <p>{item.a}</p>
         </details>

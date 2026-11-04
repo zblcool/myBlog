@@ -21,6 +21,7 @@ import {
   styleIds,
   themeIds,
 } from "@/studio/stage/presets";
+import Tip from "./Tip.astro";
 import type { Copy } from "@/studio/i18n/en";
 import { heroHotspots, shot } from "@/studio/data/devices";
 import type { ScreenCopy } from "@/studio/stage/screens";
@@ -67,7 +68,8 @@ const screenCopy: ScreenCopy = {
 // The clickable things on the stand and where each one leads.
 const spotIds = ["screen", "tablet", "laptop", "exhibit", "brochures", "contact"] as const;
 const spotHref = {
-  screen: "#shows",
+  // The trade-show landing page (English only); other languages go to the scenario cards.
+  screen: t.lang === "en" ? withBase("/trade-show-touch-screen/") : "#demo",
   tablet: demoLinks["worm-gearbox"] || "#demo",
   laptop: "#showcase",
   exhibit: "", // per exhibit, from data-demos
@@ -111,7 +113,6 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
       <div class="booth-hero__copy">
         <p class="eyebrow">{h.eyebrow}</p>
         <h1 set:html={h.title} />
-        <p class="hero__lead">{h.lead}</p>
         <div class="actions">
           <a class="btn btn--orange" href={primaryHref}>
             {h.primary}
@@ -123,8 +124,10 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
 
       <aside class="booth-hero__exhibit" data-nosnippet aria-label={s.exhibitLabel}>
         <p class="eyebrow">{s.exhibitLabel}</p>
-        <p class="booth-hero__exhibit-name" data-stage-name>{s.equipmentNames[defaultConfig.equipment]}</p>
-        <p class="booth-hero__exhibit-text">{s.exhibitText}</p>
+        <p class="booth-hero__exhibit-name">
+          <span data-stage-name>{s.equipmentNames[defaultConfig.equipment]}</span>
+          <Tip text={s.exhibitText} />
+        </p>
         <div class="actions">
           {firstDemo && (
             <a class="btn btn--orange btn--sm" href={firstDemo} target="_blank" rel="noreferrer" data-stage-demo>
@@ -164,7 +167,7 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
         <span class="booth-hero__live"><span class="app__dot" aria-hidden="true"></span>{s.label}</span>
         <span data-stage-name>{s.equipmentNames[defaultConfig.equipment]}</span>
       </p>
-      <p class="booth-hero__scroll" aria-hidden="true"><span></span>{s.scroll}</p>
+      <p class="booth-hero__scroll" aria-hidden="true"><span></span></p>
       <!-- Phones: the booth fills the screen, so give the page an easy way on (one screen at a time). -->
       <button class="booth-hero__next stage-icon" type="button" data-stage-next aria-label={s.next} title={s.next}>
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5" /></svg>

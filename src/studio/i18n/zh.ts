@@ -11,10 +11,7 @@ export const zh: Copy = {
   tagline: "Interactive ideas for real world equipment",
   nav: {
     platform: "平台",
-    product: "产品",
     showcase: "案例",
-    shows: "展会",
-    process: "合作流程",
     pricing: "价格",
     faq: "常见问题",
     cta: "预约演示",
@@ -25,10 +22,8 @@ export const zh: Copy = {
   hero: {
     eyebrow: "工业设备交互式原理展示器",
     title: "让客户看懂设备<em>怎么工作</em>，而不只是长什么样。",
-    lead: "我们把你的 CAD 或产品模型做成在浏览器里运行的 3D 原理展示：客户点击任意零件就能看到它的作用，用透视和剖切看内部结构，把设备拆开，再看它运转起来。同一份成果可以放在官网、销售的平板和展会大屏上。",
     primary: "体验在线演示",
     secondary: "预约演示",
-    points: ["浏览器直接打开，无需安装", "手机到 4K 展台大屏都能用", "展会现场可离线运行", "多语言：西班牙语等"],
     device: "蜗轮蜗杆减速器",
     quote: "获取报价",
     hint: "点击带编号的零件",
@@ -71,7 +66,6 @@ export const zh: Copy = {
     close: "关闭",
     hint: "拖动环顾展位 · 点击发光点",
     wheelHint: "按住 {key} 滚动以缩放",
-    scroll: "向下滚动，走近展台",
     next: "向下滚动",
     zoomIn: "放大",
     zoomOut: "缩小",
@@ -170,24 +164,6 @@ export const zh: Copy = {
       },
     },
   },
-  problem: {
-    label: "痛点",
-    title: "一张参数表，讲不清一台减速器是怎么工作的。",
-    items: [
-      {
-        title: "参数讲不出原理",
-        text: "客户看不懂结构，最后只能比价格。规格书列的是数字，很难说明你的设计好在哪里。",
-      },
-      {
-        title: "视频只能单向播放",
-        text: "视频对每个人都一样。客户没法停在自己关心的零件上，看不到内部，也没法就地提问。",
-      },
-      {
-        title: "展台访客转身就走",
-        text: "访客拿了一张单页就离开。你不知道他们对什么感兴趣，大多数人也不会再联系你。",
-      },
-    ],
-  },
   evidence: {
     label: "为什么要交互",
     title: "买家想自己了解产品，3D 给他们可以探索的东西。",
@@ -224,21 +200,6 @@ export const zh: Copy = {
     note: "以上为各来源公布的行业数据，并非对你产品的效果承诺。两项 3D 数据分别来自电商和汽车行业。",
     cta: "用你的产品试一试",
   },
-  product: {
-    label: "产品",
-    title: "客户想对真机做的事，在浏览器里都能做。",
-    lead: "交互式原理展示器专为机械产品设计：有零件在运动、啮合、夹紧或旋转的装配体。",
-    features: [
-      { icon: "target", title: "点击任意零件", text: "相机自动飞到零件前，面板说明它的作用，附带规格和咨询按钮。" },
-      { icon: "xray", title: "透视、剖切、蓝图", text: "看穿外壳、剖开箱体，或者切换成工程图风格。" },
-      { icon: "explode", title: "拆解与组装", text: "沿真实轴向把装配体拆开，再一步一步装回去。" },
-      { icon: "play", title: "原理演示", text: "带字幕的分步演示讲清工作过程：刹车怎么夹紧，减速比怎么来。" },
-      { icon: "sliders", title: "运行参数", text: "拖动转速、负载等滑块，读数随模型运转实时更新。" },
-      { icon: "swatch", title: "颜色与涂装", text: "切换 RAL 色号和表面处理，客户看到的就是他要下单的配置。" },
-      { icon: "link", title: "可分享的视角", text: "每个产品、每个零件都有独立链接，销售可以把客户直接带到要讲的细节。" },
-      { icon: "globe", title: "多语言", text: "用客户的语言展示：西班牙语等多种语言。增加语言只需要补充文本，不用改代码。" },
-    ],
-  },
   showcase: {
     label: "案例",
     title: "四台设备，现在就能拆开看。",
@@ -274,7 +235,6 @@ export const zh: Copy = {
   scenarios: {
     label: "在线演示",
     title: "按你的使用方式来体验。",
-    lead: "选一个场景，在线演示会打开一个按这种方式设置好的产品。全部在浏览器里运行，无需安装。",
     open: "打开这个演示",
     more: "了解更多",
     shownWith: "演示设备：{name}",
@@ -300,20 +260,6 @@ export const zh: Copy = {
       },
     ],
   },
-  shows: {
-    label: "展会",
-    title: "同一份成果，直接撑起你的展台。",
-    lead: "打开展会模式，屏幕会自动轮播原理演示。有人触摸就停下，把操作交给访客；访客离开后再继续轮播。",
-    items: [
-      { title: "自动轮播", text: "依次播放每个产品的原理演示，有人触摸屏幕时立即停下。" },
-      { title: "带回家二维码", text: "屏幕上的二维码跟随正在展示的产品和零件，访客扫码后手机上打开同一个视角。" },
-      { title: "离线运行", text: "离线版本自带模型、光照和字体，展馆网络不好也不影响演示。" },
-      { title: "统计展台访客", text: "记录每位访客的停留时间，以及看过哪些产品和零件。" },
-    ],
-    qrTitle: "带回家",
-    qrText: "扫码在手机上打开这个视角",
-    kiosk: "展会模式",
-  },
   leads: {
     label: "询盘",
     title: "每条询盘都带着上下文。",
@@ -331,15 +277,6 @@ export const zh: Copy = {
       ],
       link: "打开同一视角 ↗",
     },
-  },
-  services: {
-    label: "我们做什么",
-    items: [
-      { icon: "cube", title: "3D 可视化", text: "准确、轻量的产品模型，在任何设备上都能快速加载。" },
-      { icon: "gear", title: "交互演示", text: "零件按真实方式运动，由客户自己操控。" },
-      { icon: "box", title: "产品解析", text: "按零件讲清工作原理，用客户的语言。" },
-      { icon: "screens", title: "网站与展会展示", text: "一份成果，同时用于官网、销售团队和展台。" },
-    ],
   },
   process: {
     label: "合作流程",
@@ -483,7 +420,6 @@ export const zh: Copy = {
   contact: {
     label: "联系",
     title: "你的设备也很难<em>讲清楚？</em>",
-    lead: "告诉我们你做什么产品、想在哪里展示，我们会和你联系。",
     fields: {
       name: "姓名",
       email: "工作邮箱",
