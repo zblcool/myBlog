@@ -1,0 +1,119 @@
+---
+/**
+ * Case study, stage 1 ("Original CAD"): an illustration, not a capture. Left, the standard
+ * sheets this demonstration was modelled from (ISO 2858 pump, IEC 60072 motor), drawn as a
+ * schematic: an outline with dimension lines and a size table whose sizes are real ISO 2858
+ * designations (the demo's 80-50-200 marked) and whose values are left as bars. Right, the kinds
+ * of input a client project can start from, down to photos, all leading to one 3D model.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+const NAVY = "#16202a";
+const STEEL = "#597592";
+const STEEL_2 = "#7496b7";
+const ORANGE = "#f2a250";
+const LINE = "#c9d0d6";
+const MUTED = "#4b5967";
+
+const sizes = ["50-32-160", "65-50-160", "80-50-200", "100-65-250", "125-100-250"];
+const files = [
+  { tag: "STEP", band: STEEL, label: "STEP / IGES", sub: "CAD export" },
+  { tag: "CAD", band: NAVY, label: "Native CAD", sub: "SolidWorks, Inventor…" },
+  { tag: "BIM", band: "#2a6895", label: "BIM object", sub: "IFC / Revit" },
+  { tag: "PDF", band: "#e38f44", label: "Drawings", sub: "Datasheets, standards" },
+  { tag: "JPG", band: STEEL_2, label: "Photos", sub: "No model yet" },
+];
+---
+
+<svg class={className} viewBox="0 0 760 450" role="img" aria-label="Illustration: the ISO 2858 and IEC 60072 dimension sheets this demonstration was modelled from, and the inputs a project can start from: STEP or IGES exports, native CAD, BIM objects, drawings or photos." style="font-family: var(--font)">
+  <!-- Back sheet: IEC 60072 motor -->
+  <g transform="rotate(-4 210 220)">
+    <rect x="52" y="26" width="300" height="384" rx="6" fill="#eef1f4" stroke={LINE} />
+    <text x="74" y="58" font-size="13" font-weight="700" fill={NAVY}>IEC 60072</text>
+    <text x="74" y="74" font-size="9" fill={MUTED}>Motor frame dimensions</text>
+  </g>
+
+  <!-- Front sheet: ISO 2858 pump set -->
+  <g>
+    <path d="M90 40h285l25 25v365a6 6 0 0 1-6 6H96a6 6 0 0 1-6-6V46a6 6 0 0 1 6-6z" fill="#fff" stroke={LINE} />
+    <path d="M375 40v19a6 6 0 0 0 6 6h19" fill="#f3f4f5" stroke={LINE} />
+    <text x="112" y="72" font-size="14" font-weight="700" fill={NAVY}>ISO 2858</text>
+    <text x="112" y="88" font-size="9" fill={MUTED}>End-suction centrifugal pumps · dimensions</text>
+    <line x1="112" y1="100" x2="380" y2="100" stroke={LINE} />
+
+    <!-- Schematic side view -->
+    <g fill="none" stroke={STEEL} stroke-width="1.5" stroke-linejoin="round">
+      <rect x="116" y="232" width="258" height="9" rx="1.5" />
+      <circle cx="152" cy="192" r="28" />
+      <circle cx="152" cy="192" r="11" stroke-dasharray="3 3" />
+      <rect x="143" y="150" width="18" height="14" rx="1.5" />
+      <rect x="114" y="182" width="10" height="20" rx="1.5" />
+      <rect x="180" y="181" width="52" height="22" rx="3" />
+      <path d="M194 203v29M220 203v29" />
+      <rect x="232" y="185" width="18" height="14" rx="2" />
+      <rect x="250" y="168" width="94" height="46" rx="7" />
+      <path d="M262 168v46M276 168v46M290 168v46M304 168v46M318 168v46" stroke-opacity="0.4" />
+      <rect x="344" y="173" width="18" height="36" rx="5" />
+      <path d="M268 214v18M326 214v18" />
+      <path d="M152 192H362" stroke-dasharray="6 3 2 3" stroke-opacity="0.5" />
+    </g>
+
+    <!-- Dimension lines -->
+    <g stroke={ORANGE} stroke-width="1.2" fill="none">
+      <path d="M116 256H374M116 251v10M374 251v10" />
+      <path d="M152 128H250M152 123v10M250 123v10" />
+      <path d="M388 150V241M383 150h10M383 241h10" />
+      <path d="M100 192V241M95 192h10M95 241h10" />
+    </g>
+
+    <!-- Size table: real ISO 2858 sizes, values left as bars -->
+    <g font-size="10" fill={NAVY}>
+      <rect x="112" y="276" width="268" height="20" rx="3" fill="#f3f4f5" />
+      <text x="120" y="290" font-weight="700">Size</text>
+      {[0, 1, 2, 3].map((c) => <rect x={210 + c * 44} y="283" width="26" height="6" rx="3" fill={LINE} />)}
+      {sizes.map((size, r) => {
+        const y = 300 + r * 24;
+        const mine = size === "80-50-200";
+        return (
+          <g>
+            {mine && <rect x="112" y={y} width="268" height="22" rx="3" fill="rgba(242,162,80,0.12)" />}
+            {mine && <rect x="112" y={y} width="3" height="22" fill={ORANGE} />}
+            <text x="120" y={y + 15} font-family="var(--mono)" font-weight={mine ? 700 : 400}>{size}</text>
+            {[0, 1, 2, 3].map((c) => <rect x={210 + c * 44} y={y + 8} width={20 + ((r + c) % 3) * 6} height="5" rx="2.5" fill={mine ? STEEL_2 : "#dde2e7"} />)}
+            <line x1="112" y1={y + 22} x2="380" y2={y + 22} stroke="#eef1f4" />
+          </g>
+        );
+      })}
+    </g>
+  </g>
+
+  <!-- Inputs a project can start from -->
+  <g>
+    {files.map((f, i) => {
+      const y = 34 + i * 76;
+      return (
+        <g transform={`translate(452 ${y})`}>
+          <path d="M0 4a4 4 0 0 1 4-4h22l12 12v38a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4z" fill="#fff" stroke={LINE} />
+          <path d="M26 0v8a4 4 0 0 0 4 4h8" fill="none" stroke={LINE} />
+          <path d="M8 22h18M8 28h14" stroke="#dde2e7" stroke-width="2" stroke-linecap="round" />
+          <rect x="-4" y="34" width="34" height="13" rx="2.5" fill={f.band} />
+          <text x="13" y="44" font-size="8" font-weight="700" fill="#fff" text-anchor="middle" letter-spacing="0.06em">{f.tag}</text>
+          <text x="54" y="24" font-size="13" font-weight="600" fill={NAVY}>{f.label}</text>
+          <text x="54" y="40" font-size="10" fill={MUTED}>{f.sub}</text>
+        </g>
+      );
+    })}
+    <!-- All roads lead to one 3D model -->
+    <path d="M652 58V398M652 228h40" fill="none" stroke={STEEL_2} stroke-width="1.5" stroke-dasharray="4 4" />
+    <path d="M686 222l8 6-8 6" fill="none" stroke={STEEL_2} stroke-width="1.5" />
+    <g transform="translate(700 206)" fill="none" stroke={ORANGE} stroke-width="1.8" stroke-linejoin="round">
+      <path d="M22 0l22 12.5v25L22 50 0 37.5v-25z" fill="rgba(242,162,80,0.1)" />
+      <path d="M0 12.5L22 25l22-12.5M22 25v25" />
+    </g>
+    <text x="722" y="276" font-size="10" font-weight="700" fill={NAVY} text-anchor="middle">3D model</text>
+  </g>
+</svg>

@@ -10,8 +10,9 @@
  *   of the same model used by the home page booth (1,052,700 bytes, 100,214 triangles,
  *   38 meshes, EXT_meshopt_compression + KHR_mesh_quantization + EXT_texture_webp).
  * - Images in public/studio/case/pump-set/ are captures of the live explainer (2026-11-11).
- * `pending` marks a slot kept for material a real client project would supply: it is shown as
- * an empty, labelled frame and never filled with made-up content.
+ * Material only a client project would have (its CAD, its deployment) is left out, not faked:
+ * stage 1 shows an illustration of the inputs instead, marked as one. Add real captures here
+ * once a client project supplies them.
  */
 export type Mode = "embed" | "sales" | "kiosk";
 
@@ -29,8 +30,9 @@ export interface CaseStage {
   /** What happened in this demonstration. */
   here: string;
   images: CaseImage[];
+  /** Show the source-data illustration (CaseSourceArt): accepted inputs and the standard sheets. */
+  art?: boolean;
   facts?: { caption: string; rows: [string, string][] };
-  pending?: { title: string; text: string };
 }
 
 const img = (name: string) => `/studio/case/pump-set/${name}.webp`;
@@ -52,15 +54,17 @@ export const caseStudy = {
     ["Standards", "ISO 2858 · IEC 60072 · EN 1092-1 PN16"],
     ["Product lines", "Showcase + Configurator"],
   ] as [string, string][],
+  artCaption: "Illustration: the inputs a project can start from. This one was modelled from the ISO 2858 and IEC 60072 dimension tables.",
   stagesLabel: "Stage",
   hereLabel: "In this demonstration",
   stages: [
     {
       id: "cad",
       title: "Original CAD",
-      value: "We start from the engineering model you already have, a STEP or native CAD export, and agree with your engineers which parts buyers need to understand.",
-      here: "There is no customer CAD in this project. The geometry was drawn from the ISO 2858 and IEC 60072 dimension tables.",
+      value: "We start from whatever engineering data you have: a STEP or native CAD export, a BIM object, drawings, or just photos of the product. No 3D model yet? We build it for you. Then we agree with your engineers which parts buyers need to understand.",
+      here: "There is no customer CAD in this project. We modelled the pump from the ISO 2858 and IEC 60072 dimension tables, the same way we would work from your drawings or photos.",
       images: [],
+      art: true,
       facts: {
         caption: "Source data used instead",
         rows: [
@@ -69,10 +73,6 @@ export const caseStudy = {
           ["Duty", "Up to 200 m³/h, up to 80 m head"],
           ["Speeds", "2900 or 1450 rpm (50 Hz)"],
         ],
-      },
-      pending: {
-        title: "Original CAD capture",
-        text: "Reserved for a client's CAD export. Not shown here because this project has none.",
       },
     },
     {
@@ -117,10 +117,6 @@ export const caseStudy = {
       value: "One build goes where buyers meet the product: embedded on your product page, on a sales rep's laptop or tablet, and full screen on a trade-show stand, running offline.",
       here: "Not deployed for a client. Each delivery mode below opens this pump set live.",
       images: [{ src: img("kiosk"), alt: "Exhibition mode: the walkthrough plays on its own with a QR code to take it home", caption: "Exhibition mode: the walkthrough plays by itself, with a take-home QR code" }],
-      pending: {
-        title: "Client deployment capture",
-        text: "Reserved for photos or screenshots of a real deployment. None exist for this demonstration.",
-      },
     },
   ] as CaseStage[],
   modes: [
@@ -131,7 +127,7 @@ export const caseStudy = {
   openMode: "Open live",
   more: "Use case",
   ctaTitle: "Want this for <em>your product?</em>",
-  ctaText: "Send us a CAD export or a few photos of one product. We'll show you what its interactive 3D could look like.",
+  ctaText: "Tell us about one product you want buyers to understand. We'll show you what its interactive 3D could look like.",
   live: "Open the live demo",
   configure: "Try the configurator",
   quote: "Get a quote",

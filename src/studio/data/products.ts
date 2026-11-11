@@ -56,7 +56,7 @@ export const productLabels = {
   note: "Demonstration values for this model, not the data of a specific manufacturer's product.",
   views: "Views",
   ctaTitle: "Want this for <em>your product?</em>",
-  ctaText: "Send us a CAD export or a few photos of one product. We'll show you what its page and live 3D could look like.",
+  ctaText: "Tell us about one product you want buyers to understand. We'll show you what its page and live 3D could look like.",
   ctaButton: "Get in touch",
   others: "Other demo machines",
   credit: "3D model",

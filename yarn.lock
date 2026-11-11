@@ -1840,6 +1840,11 @@ hastscript@^9.0.0:
     property-information "^7.0.0"
     space-separated-tokens "^2.0.0"
 
+hazeglow@0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/hazeglow/-/hazeglow-0.6.1.tgz#1d5a165ab33a24616ad1b07190dbad45b0c70f0e"
+  integrity sha512-eN4TtGTwKJBXeofM8GZphzR1eyyPJhZq+sSyKAWAlx7aQLBDIGTvV0SvEQ9xiyi/KbZ3l4nt99g7sLzrQk97pg==
+
 html-escaper@3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/html-escaper/-/html-escaper-3.0.3.tgz#4d336674652beb1dcbc29ef6b6ba7f6be6fdfed6"

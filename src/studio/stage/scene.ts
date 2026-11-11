@@ -54,6 +54,12 @@ export interface StageOptions {
   lite: boolean;
   /** Copy and renders for the booth's screens. */
   copy: ScreenCopy;
+  /**
+   * The page paints its own backdrop behind the canvas: themes that allow it (graphite) leave
+   * out the hall (wall, floor, far lights, floor pool) and clear to transparent, so the stand
+   * stands on whatever is behind the canvas.
+   */
+  openHall?: boolean;
   onLoading?(loading: boolean): void;
   /** Plain wheel over the canvas: the page scrolls, and the UI can say how to zoom. */
   onWheelHint?(): void;
@@ -62,6 +68,11 @@ export interface StageOptions {
   onSpots?(spots: SpotPosition[]): void;
   /** The opening sequence has finished. */
   onIntroDone?(): void;
+  /**
+   * The first complete frame has just been drawn (every mesh and texture ready), in the same task,
+   * so the page can swap its poster for the canvas on exactly this frame.
+   */
+  onFirstFrame?(): void;
   /**
    * While the tablet is framed: its screen's corners on screen (TL, TR, BR, BL, CSS pixels),
    * so the page can lay the live app over it; null otherwise.
@@ -117,6 +128,8 @@ interface ThemeLook {
   hallLights: number;
   /** Light pool on the hall floor around the stand. */
   pool: number;
+  /** With StageOptions.openHall: no hall, a transparent backdrop. */
+  openHall: boolean;
 }
 
 const themes: Record<ThemeId, ThemeLook> = {
@@ -146,6 +159,7 @@ const themes: Record<ThemeId, ThemeLook> = {
     screenGlow: 1,
     hallLights: 1.6,
     pool: 0.07,
+    openHall: true,
   },
   gallery: {
     hall: "#d8d5cf",
@@ -173,6 +187,7 @@ const themes: Record<ThemeId, ThemeLook> = {
     screenGlow: 0.85,
     hallLights: 0.25,
     pool: 0.03,
+    openHall: false,
   },
 };
 
@@ -319,6 +334,11 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
   hallWallMat.metallic = 0;
   hallWall.material = hallWallMat;
   hallWall.isPickable = false;
+  // Everything that is the hall rather than the stand, hidden when the page paints the backdrop.
+  const hallMeshes = [hallWall, ...scene.meshes.filter((mesh) => ["hall-floor", "hall-pool", "hall-light"].includes(mesh.name))];
+  const openHall = (look: ThemeLook) => Boolean(options.openHall && look.openHall);
+  const showHall = (look: ThemeLook) => hallMeshes.forEach((mesh) => mesh.setEnabled(!openHall(look)));
+  showHall(theme);
 
   const environment = CubeTexture.CreateFromPrefilteredData(url("/studio/stage/studio.env"), scene);
   environment.rotationY = 2.2;
@@ -858,9 +878,17 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     });
     const clearTo = Color3.FromHexString(theme.hall);
     const clearFrom = new Color3(scene.clearColor.r, scene.clearColor.g, scene.clearColor.b);
+    const alphaFrom = scene.clearColor.a;
+    const alphaTo = openHall(theme) ? 0 : 1;
+    // Into a closed hall it appears at once and the backdrop fades in; into an open one it goes
+    // once the backdrop has faded out.
+    if (!openHall(theme)) showHall(theme);
     tracks.push((t) => {
       const c = Color3.Lerp(clearFrom, clearTo, t);
-      scene.clearColor = new Color4(c.r, c.g, c.b, 1);
+      const a = lerp(alphaFrom, alphaTo, t);
+      // Premultiplied: a transparent backdrop is transparent black.
+      scene.clearColor = new Color4(c.r * a, c.g * a, c.b * a, a);
+      if (t >= 1 && openHall(theme)) showHall(theme);
     });
 
     let painted = false;
@@ -990,8 +1018,15 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     frameCount++;
     if (busy || (rigState === 1 && frameCount % 2 === 0)) {
       compose();
+      // Ready before this render means this frame is complete (nothing skipped while compiling).
+      const complete = readyBefore;
       scene.render();
       reportSpots();
+      if (complete && !revealed) {
+        revealed = true;
+        options.onFirstFrame?.();
+      }
+      readyBefore ||= scene.isReady();
       if (pendingFrames > 0) pendingFrames--;
       if (waitingForReady && scene.isReady()) {
         waitingForReady = false;
@@ -1000,7 +1035,8 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     }
   };
 
-  let running = false;
+  let readyBefore = false;
+  let revealed = false;  let running = false;
   const updateLoop = () => {
     const shouldRun = active && !document.hidden && !disposed;
     if (shouldRun && !running) {

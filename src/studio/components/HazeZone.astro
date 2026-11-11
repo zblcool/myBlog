@@ -1,0 +1,27 @@
+---
+/**
+ * A dark run of home page sections over one animated Hazeglow gradient (studio/data/haze.ts).
+ * The canvas sticks to the viewport while the sections inside scroll over it, so the whole run
+ * reads as one surface. A page can have several zones.
+ *
+ * The canvas is driven by studio/haze.ts (no React, animates only while on screen). A CSS
+ * gradient stays behind it for browsers without WebGL2 on a GPU.
+ */
+---
+
+<div class="haze-zone" data-haze>
+  <div class="haze-zone__bg" aria-hidden="true">
+    <canvas class="haze-zone__canvas" data-haze-canvas></canvas>
+  </div>
+  <slot />
+</div>
+
+<script>
+  import { mountHaze } from "@/studio/haze";
+
+  // One renderer per zone; each runs only while its own zone is on screen.
+  document.querySelectorAll<HTMLElement>("[data-haze]").forEach((zone) => {
+    const canvas = zone.querySelector<HTMLCanvasElement>("[data-haze-canvas]");
+    if (canvas) mountHaze(canvas, zone).then((ok) => ok && zone.classList.add("is-live"));
+  });
+</script>

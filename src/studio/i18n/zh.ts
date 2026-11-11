@@ -23,7 +23,7 @@ export const zh: Copy = {
   hero: {
     eyebrow: "面向工业的交互式产品体验",
     title: "让复杂产品<em>一看就懂。</em>",
-    lead: "把工程模型变成交互式 3D 体验，让客户在联系销售之前，就能自己探索、配置并看懂你的产品。",
+    lead: "把工程模型变成交互式 3D 体验，让客户探索、配置并看懂你的产品，也让销售团队讲得更清楚。",
     primary: "体验在线演示",
     secondary: "获取报价",
     device: "蜗轮蜗杆减速器",
@@ -74,6 +74,7 @@ export const zh: Copy = {
     resetView: "重置视角",
     reset: "重置",
     loading: "正在加载展品…",
+    preparing: "正在加载 3D",
     load: "加载 3D 展位",
     theme: "主题",
     themes: { graphite: "石墨", gallery: "浅色展厅" },
@@ -104,7 +105,7 @@ export const zh: Copy = {
       laptop: {
         label: "你的官网",
         title: "放在产品页面上",
-        text: "嵌入客户本来就会查资料的产品页，让他们在联系你之前先看懂产品怎么工作。",
+        text: "嵌入客户本来就会查资料的产品页，让每一次销售沟通都从同一个清楚的产品画面开始。",
         cta: "官网使用场景",
       },
       exhibit: {
@@ -172,15 +173,8 @@ export const zh: Copy = {
   },
   evidence: {
     label: "为什么要交互",
-    title: "买家想自己了解产品，3D 给他们可以探索的东西。",
+    title: "买家很难在线比较产品，3D 让差别一目了然。",
     items: [
-      {
-        value: "61%",
-        title: "更偏好无需销售参与的购买体验",
-        text: "Gartner 对 632 名 B2B 买家的调查显示，多数人更愿意在没有销售代表的情况下自行了解和购买。",
-        source: "Gartner，2025",
-        href: "https://www.gartner.com/en/newsroom/press-releases/2025-06-25-gartner-sales-survey-finds-61-percent-of-b2b-buyers-prefer-a-rep-free-buying-experience",
-      },
       {
         value: "46%",
         title: "觉得很难在线比较产品",
@@ -303,9 +297,9 @@ export const zh: Copy = {
   },
   process: {
     label: "合作流程",
-    title: "从你的文件，到上线的原理展示。",
+    title: "从你的产品，到在线的交互体验。",
     steps: [
-      { title: "发来现有资料", text: "CAD 导出文件、现成的 3D 模型；还没有模型的话，照片和图纸也可以。" },
+      { title: "选择要展示什么", text: "选定产品，以及希望买家看懂的地方。我们用已有的资料来做，几张照片也可以；还没有 3D 模型的话，由我们来建。" },
       { title: "我们制作模型和讲解", text: "针对手机优化模型，给每个零件命名，并和你的工程师一起写讲解和原理演示。" },
       { title: "私密链接审阅", text: "你在自己的设备上检查内容和交互效果，提出修改。" },
       { title: "上线", text: "嵌入官网、用于展会、把链接交给销售。也可以换成你自己的品牌。" },

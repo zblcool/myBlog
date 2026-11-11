@@ -2,9 +2,10 @@
 /**
  * Featured case study: a demonstration project (studio/data/caseStudy.ts), told in four stages
  * from engineering model to delivery. Every stage pairs what Ashmartisan does with what happened
- * in this project, shown with captures of the live explainer. Slots for material only a client
- * project would have (its CAD, its deployment) stay as labelled empty frames.
+ * in this project, shown with captures of the live explainer. Stage 1 is an illustration of the
+ * inputs (marked as one): this project has no client CAD to show.
  */
+import CaseSourceArt from "@/studio/components/CaseSourceArt.astro";
 import StudioLayout from "@/studio/layouts/StudioLayout.astro";
 import { demoLink } from "@/studio/config";
 import { caseStudy as C } from "@/studio/data/caseStudy";
@@ -135,12 +136,11 @@ const num = (i: number) => String(i + 1).padStart(2, "0");
               })}
             </ul>
           )}
-          {stage.pending && (
-            <div class="case-pending" role="note">
-              <span class="case-pending__tag">Pending asset</span>
-              <strong>{stage.pending.title}</strong>
-              <span>{stage.pending.text}</span>
-            </div>
+          {stage.art && (
+            <figure class="case-shot case-shot--art">
+              <CaseSourceArt class="case-art" />
+              <figcaption>{C.artCaption}</figcaption>
+            </figure>
           )}
         </div>
       </div>

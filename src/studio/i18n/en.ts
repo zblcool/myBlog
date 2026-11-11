@@ -22,7 +22,7 @@ export const en = {
   hero: {
     eyebrow: "Interactive Product Experiences for Industry",
     title: "Make complex products <em>easy to understand.</em>",
-    lead: "Turn engineering models into interactive 3D experiences that help customers explore, configure and understand your products — before they talk to sales.",
+    lead: "Turn engineering models into interactive 3D experiences that help customers explore, configure and understand your products — and give your sales team a clearer way to explain them.",
     primary: "Try the live demo",
     secondary: "Get a quote",
     device: "Worm Gear Reducer",
@@ -73,6 +73,7 @@ export const en = {
     resetView: "Reset view",
     reset: "Reset",
     loading: "Loading exhibit…",
+    preparing: "Loading 3D",
     load: "Load the 3D booth",
     theme: "Theme",
     themes: { graphite: "Graphite", gallery: "Light gallery" },
@@ -103,7 +104,7 @@ export const en = {
       laptop: {
         label: "Your website",
         title: "On your product pages",
-        text: "Embedded where buyers already research, so they understand how the product works before they call.",
+        text: "Embedded where buyers already research, so every sales conversation starts from the same clear picture of how the product works.",
         cta: "Website use case",
       },
       exhibit: {
@@ -171,15 +172,8 @@ export const en = {
   },
   evidence: {
     label: "Why interactive",
-    title: "Buyers want to explore on their own. 3D gives them something to explore.",
+    title: "Buyers struggle to compare products online. 3D shows them the difference.",
     items: [
-      {
-        value: "61%",
-        title: "prefer a rep-free buying experience",
-        text: "Gartner's survey of 632 B2B buyers found most prefer to research and buy without a sales rep.",
-        source: "Gartner, 2025",
-        href: "https://www.gartner.com/en/newsroom/press-releases/2025-06-25-gartner-sales-survey-finds-61-percent-of-b2b-buyers-prefer-a-rep-free-buying-experience",
-      },
       {
         value: "46%",
         title: "struggle to compare products online",
@@ -319,9 +313,9 @@ export const en = {
   },
   process: {
     label: "How it works",
-    title: "From your files to a live explainer.",
+    title: "From your product to a live interactive experience.",
     steps: [
-      { title: "Send what you have", text: "An existing 3D model, or photos and drawings if there is no model yet." },
+      { title: "Choose what to show", text: "Pick the product and what buyers should understand about it. We work from whatever already exists, down to a few photos, and build the 3D model when there is none." },
       { title: "We build the model and the story", text: "We prepare the model for you, name every part, and write the explanations and walkthroughs with your engineers." },
       { title: "Review on a private link", text: "You check the content and the behaviour on your own devices and ask for changes." },
       { title: "Launch", text: "Embed it on your website, run it at shows and give sales the links. It can carry your brand instead of ours." },

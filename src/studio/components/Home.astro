@@ -7,10 +7,12 @@
  * three product lines) → try it (Live Demos) → a full worked example (case study) → where it
  * runs (Use Cases) → how a project runs and why it's worth it (How it works, evidence) →
  * price, questions, contact. Feature detail (views, walkthroughs, enquiry context) lives on the
- * Showcase page and the product pages.
+ * Showcase page and the product pages. Three runs sit on a dark animated background (HazeZone):
+ * live demos with the case study, the evidence with pricing, and the contact form.
  */
 import CaseTeaser from "./CaseTeaser.astro";
 import Contact from "./Contact.astro";
+import HazeZone from "./HazeZone.astro";
 import Hero from "./Hero.astro";
 import LiveDemos from "./LiveDemos.astro";
 import Modules from "./Modules.astro";
@@ -30,31 +32,12 @@ const { t } = Astro.props;
 
 <Modules t={t} />
 
-<LiveDemos t={t} />
-
-<CaseTeaser t={t} />
+<HazeZone>
+  <LiveDemos t={t} />
+  <CaseTeaser t={t} />
+</HazeZone>
 
 <Scenarios t={t} />
-
-<section class="section section--navy-2" id="evidence">
-  <div class="wrap">
-    <h2 class="section__title">
-      {t.evidence.title}
-      <Tip text={t.evidence.note} />
-    </h2>
-    <ul class="stats">
-      {t.evidence.items.map((item) => (
-        <li>
-          <strong class="stats__value">{item.value}</strong>
-          <h3>
-            {item.title}
-            <Tip text={item.text} links={[{ href: item.href, label: item.source }]} />
-          </h3>
-        </li>
-      ))}
-    </ul>
-  </div>
-</section>
 
 <section class="section section--paper" id="process">
   <div class="wrap">
@@ -73,7 +56,29 @@ const { t } = Astro.props;
   </div>
 </section>
 
-<Pricing t={t} />
+<HazeZone>
+  <section class="section section--navy-2" id="evidence">
+    <div class="wrap">
+      <h2 class="section__title">
+        {t.evidence.title}
+        <Tip text={t.evidence.note} />
+      </h2>
+      <ul class="stats">
+        {t.evidence.items.map((item) => (
+          <li>
+            <strong class="stats__value">{item.value}</strong>
+            <h3>
+              {item.title}
+              <Tip text={item.text} links={[{ href: item.href, label: item.source }]} />
+            </h3>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <Pricing t={t} />
+</HazeZone>
 
 <section class="section section--paper" id="faq">
   <div class="wrap split split--faq">
@@ -89,4 +94,6 @@ const { t } = Astro.props;
   </div>
 </section>
 
-<Contact t={t} />
+<HazeZone>
+  <Contact t={t} />
+</HazeZone>

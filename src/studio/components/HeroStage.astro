@@ -9,6 +9,21 @@
  * cranes in. Glowing markers on the stand (screen, tablet, laptop, exhibit, brochures, desk)
  * frame each surface and link into the demo and the rest of the page.
  *
+ * In the dark theme the scene leaves out its hall and draws on a transparent backdrop: behind it
+ * is the site's Hazeglow gradient (studio/haze.ts), so the stand floats on the same glow as the
+ * sections below. The light theme keeps its own hall.
+ *
+ * Loading: the glow moves from the first paint; the poster is the booth cut out (transparent) in
+ * standby, exactly the live scene's first frame, breathing while the 3D downloads; a chip in the
+ * corner shows progress (real bytes for the model and lighting, which download alongside the
+ * engine code). The live scene then takes over on that frame and the lights strike.
+ *
+ * Posters, all 1920×1090 and 900×1600 (public/studio/stage/):
+ * - poster-{wide,tall}.webp: the cut-out. Open /?poster in dev at that viewport size and read the
+ *   booth canvas (alpha) right after it renders; its buffer is not preserved between frames.
+ * - poster-lit-{wide,tall}.webp: the fallback (no WebGL, lost context): the lit, settled booth
+ *   (__booth.start(), wait for the intro) over the glow's frame at time 0 (hazeglow/core).
+ *
  * The poster stays as the fallback. The scene loads once the page is idle, only with WebGL, and
  * not at all under Save-Data until asked. Reduced motion skips the opening, the sway and the
  * scroll-linked camera. The markers, card and panel are plain HTML.
@@ -93,6 +108,9 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
 >
   <div class="booth-hero__sticky">
     <div class="booth-hero__scene">
+      <!-- The glow first, moving from the first paint; the poster (the booth cut out, in standby)
+           stands on it until the live scene takes over on the same frame. -->
+      <canvas class="booth-hero__haze" data-stage-haze aria-hidden="true"></canvas>
       <picture>
         <source media="(max-aspect-ratio: 1/1)" srcset={withBase("/studio/stage/poster-tall.webp")} width="900" height="1600" />
         <img
@@ -104,6 +122,11 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
           fetchpriority="high"
           decoding="async"
         />
+      </picture>
+      <!-- Without WebGL (or after a lost context) the hero keeps a finished picture: the lit booth on the glow. -->
+      <picture class="booth-hero__still">
+        <source media="(max-aspect-ratio: 1/1)" srcset={withBase("/studio/stage/poster-lit-tall.webp")} width="900" height="1600" />
+        <img src={withBase("/studio/stage/poster-lit-wide.webp")} alt="" width="1920" height="1090" loading="lazy" decoding="async" />
       </picture>
       <canvas class="booth-hero__canvas" data-stage-canvas role="img" aria-label={s.canvas}></canvas>
     </div>
@@ -176,6 +199,15 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
       <button class="booth-hero__edge" type="button" data-stage-next tabindex="-1" aria-hidden="true"></button>
       <p class="booth-hero__hint" data-stage-hint aria-hidden="true" data-wheel={s.wheelHint}>{s.hint}</p>
       <p class="booth-hero__status" role="status" data-stage-status data-loading={s.loading}></p>
+      <!-- While the 3D downloads: a ring filling with real progress, in the corner the LIVE 3D label takes after. -->
+      <p class="booth-hero__loader" data-stage-loader aria-hidden="true">
+        <svg viewBox="0 0 20 20">
+          <circle class="booth-hero__loader-track" cx="10" cy="10" r="7.5" pathLength="100" />
+          <circle class="booth-hero__loader-bar" cx="10" cy="10" r="7.5" pathLength="100" data-stage-ring />
+        </svg>
+        <span>{s.preparing}</span>
+        <span class="booth-hero__loader-pct" data-stage-pct>0%</span>
+      </p>
       <button class="booth-hero__load btn btn--ghost btn--sm" type="button" data-stage-load hidden>{s.load}</button>
 
       <div class="booth-hero__dock">
@@ -239,7 +271,7 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
 </section>
 
 <script>
-  import { defaultConfig, type StageConfig } from "@/studio/stage/presets";
+  import { defaultConfig, equipmentModels, type StageConfig } from "@/studio/stage/presets";
   import type { SpotId, SpotPosition, StageController } from "@/studio/stage/scene";
   import type { ScreenCopy } from "@/studio/stage/screens";
 
@@ -290,6 +322,14 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const lite = matchMedia("(max-width: 720px), (pointer: coarse)").matches;
     const saveData = Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData);
+
+    // The glow behind the open hall, from the first paint, so the hero moves while the 3D loads:
+    // animated on desktop, a still frame on phones (the booth needs their GPU) and under Save-Data.
+    const hazeCanvas = root.querySelector<HTMLCanvasElement>("[data-stage-haze]")!;
+    import("@/studio/haze")
+      .then(({ mountHaze }) => mountHaze(hazeCanvas, root, { still: lite || saveData }))
+      .then((ok) => ok && root.classList.add("has-haze"))
+      .catch(() => {});
     let stage: StageController | null = null;
     let started = false;
 
@@ -485,18 +525,130 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
       tabletTimer = window.setTimeout(() => tabletOpen && (tabletFrame.src = tabletSrc), 2000);
     };
 
+    // --- loading progress -------------------------------------------------------------
+    // Three parts: the engine code (no byte count, so it eases forward while it downloads), the
+    // model and lighting files (real bytes) and building the scene (eases forward). The ring shows a
+    // smoothed mix, so it never stalls flat or steps back.
+    const ring = root.querySelector<SVGCircleElement>("[data-stage-ring]")!;
+    const pct = root.querySelector<HTMLElement>("[data-stage-pct]")!;
+    const loadProgress = (() => {
+      const weight = { code: 0.45, assets: 0.4, build: 0.15 };
+      const real = { code: 0, assets: 0 };
+      let soft = 0;
+      let shown = 0;
+      let frame = 0;
+      let last = 0;
+      let finished = false;
+      const paint = () => {
+        ring.style.strokeDashoffset = String(100 - shown * 100);
+        pct.textContent = `${Math.round(shown * 100)}%`;
+      };
+      const tick = (now: number) => {
+        const dt = last ? Math.min(now - last, 100) : 16;
+        last = now;
+        const known = real.code * weight.code + real.assets * weight.assets;
+        // A part still in flight with nothing to measure creeps towards 90% of its share, slowly
+        // (a 6 s time constant), so on a slow line the ring keeps moving instead of parking.
+        const cap = known + (real.code ? weight.build : weight.code) * 0.9;
+        soft = Math.max(known, soft + (cap - soft) * (1 - Math.exp(-dt / 6000)));
+        shown += (soft - shown) * (1 - Math.exp(-dt / 140));
+        paint();
+        frame = requestAnimationFrame(tick);
+      };
+      return {
+        assets: (fraction: number) => (real.assets = Math.max(real.assets, Math.min(fraction, 1))),
+        step: (part: "code") => (real[part] = 1),
+        run: () => {
+          if (!frame && !finished) frame = requestAnimationFrame(tick);
+        },
+        done: () => {
+          finished = true;
+          cancelAnimationFrame(frame);
+          shown = 1;
+          paint();
+        },
+        stop: () => {
+          finished = true;
+          cancelAnimationFrame(frame);
+        },
+      };
+    })();
+
+    /** Fetch the scene's heavy files now, reporting the share of their bytes that has arrived. */
+    const warmAssets = (onProgress: (fraction: number) => void) => {
+      const base = (root.dataset.base || "/").replace(/\/$/, "");
+      const files = [equipmentModels[defaultConfig.equipment].file, "/studio/stage/studio.env", "/studio/stage/meshopt_decoder.js"];
+      const loaded = new Map<string, number>();
+      const total = new Map<string, number>();
+      const report = () => {
+        if (total.size < files.length) return;
+        let got = 0;
+        let all = 0;
+        for (const file of files) {
+          got += loaded.get(file) ?? 0;
+          all += total.get(file) ?? 0;
+        }
+        if (all) onProgress(got / all);
+      };
+      for (const file of files) {
+        fetch(`${base}${file}`)
+          .then(async (res) => {
+            const size = Number(res.headers.get("content-length")) || 0;
+            total.set(file, size || 1);
+            if (!res.body || !size) {
+              await res.arrayBuffer();
+              loaded.set(file, size || 1);
+              return report();
+            }
+            const reader = res.body.getReader();
+            for (;;) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              loaded.set(file, Math.min((loaded.get(file) ?? 0) + value.length, size));
+              report();
+            }
+          })
+          .catch(() => {
+            total.set(file, 1);
+            loaded.set(file, 1);
+            report();
+          });
+      }
+    };
+
     // --- engine ----------------------------------------------------------------
     const start = async () => {
       if (started) return;
       started = true;
       loadButton.hidden = true;
       root.classList.add("is-loading");
+      loadProgress.run();
+      // The heavy files download alongside the engine code instead of after it; the scene's own
+      // requests then come from the HTTP cache.
+      warmAssets(loadProgress.assets);
       try {
-        const { createStage } = await import("@/studio/stage/scene");
+        const scene = import("@/studio/stage/scene");
+        scene.then(() => loadProgress.step("code"), () => {});
+        const { createStage } = await scene;
+        // Dev only: ?poster holds the opening frame so it can be captured as the poster.
+        const holdForPoster = import.meta.env.DEV && new URLSearchParams(location.search).has("poster");
+        // The swap: on the scene's first complete frame (the poster's frame) the canvas appears and
+        // the poster goes in the same paint, with no crossfade; only then does the intro start.
+        let firstFrame = false;
+        let revealed = false;
+        const reveal = () => {
+          if (revealed || !stage) return;
+          revealed = true;
+          loadProgress.done();
+          root.classList.add("is-shown");
+          if (!holdForPoster) stage.start();
+        };
         stage = await createStage(canvas, readForm(), {
           base: root.dataset.base || "/",
           reducedMotion,
           lite,
+          // The dark theme stands the booth on the page's glow (data-stage-haze) instead of a hall.
+          openHall: true,
           onLoading: (loading) => {
             status.textContent = loading ? loadingText : "";
             root.classList.toggle("is-busy", loading);
@@ -507,17 +659,22 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
           onSpots: placeSpots,
           onTabletScreen: placeTablet,
           onIntroDone: () => root.classList.add("is-live"),
+          onFirstFrame: () => {
+            firstFrame = true;
+            reveal();
+          },
         });
         stage.setProgress(cameraProgress());
         root.classList.add("is-ready");
-        // Dev only: ?poster holds the opening frame so it can be captured as the poster.
-        const holdForPoster = import.meta.env.DEV && new URLSearchParams(location.search).has("poster");
-        if (!holdForPoster) stage.start();
-        else Object.assign(window, { __booth: stage });
+        if (firstFrame) reveal();
+        // A first visit can spend a while compiling shaders: don't hold the poster for ever.
+        else window.setTimeout(reveal, 8000);
+        if (holdForPoster) Object.assign(window, { __booth: stage });
         new IntersectionObserver(([entry]) => stage?.setActive(entry.isIntersecting)).observe(root);
       } catch (error) {
         console.warn("3D booth unavailable", error);
         root.classList.add("is-fallback");
+        loadProgress.stop();
         stage?.dispose();
         stage = null;
       } finally {
@@ -525,13 +682,14 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
       }
     };
 
-    // The poster is the LCP; the engine comes after it, while the browser is idle.
+    // The poster is the LCP; the engine comes right after it, once the browser has a moment.
     const whenIdle = (fn: () => void) =>
-      "requestIdleCallback" in window ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 600);
+      "requestIdleCallback" in window ? requestIdleCallback(fn, { timeout: 400 }) : setTimeout(fn, 200);
     if (saveData) {
       loadButton.hidden = false;
       loadButton.addEventListener("click", start);
     } else {
+      root.classList.add("is-loading");
       const seen = new IntersectionObserver(([entry]) => {
         if (!entry.isIntersecting) return;
         seen.disconnect();

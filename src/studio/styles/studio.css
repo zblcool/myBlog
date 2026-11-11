@@ -460,21 +460,21 @@ p {
   background: var(--navy-2);
 }
 
-:is(.section--dark, .section--navy, .section--navy-2, .hero) .eyebrow {
+:is(.section--dark, .section--navy, .section--navy-2, .hero, .haze-zone) .eyebrow {
   color: var(--steel-2);
 }
 
-:is(.section--dark, .section--navy, .section--navy-2, .hero) .section__lead,
-:is(.section--dark, .section--navy, .section--navy-2, .hero) p {
+:is(.section--dark, .section--navy, .section--navy-2, .hero, .haze-zone) .section__lead,
+:is(.section--dark, .section--navy, .section--navy-2, .hero, .haze-zone) p {
   color: var(--d-muted);
 }
 
-:is(.section--dark, .section--navy, .section--navy-2, .hero) .btn--ghost {
+:is(.section--dark, .section--navy, .section--navy-2, .hero, .haze-zone) .btn--ghost {
   border-color: rgba(255, 255, 255, 0.24);
   color: var(--white);
 }
 
-:is(.section--dark, .section--navy, .section--navy-2, .hero) .btn--ghost:hover {
+:is(.section--dark, .section--navy, .section--navy-2, .hero, .haze-zone) .btn--ghost:hover {
   border-color: var(--white);
 }
 
@@ -628,7 +628,7 @@ p {
   cursor: grabbing;
 }
 
-.booth-hero.is-ready .booth-hero__canvas {
+.booth-hero.is-shown .booth-hero__canvas {
   opacity: 1;
 }
 
@@ -2073,7 +2073,7 @@ p {
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 32px;
   margin: 0 0 28px;
   padding: 0;
@@ -2114,7 +2114,7 @@ p {
 
 @media (max-width: 960px) {
   .stats {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -4480,44 +4480,20 @@ a.machine:hover img {
   font-size: 13px;
 }
 
-/* A slot kept for material only a client project has: visibly empty, never filled in. */
-.case-pending {
-  display: grid;
-  place-content: center;
-  justify-items: center;
-  gap: 6px;
-  min-height: 180px;
-  padding: 28px;
-  border: 2px dashed var(--silver);
-  border-radius: var(--radius);
-  background: repeating-linear-gradient(135deg, transparent 0 12px, rgba(89, 117, 146, 0.05) 12px 24px);
-  color: var(--text-2);
-  font-size: 14px;
-  text-align: center;
-}
-
-.case-pending strong {
-  color: var(--navy);
-  font-size: 16px;
-}
-
-.case-pending__tag {
-  padding: 3px 10px;
-  border-radius: 999px;
+/* Stage 1: the source-data illustration (CaseSourceArt). */
+.case-shot--art {
   background: var(--paper);
-  color: var(--steel);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
 }
 
-.section--paper .case-pending__tag {
+.section--paper .case-shot--art {
   background: var(--white);
 }
 
-#stage-cad .case-pending {
-  min-height: 320px;
+.case-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: clamp(12px, 2vw, 24px);
 }
 
 .case-modes {
@@ -4581,4 +4557,331 @@ a.machine:hover img {
   .case-stage__visual--gallery {
     grid-template-columns: 1fr;
   }
+}
+
+/* ---------- Home: the dark haze run (HazeZone.astro) ---------- */
+
+/* Products, live demos and the case study scroll over one animated gradient. The CSS gradient is
+   the fallback (no WebGL2 on a GPU) and the first paint; the canvas fades in over it. */
+.haze-zone {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(60% 40% at 8% 48%, rgba(129, 89, 50, 0.38), transparent 70%),
+    radial-gradient(45% 30% at 55% 58%, rgba(192, 200, 210, 0.12), transparent 70%),
+    radial-gradient(35% 30% at 95% 62%, rgba(42, 104, 149, 0.22), transparent 70%),
+    linear-gradient(180deg, #0b0e12 0%, #111416 40%, #121820 100%);
+  color: var(--d-text);
+}
+
+.haze-zone__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.haze-zone__canvas {
+  position: sticky;
+  top: 0;
+  display: block;
+  width: 100%;
+  height: 100vh;
+  height: 100lvh;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.haze-zone.is-live .haze-zone__canvas {
+  opacity: 1;
+}
+
+.haze-zone > .section {
+  background: transparent;
+}
+
+.haze-zone .section__title {
+  color: var(--white);
+}
+
+/* Glass cards over the haze. */
+.haze-zone :is(.module, .demo) {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(16, 22, 29, 0.55);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  backdrop-filter: blur(14px) saturate(1.1);
+  color: var(--d-text);
+}
+
+.haze-zone .module--available {
+  border-color: rgba(116, 150, 183, 0.55);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.haze-zone .module--future {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(16, 22, 29, 0.3);
+}
+
+.haze-zone .module__top {
+  color: var(--steel-2);
+}
+
+.haze-zone .module__status {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--d-muted);
+}
+
+.haze-zone .module--available .module__status {
+  background: var(--white);
+  color: var(--navy);
+}
+
+.haze-zone .module--new .module__status {
+  background: var(--orange);
+  color: var(--navy);
+}
+
+.haze-zone .module__points li {
+  border-color: var(--d-line);
+}
+
+.haze-zone .module__kind,
+.haze-zone .module__points {
+  color: var(--d-muted);
+}
+
+.haze-zone .verb {
+  border-color: rgba(255, 255, 255, 0.14);
+  color: var(--d-text);
+}
+
+.haze-zone .verb--understand::before {
+  background: var(--silver);
+}
+
+.haze-zone .demo:hover {
+  border-color: rgba(242, 162, 80, 0.6);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+}
+
+.haze-zone .demo__go {
+  color: var(--white);
+}
+
+.haze-zone .demo__more {
+  color: var(--d-muted);
+}
+
+.haze-zone .demo__go:hover,
+.haze-zone .demo__more:hover {
+  color: var(--orange);
+}
+
+.haze-zone .case-teaser__card {
+  background: rgba(16, 22, 29, 0.55);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.haze-zone .link-arrow:hover {
+  color: var(--orange);
+}
+
+.haze-zone .tier:not(.tier--featured) {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(16, 22, 29, 0.55);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+/* The enquiry form over the glow: a darker frosted card keeps the small print readable. */
+.haze-zone .form {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(16, 22, 29, 0.7);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+/* Text-dense pricing blocks get the same frosted backing as the cards, so muted labels such as
+   "Upgrade" stay readable where the glow is brightest. */
+.haze-zone :is(.runs, .pricing__foot, .pricing__modules) {
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  background: rgba(16, 22, 29, 0.62);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.haze-zone .pricing__foot {
+  margin-top: 16px;
+}
+
+.haze-zone .cover {
+  color: #c3ccd5;
+}
+
+/* ---------- Hero: the glow behind the open hall (dark theme) ---------- */
+
+/* The scene leaves out its hall and clears to transparent; the glow (or, without WebGL2 on a GPU,
+   the same gradient in CSS) shows through, from the first paint. The poster is the booth cut out
+   in standby, the live scene's first frame: the canvas fades in over it, and only once it fully
+   covers the poster does the poster go, so the booth never turns see-through. */
+.booth-hero[data-theme="graphite"] .booth-hero__scene {
+  background:
+    radial-gradient(60% 40% at 8% 48%, rgba(129, 89, 50, 0.38), transparent 70%),
+    radial-gradient(45% 30% at 55% 58%, rgba(192, 200, 210, 0.12), transparent 70%),
+    radial-gradient(35% 30% at 95% 62%, rgba(42, 104, 149, 0.22), transparent 70%),
+    linear-gradient(180deg, #0b0e12 0%, #111416 40%, #121820 100%);
+}
+
+.booth-hero__haze {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.booth-hero.has-haze .booth-hero__haze {
+  opacity: 1;
+}
+
+/* The swap, on the scene's first complete frame (is-shown): the canvas appears and the poster goes
+   in the same paint. No fades: both show the same frame, so any overlap would only ghost. */
+.booth-hero .booth-hero__canvas {
+  transition: none;
+}
+
+.booth-hero.is-shown:not(.is-lost, .is-fallback) .booth-hero__poster {
+  opacity: 0;
+  animation: none;
+}
+
+/* The finished picture for no WebGL or a lost context. */
+.booth-hero__still {
+  display: none;
+}
+
+.booth-hero:is(.is-fallback, .is-lost) .booth-hero__still {
+  display: block;
+}
+
+.booth-hero__still img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Loading chip: where LIVE 3D appears later, the same pill, with a ring filling up. */
+.booth-hero__loader {
+  position: absolute;
+  top: calc(var(--header) + 18px);
+  right: var(--edge);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 5px 12px 5px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(14, 21, 28, 0.6);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: var(--d-muted);
+  font: 500 10.5px/1 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.4s ease,
+    visibility 0s 0.4s;
+}
+
+.booth-hero:is(.is-loading, .is-ready):not(.is-shown, .is-fallback) .booth-hero__loader {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.booth-hero__loader svg {
+  width: 18px;
+  height: 18px;
+  transform: rotate(-90deg);
+}
+
+.booth-hero__loader circle {
+  fill: none;
+  stroke-width: 2;
+}
+
+.booth-hero__loader-track {
+  stroke: rgba(255, 255, 255, 0.14);
+}
+
+.booth-hero__loader-bar {
+  stroke: var(--orange);
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+
+.booth-hero__loader-pct {
+  min-width: 3.5ch;
+  color: var(--d-text);
+  text-align: right;
+}
+
+@media (max-width: 720px) {
+  /* Phones: bottom right, where the controls appear once the booth is live. */
+  .booth-hero__loader {
+    top: auto;
+    right: var(--gutter);
+    bottom: 22px;
+  }
+}
+
+/* Text that sits straight on the moving glow (headings, stat labels): a soft shadow keeps it
+   readable when the bright patch drifts underneath. */
+.haze-zone :is(.section__title, .stats, .contact__intro) {
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 640px) {
+  /* The frosted panel takes width from the table: give it back on phones. */
+  .haze-zone .runs {
+    padding: 18px 12px;
+  }
+
+  .haze-zone .runs__table :is(th, td) {
+    padding-inline: 4px;
+  }
+
+  .haze-zone .runs__table thead th {
+    font-size: 10px;
+    letter-spacing: 0;
+  }
+}
+
+/* While the 3D loads, the standby booth breathes: a slow rise and fall of light, like a stand
+   powering up before the show, until the live scene takes over on its own frame. */
+@keyframes booth-standby {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(1.1);
+  }
+}
+
+.booth-hero:is(.is-loading, .is-ready):not(.is-shown, .is-fallback) .booth-hero__poster {
+  animation: booth-standby 3.2s ease-in-out infinite;
 }
