@@ -1,0 +1,57 @@
+---
+/**
+ * Live demos: one card per device in the live explainer, with what you do there (explore,
+ * configure, understand) and a direct way in. The whole card opens the demo; the second link
+ * (above it) goes to the device's product page or the case study (English only).
+ */
+import { demoLink } from "@/studio/config";
+import { liveDemos } from "@/studio/data/demos";
+import type { Copy } from "@/studio/i18n/en";
+import { withBase } from "@/lib/paths";
+
+interface Props {
+  t: Copy;
+}
+
+const { t } = Astro.props;
+const d = t.demos;
+const nameOf = (id: string) =>
+  id in t.showcase.devices
+    ? t.showcase.devices[id as keyof typeof t.showcase.devices].name
+    : d.items[id as keyof typeof d.items];
+const cards = liveDemos
+  .map((demo) => ({ ...demo, href: demoLink(demo.equipment, { lang: t.lang, ...demo.params }), name: nameOf(demo.equipment) }))
+  .filter((demo) => demo.href);
+---
+
+{cards.length > 0 && (
+  <section class="section" id="demos">
+    <div class="wrap">
+      <h2 class="section__title">{d.title}</h2>
+      <div class="demos">
+        {cards.map((demo) => (
+          <article class="demo">
+            <img class="demo__shot" src={withBase(demo.image)} alt="" width="1600" height="1000" loading="lazy" />
+            <div class="demo__body">
+              <h3>{demo.name}</h3>
+              <p class="verbs">
+                {demo.verbs.map((verb) => <span class={`verb verb--${verb}`}>{t.platform.verbs[verb]}</span>)}
+              </p>
+              <span class="demo__actions">
+                <a class="demo__go" href={demo.href} target="_blank" rel="noreferrer">
+                  {d.open} <span aria-hidden="true">↗</span>
+                  <span class="sr-only">: {demo.name}</span>
+                </a>
+                {t.lang === "en" && demo.page && (
+                  <a class="demo__more" href={withBase(demo.page.href)}>
+                    {demo.page.kind === "case" ? d.caseLink : d.page} <span aria-hidden="true">→</span>
+                  </a>
+                )}
+              </span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

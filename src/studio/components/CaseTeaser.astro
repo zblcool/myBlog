@@ -1,0 +1,42 @@
+---
+/**
+ * Home page entry to the featured case study: a demonstration project (not a client project),
+ * shown as its four stages from engineering model to delivery. English only, like the page.
+ */
+import type { Copy } from "@/studio/i18n/en";
+import { withBase } from "@/lib/paths";
+
+interface Props {
+  t: Copy;
+}
+
+const { t } = Astro.props;
+const c = t.caseStudy;
+const href = withBase("/case-study/centrifugal-pump-set/");
+---
+
+{t.lang === "en" && (
+  <section class="section section--navy case-teaser" id="case-study" aria-labelledby="case-teaser-title">
+    <div class="wrap">
+      <a class="case-teaser__card" href={href}>
+        <figure class="case-teaser__shot">
+          <img src={withBase("/studio/case/pump-set/blueprint.webp")} alt="" width="1600" height="1000" loading="lazy" />
+        </figure>
+        <div class="case-teaser__body">
+          <span class="case-badge">{c.badge}</span>
+          <h2 id="case-teaser-title">{c.title}</h2>
+          <p class="case-teaser__name">{c.name}</p>
+          <ol class="case-stages">
+            {c.stages.map((stage, i) => (
+              <li>
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                {stage}
+              </li>
+            ))}
+          </ol>
+          <span class="btn btn--orange case-teaser__cta">{c.cta} <span aria-hidden="true">→</span></span>
+        </div>
+      </a>
+    </div>
+  </section>
+)}

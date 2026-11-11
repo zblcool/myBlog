@@ -1,0 +1,169 @@
+---
+/**
+ * Featured case study: a demonstration project (studio/data/caseStudy.ts), told in four stages
+ * from engineering model to delivery. Every stage pairs what Ashmartisan does with what happened
+ * in this project, shown with captures of the live explainer. Slots for material only a client
+ * project would have (its CAD, its deployment) stay as labelled empty frames.
+ */
+import StudioLayout from "@/studio/layouts/StudioLayout.astro";
+import { demoLink } from "@/studio/config";
+import { caseStudy as C } from "@/studio/data/caseStudy";
+import { localePath } from "@/studio/i18n";
+import { caseStudyStructuredData } from "@/studio/seo";
+import { withBase } from "@/lib/paths";
+
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).toString() : path);
+const path = `/case-study/${C.slug}/`;
+const home = localePath("en", "/");
+const live = demoLink("pump-set", { lang: "en" });
+const configure = demoLink("pump-set", { lang: "en", view: "configure" });
+const quote = `${home}#contact`;
+const structuredData = caseStudyStructuredData(
+  { title: C.title, description: C.description, name: `${C.crumb}: ${C.name}` },
+  absolute(localePath("en", path)),
+  absolute(home),
+  absolute(withBase(C.image)),
+);
+const num = (i: number) => String(i + 1).padStart(2, "0");
+---
+
+<StudioLayout lang="en" path={path} title={C.title} description={C.description} structuredData={structuredData}>
+  <section class="hero case-hero">
+    <div class="hero__grid-bg" aria-hidden="true"></div>
+    <div class="wrap case-hero__grid">
+      <div>
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href={home}>Ashmartisan</a> <span aria-hidden="true">/</span> <span>{C.crumb}</span>
+        </nav>
+        <span class="case-badge">{C.badge}</span>
+        <h1>{C.name}</h1>
+        <p class="hero__lead">{C.question}</p>
+        <div class="actions">
+          {live && (
+            <a class="btn btn--orange" href={live} target="_blank" rel="noreferrer">
+              {C.live} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+          <a class="btn btn--ghost" href={quote}>{C.quote}</a>
+        </div>
+      </div>
+      <aside class="case-hero__aside">
+        <dl class="case-facts case-facts--dark">
+          {C.summary.map(([label, value]) => (
+            <div>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="case-notice" role="note">
+          <strong>{C.badge}.</strong>{" "}{C.disclaimer}
+        </p>
+      </aside>
+    </div>
+    <nav class="wrap case-steps" aria-label="Stages">
+      <ol>
+        {C.stages.map((stage, i) => (
+          <li>
+            <a href={`#stage-${stage.id}`}>
+              <span>{num(i)}</span>
+              {stage.title}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  </section>
+
+  {C.stages.map((stage, i) => (
+    <section class:list={["section", "case-stage", i % 2 ? "section--paper" : ""]} id={`stage-${stage.id}`} aria-labelledby={`stage-${stage.id}-title`}>
+      <div class="wrap case-stage__grid">
+        <div class="case-stage__text">
+          <p class="case-stage__num">
+            {C.stagesLabel} {num(i)} <span aria-hidden="true">/ 04</span>
+          </p>
+          <h2 id={`stage-${stage.id}-title`}>{stage.title}</h2>
+          <p class="case-stage__value">{stage.value}</p>
+          <div class="case-stage__here">
+            <p class="product-label">{C.hereLabel}</p>
+            <p>{stage.here}</p>
+          </div>
+          {stage.facts && (
+            <div class="case-facts-block">
+              <p class="product-label">{stage.facts.caption}</p>
+              <dl class="case-facts">
+                {stage.facts.rows.map(([label, value]) => (
+                  <div>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
+        </div>
+
+        <div class:list={["case-stage__visual", stage.images.length > 1 && "case-stage__visual--gallery"]}>
+          {stage.images.map((image) => (
+            <figure class="case-shot">
+              <img src={withBase(image.src)} alt={image.alt} width="1600" height="1000" loading="lazy" />
+              <figcaption>{image.caption}</figcaption>
+            </figure>
+          ))}
+          {stage.id === "delivery" && (
+            <ul class="case-modes">
+              {C.modes.map((mode) => {
+                const href = demoLink("pump-set", { lang: "en", ...mode.params });
+                return (
+                  <li>
+                    <strong>{mode.label}</strong>
+                    <span>{mode.text}</span>
+                    <span class="case-modes__links">
+                      {href && (
+                        <a href={href} target="_blank" rel="noreferrer">
+                          {C.openMode} <span aria-hidden="true">↗</span>
+                          <span class="sr-only">: {mode.label}</span>
+                        </a>
+                      )}
+                      <a href={withBase(mode.page)}>
+                        {C.more} <span aria-hidden="true">→</span>
+                        <span class="sr-only">: {mode.label}</span>
+                      </a>
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+          {stage.pending && (
+            <div class="case-pending" role="note">
+              <span class="case-pending__tag">Pending asset</span>
+              <strong>{stage.pending.title}</strong>
+              <span>{stage.pending.text}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="section section--navy">
+    <div class="wrap solution-cta">
+      <h2 set:html={C.ctaTitle} />
+      <p class="section__lead">{C.ctaText}</p>
+      <div class="actions">
+        <a class="btn btn--orange" href={quote}>{C.quote}</a>
+        {live && (
+          <a class="btn btn--ghost" href={live} target="_blank" rel="noreferrer">
+            {C.live} <span aria-hidden="true">↗</span>
+          </a>
+        )}
+        {configure && (
+          <a class="btn btn--ghost" href={configure} target="_blank" rel="noreferrer">
+            {C.configure} <span aria-hidden="true">↗</span>
+          </a>
+        )}
+      </div>
+    </div>
+  </section>
+</StudioLayout>

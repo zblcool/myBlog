@@ -42,6 +42,7 @@ export function homeStructuredData(t: Copy, siteUrl: string, asset: (path: strin
           "Interactive 3D product visualisation",
           "Industrial equipment marketing",
           "Trade-show interactive displays",
+          "3D product configurators",
           "WebGL",
           "Babylon.js",
           "Three.js",
@@ -166,6 +167,64 @@ export function productStructuredData(p: Product, pageUrl: string, siteUrl: stri
           { "@type": "ListItem", position: 1, name: brand.name, item: siteUrl },
           { "@type": "ListItem", position: 2, name: "Showcase", item: showcaseUrl },
           { "@type": "ListItem", position: 3, name: p.name, item: pageUrl },
+        ],
+      },
+    ],
+  };
+}
+
+/** schema.org data for a product-line page (e.g. Showcase): the service and its breadcrumb trail. */
+export function productLineStructuredData(s: { name: string; description: string }, pageUrl: string, siteUrl: string) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Service",
+        "@id": `${pageUrl}#service`,
+        name: s.name,
+        description: s.description,
+        serviceType: "Interactive 3D product visualisation",
+        provider: { "@id": `${siteUrl}#organization` },
+        areaServed: "Worldwide",
+        url: pageUrl,
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: brand.name, item: siteUrl },
+          { "@type": "ListItem", position: 2, name: s.name, item: pageUrl },
+        ],
+      },
+    ],
+  };
+}
+
+/** schema.org data for a case study page: an article by the studio, with its breadcrumb trail. */
+export function caseStudyStructuredData(
+  c: { title: string; description: string; name: string },
+  pageUrl: string,
+  siteUrl: string,
+  imageUrl: string,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        "@id": `${pageUrl}#article`,
+        headline: c.title,
+        description: c.description,
+        image: imageUrl,
+        url: pageUrl,
+        author: { "@id": `${siteUrl}#organization` },
+        publisher: { "@id": `${siteUrl}#organization` },
+        isPartOf: { "@id": `${siteUrl}#website` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: brand.name, item: siteUrl },
+          { "@type": "ListItem", position: 2, name: c.name, item: pageUrl },
         ],
       },
     ],

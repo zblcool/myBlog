@@ -1,0 +1,139 @@
+---
+/**
+ * The Showcase product-line page: the explainer teaser (views, numbered parts, live 3D), what
+ * buyers can do with it, the demo machines, the enquiry it sends, and where it runs (the three
+ * use-case pages). Ends with the enquiry form, which the teaser's quote links pre-fill.
+ */
+import Contact from "@/studio/components/Contact.astro";
+import ExplainerTeaser from "@/studio/components/ExplainerTeaser.astro";
+import Icon from "@/studio/components/Icon.astro";
+import Modules from "@/studio/components/Modules.astro";
+import Tip from "@/studio/components/Tip.astro";
+import StudioLayout from "@/studio/layouts/StudioLayout.astro";
+import { demoLink } from "@/studio/config";
+import { copies, localePath } from "@/studio/i18n";
+import { products } from "@/studio/data/products";
+import { showcasePage as S } from "@/studio/data/showcase";
+import { solutions } from "@/studio/data/solutions";
+import { productLineStructuredData } from "@/studio/seo";
+import { withBase } from "@/lib/paths";
+
+const t = copies.en;
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).toString() : path);
+const path = "/showcase/";
+const home = localePath("en", "/");
+const demo = demoLink(undefined, { lang: "en" });
+// The explainer's features, as written for the website / sales landing page.
+const features = solutions.find((s) => s.scene === "website")!.features;
+// Website, sales, exhibition: the order of the home page's use cases.
+const useCases = (["embed", "website", "tradeshow"] as const).map((scene) => ({
+  solution: solutions.find((s) => s.scene === scene)!,
+  title: t.scenarios.items.find((item) => item.id === scene)!.title,
+}));
+const structuredData = productLineStructuredData(
+  { name: `${S.h1}: ${S.kind}`, description: S.description },
+  absolute(localePath("en", path)),
+  absolute(home),
+);
+---
+
+<StudioLayout lang="en" path={path} title={S.title} description={S.description} structuredData={structuredData}>
+  <section class="hero solution-hero product-line-hero">
+    <div class="hero__grid-bg" aria-hidden="true"></div>
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href={home}>Ashmartisan</a> <span aria-hidden="true">/</span> <span>{S.crumb}</span>
+      </nav>
+      <p class="eyebrow">{S.eyebrow}</p>
+      <h1>{S.h1} <span class="product-line-hero__kind">{S.kind}</span></h1>
+      <p class="hero__lead">{S.lead}</p>
+      <div class="actions">
+        {demo && (
+          <a class="btn btn--orange" href={demo} target="_blank" rel="noreferrer">
+            {S.live} <span aria-hidden="true">↗</span>
+          </a>
+        )}
+        <a class="btn btn--ghost" href="#contact">{S.quote}</a>
+      </div>
+    </div>
+  </section>
+
+  <ExplainerTeaser t={t} />
+
+  <section class="section" id="features">
+    <div class="wrap">
+      <h2 class="section__title">{S.featuresTitle}</h2>
+      <div class="features features--three">
+        {features.map((feature) => (
+          <article class="feature">
+            <Icon name={feature.icon} />
+            <h3>{feature.title}</h3>
+            <p>{feature.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper" id="machines">
+    <div class="wrap">
+      <h2 class="section__title">{S.machinesTitle}</h2>
+      <div class="machines">
+        {products.map((p) => (
+          <a class="machine" href={withBase(`/showcase/${p.id}/`)}>
+            <img src={withBase(p.diagram.image)} alt="" width={p.diagram.width} height={p.diagram.height} loading="lazy" />
+            <strong>{t.showcase.devices[p.id].name}</strong>
+            <span>{t.showcase.devices[p.id].tagline}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--navy-2" id="leads">
+    <div class="wrap split split--reverse">
+      <h2 class="section__title">
+        {S.leadsTitle}
+        <Tip text={t.leads.lead} />
+      </h2>
+      <div class="enquiry-card" aria-label={t.leads.card.header}>
+        <div class="enquiry-card__head">
+          <span class="enquiry-card__dot"></span>
+          <span>{t.leads.card.header}</span>
+          <strong>{t.leads.card.product}</strong>
+        </div>
+        <dl>
+          {t.leads.card.rows.map(([label, value]) => (
+            <div>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+        <span class="enquiry-card__link">{t.leads.card.link}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--navy" id="use-cases">
+    <div class="wrap">
+      <h2 class="section__title">{S.useCasesTitle}</h2>
+      <div class="solution-links solution-links--three">
+        {useCases.map(({ solution, title }) => (
+          <a class="solution-link" href={withBase(`/${solution.slug}/`)}>
+            <Icon name={solution.icon} size={30} />
+            <span>
+              <strong>{title}</strong>
+              <small>{solution.name}</small>
+            </span>
+            <span aria-hidden="true">→</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Modules t={t} />
+
+  <Contact t={t} />
+</StudioLayout>

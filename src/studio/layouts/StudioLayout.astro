@@ -30,9 +30,11 @@ const pageDescription = description ?? t.meta.description;
 const home = localePath(lang, "/");
 const year = new Date().getFullYear();
 
+// The case study is English only, like the product pages.
 const nav = [
-  { href: `${home}#showcase`, label: t.nav.showcase },
-  { href: `${home}#platform`, label: t.nav.platform },
+  { href: `${home}#solutions`, label: t.nav.products },
+  { href: `${home}#demos`, label: t.nav.demos },
+  ...(lang === "en" ? [{ href: withBase("/case-study/centrifugal-pump-set/"), label: t.nav.caseStudy }] : []),
   { href: `${home}#pricing`, label: t.nav.pricing },
   { href: `${home}#faq`, label: t.nav.faq },
 ];

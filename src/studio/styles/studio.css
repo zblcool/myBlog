@@ -1581,20 +1581,33 @@ p {
     opacity: 0.2;
   }
 
-  /* The booth leads on a phone: headline and actions only, the lead is for the wide layout. */
-  .booth-hero .eyebrow:not(.booth-hero__card .eyebrow, .booth-hero__exhibit .eyebrow),
-  .booth-hero .hero__lead {
-    display: none;
+  /* The booth leads on a phone: brand line, headline, value line and actions, all compact. */
+  .booth-hero__copy .eyebrow {
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+
+  .booth-hero__copy .eyebrow::before {
+    width: 14px;
   }
 
   .booth-hero h1 {
-    margin-bottom: 18px;
+    margin-bottom: 10px;
     font-size: clamp(1.75rem, 7.4vw, 2.2rem);
+  }
+
+  .booth-hero .hero__lead {
+    margin: 0 0 16px;
+    color: #c3ccd5;
+    font-size: 0.86rem;
+    line-height: 1.5;
   }
 
   .booth-hero__scrim {
     background:
-      linear-gradient(180deg, rgba(var(--hall-rgb), 0.9) 0%, rgba(var(--hall-rgb), 0.55) 26%, rgba(var(--hall-rgb), 0) 40%),
+      linear-gradient(180deg, rgba(var(--hall-rgb), 0.92) 0%, rgba(var(--hall-rgb), 0.7) 34%, rgba(var(--hall-rgb), 0) 52%),
       linear-gradient(0deg, var(--navy) 0, rgba(22, 32, 42, 0) 12%);
   }
 
@@ -3959,5 +3972,613 @@ a.machine:hover img {
 
   .tip:is(:hover, :focus-within) .tip__bubble {
     transform: none;
+  }
+}
+
+/* ---------- Product lines: kind line and value chips ---------- */
+
+.module__kind {
+  margin: 0 0 12px;
+  color: var(--text-2);
+  font-size: 14px;
+}
+
+/* Explore / configure / understand: what a visitor does with a product line or demo. */
+.verbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+
+.verb {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.verb::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--steel-2);
+}
+
+.verb--configure::before {
+  background: var(--orange);
+}
+
+.verb--understand::before {
+  background: var(--navy);
+}
+
+/* ---------- Home: live demos ---------- */
+
+.demos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.demo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+
+.demo:hover {
+  border-color: var(--steel-2);
+  box-shadow: 0 14px 34px rgba(22, 32, 42, 0.1);
+  transform: translateY(-3px);
+}
+
+.demo__shot {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  background: var(--navy);
+}
+
+.demo__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px 18px;
+}
+
+.demo h3 {
+  font-size: 18px;
+}
+
+.demo__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.demo__go,
+.demo__more {
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.demo__go {
+  color: var(--navy);
+}
+
+/* The whole card opens the demo; the page link sits above that. */
+.demo__go::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.demo__more {
+  position: relative;
+  z-index: 1;
+  color: var(--text-2);
+}
+
+.demo__go:hover,
+.demo__more:hover {
+  color: var(--orange-2);
+}
+
+@media (max-width: 1000px) {
+  .demos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .demos {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Case study: badge, stage list, home teaser ---------- */
+
+.case-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border: 1px dashed var(--orange);
+  border-radius: 999px;
+  color: var(--orange);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.case-stages {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.case-stages li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 0 0;
+  border-top: 2px solid var(--steel);
+  color: var(--d-text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.case-stages li:last-child {
+  border-color: var(--orange);
+}
+
+.case-stages span {
+  color: var(--d-muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.case-teaser__card {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  overflow: hidden;
+  border: 1px solid var(--d-line);
+  border-radius: 18px;
+  background: var(--navy-2);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s;
+}
+
+.case-teaser__card:hover {
+  border-color: var(--orange);
+}
+
+.case-teaser__shot {
+  margin: 0;
+  min-height: 100%;
+}
+
+.case-teaser__shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 30% 50%;
+}
+
+.case-teaser__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  padding: clamp(28px, 4vw, 48px);
+}
+
+.case-teaser__body h2 {
+  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+}
+
+.case-teaser__name {
+  margin-top: -8px;
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.case-teaser__body .case-stages {
+  align-self: stretch;
+  margin: 6px 0 8px;
+}
+
+.case-teaser__card:hover .case-teaser__cta {
+  background: #f6b46e;
+}
+
+@media (max-width: 900px) {
+  .case-teaser__card {
+    grid-template-columns: 1fr;
+  }
+
+  .case-teaser__shot img {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (max-width: 520px) {
+  .case-stages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 14px;
+  }
+}
+
+/* ---------- Product-line page (pages/showcase/index.astro) ---------- */
+
+.product-line-hero {
+  padding-bottom: 0;
+}
+
+.product-line-hero h1 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 20px;
+}
+
+.product-line-hero__kind {
+  color: var(--d-muted);
+  font-size: 0.42em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.product-line-hero .hero__lead {
+  max-width: 46ch;
+}
+
+/* ---------- Case study page ---------- */
+
+.case-hero {
+  padding-bottom: 0;
+}
+
+.case-hero__grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: end;
+  gap: clamp(32px, 5vw, 72px);
+}
+
+.case-hero h1 {
+  margin: 18px 0;
+  font-size: clamp(2.1rem, 4.4vw, 3.5rem);
+}
+
+.case-hero .hero__lead {
+  max-width: 34ch;
+  color: var(--d-text);
+  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+  line-height: 1.5;
+}
+
+.case-hero .actions {
+  margin-top: 30px;
+}
+
+.case-hero__aside {
+  display: grid;
+  gap: 16px;
+}
+
+.case-notice {
+  padding: 14px 16px;
+  border: 1px dashed rgba(242, 162, 80, 0.6);
+  border-radius: 12px;
+  background: rgba(242, 162, 80, 0.06);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.hero .case-notice {
+  color: var(--d-text);
+}
+
+.case-notice strong {
+  color: var(--orange);
+}
+
+.case-facts {
+  display: grid;
+  margin: 0;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.case-facts div {
+  display: grid;
+  grid-template-columns: minmax(96px, 0.45fr) 1fr;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.case-facts dt {
+  color: var(--text-2);
+}
+
+.case-facts dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.case-facts--dark,
+.case-facts--dark div {
+  border-color: var(--d-line);
+}
+
+.case-facts--dark dt {
+  color: var(--d-muted);
+}
+
+.case-facts--dark dd {
+  color: var(--d-text);
+}
+
+.case-steps {
+  position: relative;
+  margin-top: clamp(48px, 6vw, 72px);
+  padding-bottom: 28px;
+}
+
+.case-steps ol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.case-steps a {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 2px solid var(--steel);
+  color: var(--d-text);
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.2s;
+}
+
+.case-steps li:last-child a {
+  border-color: var(--orange);
+}
+
+.case-steps a:hover {
+  border-color: var(--orange);
+  color: var(--white);
+}
+
+.case-steps span {
+  color: var(--d-muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.case-stage__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: start;
+  gap: clamp(32px, 5vw, 72px);
+}
+
+.case-stage__text {
+  display: grid;
+  gap: 20px;
+}
+
+.case-stage__num {
+  color: var(--steel);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.case-stage__num span {
+  color: var(--text-2);
+  opacity: 0.6;
+}
+
+.case-stage__value {
+  color: var(--text);
+  font-size: 1.08rem;
+  line-height: 1.65;
+}
+
+.case-stage__here {
+  display: grid;
+  gap: 8px;
+  padding-left: 14px;
+  border-left: 2px solid var(--line);
+  color: var(--text-2);
+  font-size: 15px;
+}
+
+.case-stage__here .product-label::before {
+  display: none;
+}
+
+.case-stage__here .product-label,
+.case-facts-block .product-label {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.case-facts-block {
+  display: grid;
+  gap: 10px;
+}
+
+.case-stage__visual {
+  display: grid;
+  gap: 16px;
+}
+
+/* Three captures: one large, two below. */
+.case-stage__visual--gallery {
+  grid-template-columns: 1fr 1fr;
+}
+
+.case-stage__visual--gallery .case-shot:first-child {
+  grid-column: 1 / -1;
+}
+
+.case-shot {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.case-shot img {
+  width: 100%;
+  height: auto;
+}
+
+.case-shot figcaption {
+  padding: 10px 14px;
+  border-top: 1px solid var(--line);
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+/* A slot kept for material only a client project has: visibly empty, never filled in. */
+.case-pending {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 6px;
+  min-height: 180px;
+  padding: 28px;
+  border: 2px dashed var(--silver);
+  border-radius: var(--radius);
+  background: repeating-linear-gradient(135deg, transparent 0 12px, rgba(89, 117, 146, 0.05) 12px 24px);
+  color: var(--text-2);
+  font-size: 14px;
+  text-align: center;
+}
+
+.case-pending strong {
+  color: var(--navy);
+  font-size: 16px;
+}
+
+.case-pending__tag {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--steel);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.section--paper .case-pending__tag {
+  background: var(--white);
+}
+
+#stage-cad .case-pending {
+  min-height: 320px;
+}
+
+.case-modes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.case-modes li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--white);
+  font-size: 14px;
+}
+
+.case-modes li > span:not(.case-modes__links) {
+  color: var(--text-2);
+}
+
+.case-modes__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.case-modes__links a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.case-modes__links a:hover {
+  color: var(--orange-2);
+}
+
+@media (max-width: 900px) {
+  .case-hero__grid,
+  .case-stage__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .case-modes {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .case-steps ol {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 14px;
+  }
+
+  .case-stage__visual--gallery {
+    grid-template-columns: 1fr;
   }
 }

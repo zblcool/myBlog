@@ -1,6 +1,7 @@
 ---
 /**
- * Live demo entry: three scenarios, each opening the explainer set up for it (`?scene=` in the
+ * Use cases: website, sales and exhibition, the three places one Showcase build runs. Each card
+ * opens the explainer set up for it (`?scene=` in the
  * explainer, see its src/app/demo/scenes.ts). The explainer shows the same choice when opened bare.
  */
 import ScenarioArt from "./ScenarioArt.astro";
@@ -25,7 +26,7 @@ const pageOf = (scene: string) => solutions.find((sol) => sol.scene === scene);
 ---
 
 {chooser && (
-  <section class="section scenarios" id="demo">
+  <section class="section scenarios" id="use-cases">
     <div class="wrap">
       <h2 class="section__title">{s.title}</h2>
       <div class="scenarios__grid">

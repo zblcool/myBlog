@@ -28,7 +28,7 @@ const t = copies.en;
 const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).toString() : path);
 const path = `/showcase/${p.id}/`;
 const home = localePath("en", "/");
-const showcase = `${home}#showcase`;
+const showcase = withBase("/showcase/");
 const demo = demoLink(p.id, { lang: "en" });
 const device = devices.find((d) => d.id === p.id)!;
 const others = products.filter((o) => o.id !== p.id);

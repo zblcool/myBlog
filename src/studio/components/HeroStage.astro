@@ -68,10 +68,10 @@ const screenCopy: ScreenCopy = {
 // The clickable things on the stand and where each one leads.
 const spotIds = ["screen", "tablet", "laptop", "exhibit", "brochures", "contact"] as const;
 const spotHref = {
-  // The trade-show landing page (English only); other languages go to the scenario cards.
-  screen: t.lang === "en" ? withBase("/trade-show-touch-screen/") : "#demo",
-  tablet: demoLinks["worm-gearbox"] || "#demo",
-  laptop: "#showcase",
+  // The use-case landing pages (English only); other languages go to the use-case cards.
+  screen: t.lang === "en" ? withBase("/trade-show-touch-screen/") : "#use-cases",
+  tablet: demoLinks["worm-gearbox"] || "#demos",
+  laptop: t.lang === "en" ? withBase("/embed-3d-product-viewer/") : "#use-cases",
   exhibit: "", // per exhibit, from data-demos
   brochures: "#pricing",
   contact: "#contact",
@@ -113,6 +113,7 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
       <div class="booth-hero__copy">
         <p class="eyebrow">{h.eyebrow}</p>
         <h1 set:html={h.title} />
+        <p class="hero__lead">{h.lead}</p>
         <div class="actions">
           <a class="btn btn--orange" href={primaryHref}>
             {h.primary}
@@ -370,7 +371,7 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
     let focused: SpotId | null = null;
     let focusScroll = 0;
     const spotHref = (id: SpotId) =>
-      id === "exhibit" ? demos[readForm().equipment] || "#demo" : spots[id].href;
+      id === "exhibit" ? demos[readForm().equipment] || "#demos" : spots[id].href;
 
     const placeSpots = (list: SpotPosition[]) => {
       for (const { id, x, y, visible } of list) {

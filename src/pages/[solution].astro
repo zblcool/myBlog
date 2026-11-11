@@ -40,7 +40,9 @@ const structuredData = solutionStructuredData(s, absolute(localePath("en", path)
     <div class="wrap solution-hero__grid">
       <div>
         <nav class="crumbs" aria-label="Breadcrumb">
-          <a href={home}>{L.home}</a> <span aria-hidden="true">/</span> <span>{s.name}</span>
+          <a href={home}>{L.home}</a> <span aria-hidden="true">/</span>
+          <a href={withBase("/showcase/")}>{productLabels.showcase}</a> <span aria-hidden="true">/</span>
+          <span>{s.name}</span>
         </nav>
         <p class="eyebrow">{s.eyebrow}</p>
         <h1 set:html={s.h1} />

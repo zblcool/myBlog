@@ -2,29 +2,41 @@
 /**
  * The business home page. Rule: show, don't explain. Each section is a heading plus something
  * to look at or use; any explanation that has to exist sits in a Tip, off the main view.
+ *
+ * Order follows a first-time visitor: what this is (Hero) → what you can buy (Solutions: the
+ * three product lines) → try it (Live Demos) → a full worked example (case study) → where it
+ * runs (Use Cases) → how a project runs and why it's worth it (How it works, evidence) →
+ * price, questions, contact. Feature detail (views, walkthroughs, enquiry context) lives on the
+ * Showcase page and the product pages.
  */
+import CaseTeaser from "./CaseTeaser.astro";
 import Contact from "./Contact.astro";
 import Hero from "./Hero.astro";
+import LiveDemos from "./LiveDemos.astro";
 import Modules from "./Modules.astro";
 import Pricing from "./Pricing.astro";
 import Scenarios from "./Scenarios.astro";
 import Tip from "./Tip.astro";
-import { products } from "@/studio/data/products";
 import type { Copy } from "@/studio/i18n/en";
-import { withBase } from "@/lib/paths";
 
 interface Props {
   t: Copy;
 }
 
 const { t } = Astro.props;
-// Product pages are English only, like the other landing pages.
-const productPages = t.lang === "en";
 ---
 
 <Hero t={t} />
 
-<section class="section section--navy" id="evidence">
+<Modules t={t} />
+
+<LiveDemos t={t} />
+
+<CaseTeaser t={t} />
+
+<Scenarios t={t} />
+
+<section class="section section--navy-2" id="evidence">
   <div class="wrap">
     <h2 class="section__title">
       {t.evidence.title}
@@ -44,57 +56,7 @@ const productPages = t.lang === "en";
   </div>
 </section>
 
-<section class="section section--paper" id="showcase">
-  <div class="wrap">
-    <h2 class="section__title">{t.showcase.title}</h2>
-    <div class="machines">
-      {products.map((p) => {
-        const card = (
-          <>
-            <img src={withBase(p.diagram.image)} alt="" width={p.diagram.width} height={p.diagram.height} loading="lazy" />
-            <strong>{t.showcase.devices[p.id].name}</strong>
-          </>
-        );
-        return productPages ? (
-          <a class="machine" href={withBase(`/showcase/${p.id}/`)}>{card}</a>
-        ) : (
-          <div class="machine">{card}</div>
-        );
-      })}
-    </div>
-  </div>
-</section>
-
-<Scenarios t={t} />
-
-<Modules t={t} />
-
-<section class="section section--navy-2" id="leads">
-  <div class="wrap split split--reverse">
-    <h2 class="section__title">
-      {t.leads.title}
-      <Tip text={t.leads.lead} />
-    </h2>
-    <div class="enquiry-card" aria-label={t.leads.card.header}>
-      <div class="enquiry-card__head">
-        <span class="enquiry-card__dot"></span>
-        <span>{t.leads.card.header}</span>
-        <strong>{t.leads.card.product}</strong>
-      </div>
-      <dl>
-        {t.leads.card.rows.map(([label, value]) => (
-          <div>
-            <dt>{label}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))}
-      </dl>
-      <span class="enquiry-card__link">{t.leads.card.link}</span>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="process">
+<section class="section section--paper" id="process">
   <div class="wrap">
     <h2 class="section__title">{t.process.title}</h2>
     <ol class="steps">
