@@ -203,7 +203,7 @@ export const zh: Copy = {
   demos: {
     title: "现在就能打开的在线演示。",
     open: "打开演示",
-    page: "产品页",
+    page: "演示解析",
     caseLink: "示范案例",
     items: {
       "pump-set": "ISO 2858 离心泵组",

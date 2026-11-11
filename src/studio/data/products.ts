@@ -60,7 +60,7 @@ export const productLabels = {
   ctaButton: "Get in touch",
   others: "Other demo machines",
   credit: "3D model",
-  pageLink: "Product page",
+  pageLink: "Demo breakdown",
   diagramAlt: (name: string) => `${name}: structure diagram with numbered parts`,
 };
 

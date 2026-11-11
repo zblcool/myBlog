@@ -202,7 +202,7 @@ export const en = {
   demos: {
     title: "Live demos you can open right now.",
     open: "Open live",
-    page: "Product page",
+    page: "Demo breakdown",
     caseLink: "Case study",
     items: {
       "pump-set": "ISO 2858 Centrifugal Pump Set",
