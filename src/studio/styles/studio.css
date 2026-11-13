@@ -1466,19 +1466,19 @@ p {
 }
 
 /* Header over a light booth: dark text until it gets its own background on scroll. */
-:root[data-hero-tone="light"] .header:not(.is-scrolled, .is-open) {
+:root[data-hero-tone="light"] .header:not(.is-scrolled, .is-open, .is-menu) {
   color: var(--navy);
 }
 
-:root[data-hero-tone="light"] .header:not(.is-scrolled, .is-open) .header__nav a:not(.btn) {
+:root[data-hero-tone="light"] .header:not(.is-scrolled, .is-open, .is-menu) .header__nav a:not(.btn) {
   color: var(--text-2);
 }
 
-:root[data-hero-tone="light"] .header:not(.is-scrolled, .is-open) .lockup__word {
+:root[data-hero-tone="light"] .header:not(.is-scrolled, .is-open, .is-menu) .lockup__word {
   color: var(--steel);
 }
 
-:root[data-hero-tone="light"] .header:not(.is-scrolled, .is-open) .lockup__word b {
+:root[data-hero-tone="light"] .header:not(.is-scrolled, .is-open, .is-menu) .lockup__word b {
   color: var(--navy);
 }
 
@@ -4884,4 +4884,435 @@ a.machine:hover img {
 
 .booth-hero:is(.is-loading, .is-ready):not(.is-shown, .is-fallback) .booth-hero__poster {
   animation: booth-standby 3.2s ease-in-out infinite;
+}
+
+/* ---------- Hero: the exhibit's scroll steps (callouts, x-ray, exploded) ---------- */
+
+/* More scroll for exhibits with steps: the same travel to the close-up, then about 70vh a step. */
+.booth-hero.is-scrub.has-steps:not(.is-fallback) {
+  height: 385vh;
+  height: 385svh;
+}
+
+/* The booth's markers make way while the exhibit is being taken apart. */
+.booth-hero.is-features .booth-hero__spots {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.booth-hero__callouts {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.booth-hero__callouts.is-on {
+  visibility: visible;
+}
+
+.booth-hero:is(.is-focus, .is-open, .is-lost, .is-fallback) .booth-hero__callouts {
+  visibility: hidden;
+}
+
+.booth-hero__leaders {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.booth-hero__leaders line {
+  stroke: rgba(238, 241, 244, 0.6);
+  stroke-width: 1;
+}
+
+.booth-hero__leaders circle {
+  fill: var(--orange);
+  stroke: rgba(14, 21, 28, 0.8);
+  stroke-width: 1.5;
+}
+
+.booth-callout {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 11px 4px 4px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(14, 21, 28, 0.8);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: var(--d-text);
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.booth-callout b {
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: var(--navy);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* The exhibit card's step list: where you are, and a way to jump. */
+.booth-steps {
+  display: none;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.booth-hero.has-steps .booth-steps {
+  display: grid;
+}
+
+.booth-steps button {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  padding: 8px 0 0;
+  border: 0;
+  border-top: 2px solid rgba(255, 255, 255, 0.16);
+  background: none;
+  color: var(--d-muted);
+  font: 600 12px/1.2 var(--font);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.3s,
+    color 0.3s;
+}
+
+.booth-steps button span {
+  font: 500 10.5px var(--mono);
+  opacity: 0.8;
+}
+
+.booth-steps button:hover {
+  color: var(--d-text);
+}
+
+.booth-steps button[aria-current] {
+  border-color: var(--orange);
+  color: var(--white);
+}
+
+.booth-hero[data-theme="gallery"] .booth-steps button {
+  border-color: rgba(22, 32, 42, 0.16);
+  color: var(--text-2);
+}
+
+.booth-hero[data-theme="gallery"] .booth-steps button[aria-current] {
+  border-color: var(--orange);
+  color: var(--navy);
+}
+
+@media (max-width: 720px) {
+  .booth-hero.is-scrub.has-steps:not(.is-fallback) {
+    height: 340vh;
+    height: 340svh;
+  }
+
+  .booth-callout {
+    gap: 5px;
+    padding: 3px 8px 3px 3px;
+    font-size: 11px;
+  }
+
+  .booth-callout b {
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+  }
+
+  .booth-steps {
+    margin-top: 14px;
+  }
+}
+
+/* ---------- Header dropdowns (MegaMenu.astro) ---------- */
+
+.header.is-menu {
+  background: rgba(22, 32, 42, 0.97);
+  border-bottom-color: var(--d-line);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.mega__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--d-muted);
+  font: inherit;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.mega__trigger svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s;
+}
+
+.mega__trigger:hover,
+.mega.is-open .mega__trigger {
+  color: var(--white);
+}
+
+.mega.is-open .mega__trigger svg {
+  transform: rotate(180deg);
+}
+
+:root[data-hero-tone="light"] .header:not(.is-scrolled, .is-open, .is-menu) .mega__trigger {
+  color: var(--text-2);
+}
+
+/* The panel hangs from the header across the page, an orange edge on top. */
+.mega__panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 28px 0 32px;
+  border-top: 2px solid transparent;
+  border-bottom: 1px solid var(--d-line);
+  background:
+    linear-gradient(rgba(14, 21, 28, 0.98), rgba(14, 21, 28, 0.98)) padding-box,
+    linear-gradient(90deg, transparent 0%, var(--orange) 30%, var(--orange-2) 70%, transparent 100%) border-box;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    visibility 0s 0.18s;
+}
+
+.mega.is-open .mega__panel {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition-delay: 0s;
+}
+
+.mega__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr)) minmax(260px, 0.95fr);
+  gap: 40px;
+}
+
+.mega__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--d-line);
+  color: var(--d-muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.mega__head .icon {
+  color: var(--orange);
+}
+
+.mega__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.header__nav .mega__list a {
+  display: grid;
+  gap: 2px;
+  margin: 0 -10px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--d-text);
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+
+.header__nav .mega__list a:is(:hover, :focus-visible, .is-current) {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--white);
+}
+
+.mega__label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.mega__note {
+  color: var(--d-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.header__nav a.mega__all {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+  color: var(--orange);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.header__nav a.mega__all:hover {
+  color: #f6b46e;
+}
+
+/* The card previews the link under the pointer or focus. */
+.header__nav a.mega__card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--d-line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--d-text);
+  text-decoration: none;
+}
+
+.mega__visual {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  margin-bottom: 6px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: radial-gradient(70% 90% at 75% 30%, rgba(242, 162, 80, 0.28), transparent 70%), var(--navy-3);
+}
+
+.mega__visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mega__icon {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--orange);
+}
+
+.mega__icon[hidden],
+.mega__visual img[hidden] {
+  display: none;
+}
+
+.mega__eyebrow {
+  color: var(--orange);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.mega__card strong {
+  color: var(--white);
+  font-size: 16px;
+}
+
+.mega__text {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--d-muted);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.mega__go {
+  margin-top: 4px;
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Under the burger: fold-out lists, no card. */
+@media (max-width: 1040px) {
+  .header__nav {
+    max-height: calc(100vh - var(--header));
+    max-height: calc(100svh - var(--header));
+    overflow-y: auto;
+    /* A long open list scrolls over the page: no page showing through it. */
+    background: var(--navy);
+  }
+
+  .mega {
+    border-bottom: 1px solid var(--d-line);
+  }
+
+  .mega__trigger {
+    justify-content: space-between;
+    width: 100%;
+    padding: 14px 0;
+    color: var(--d-text);
+    font-size: 16px;
+  }
+
+  .mega__panel {
+    position: static;
+    display: none;
+    padding: 0 0 14px;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .mega.is-open .mega__panel {
+    display: block;
+  }
+
+  .mega__grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0;
+  }
+
+  .header__nav a.mega__card {
+    display: none;
+  }
+
+  .mega__head {
+    margin-bottom: 4px;
+    padding-bottom: 8px;
+  }
 }

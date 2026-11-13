@@ -1,0 +1,82 @@
+---
+/**
+ * One dropdown of the header (studio/data/nav.ts): a button, and a full-width panel with columns
+ * of links and a card that previews the link under the pointer or focus. Desktop: opens on hover
+ * or click, closes on Escape, a click outside, or focus leaving it. Under the burger (≤1040px) it
+ * is a fold-out list without the card. Behaviour lives in StudioLayout's script.
+ */
+import Icon from "./Icon.astro";
+import type { Menu } from "@/studio/data/nav";
+import { withBase } from "@/lib/paths";
+
+interface Props {
+  menu: Menu;
+  openLabel: string;
+}
+
+const { menu, openLabel } = Astro.props;
+const first = menu.columns[0].items[0];
+const icons = [...new Set(menu.columns.flatMap((c) => c.items.map((i) => i.icon)).filter((i): i is string => Boolean(i)))];
+const panelId = `menu-${menu.id}`;
+const src = (path?: string) => (path ? (path.startsWith("/studio") ? withBase(path) : path) : "");
+---
+
+<div class="mega" data-menu>
+  <button class="mega__trigger" type="button" aria-expanded="false" aria-controls={panelId} data-menu-trigger>
+    {menu.label}
+    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" /></svg>
+  </button>
+  <div class="mega__panel" id={panelId} data-menu-panel>
+    <div class="wrap mega__grid" style={`--cols:${menu.columns.length}`}>
+      {menu.columns.map((column) => (
+        <div class="mega__col">
+          <p class="mega__head">
+            <Icon name={column.icon} size={16} />
+            {column.title}
+          </p>
+          <ul class="mega__list">
+            {column.items.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  data-card-image={src(item.image)}
+                  data-card-icon={item.icon ?? ""}
+                  data-card-eyebrow={item.eyebrow}
+                  data-card-title={item.label}
+                  data-card-text={item.text}
+                  {...(item.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                >
+                  <span class="mega__label">
+                    {item.label}
+                    {item.external && <span aria-hidden="true"> ↗</span>}
+                  </span>
+                  {item.note && <span class="mega__note">{item.note}</span>}
+                </a>
+              </li>
+            ))}
+          </ul>
+          {column.all && (
+            <a class="mega__all" href={column.all.href}>
+              {column.all.label} <span aria-hidden="true">›</span>
+            </a>
+          )}
+        </div>
+      ))}
+
+      <a class="mega__card" href={first.href} data-menu-card aria-hidden="true" tabindex="-1" {...(first.external ? { target: "_blank", rel: "noreferrer" } : {})}>
+        <span class="mega__visual">
+          <img data-card-img src={src(first.image)} alt="" width="1600" height="1000" loading="lazy" hidden={!first.image} />
+          {icons.map((name) => (
+            <span class="mega__icon" data-card-iconbox={name} hidden={first.image ? true : first.icon !== name}>
+              <Icon name={name} size={44} />
+            </span>
+          ))}
+        </span>
+        <span class="mega__eyebrow" data-card-eyebrow>{first.eyebrow}</span>
+        <strong data-card-title>{first.label}</strong>
+        <span class="mega__text" data-card-text>{first.text}</span>
+        <span class="mega__go">{openLabel} <span aria-hidden="true">›</span></span>
+      </a>
+    </div>
+  </div>
+</div>

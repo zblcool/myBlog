@@ -160,6 +160,17 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
           )}
           <button class="btn btn--ghost btn--sm" type="button" data-stage-open>{s.customise}</button>
         </div>
+        <!-- The scroll steps on the exhibit (exhibits with parts data); each jumps the page to its step. -->
+        <ol class="booth-steps" aria-label={s.stepsLabel} data-stage-steps>
+          {s.steps.map((label, i) => (
+            <li>
+              <button type="button" data-step-to={i + 1}>
+                <span aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+                {label}
+              </button>
+            </li>
+          ))}
+        </ol>
       </aside>
 
       <aside class="booth-hero__card" data-nosnippet aria-live="polite" data-spot-card>
@@ -179,6 +190,17 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
           <span class="booth-spot__dot" aria-hidden="true"></span>
           <span class="booth-spot__label">{s.spots[id].label}</span>
         </button>
+      ))}
+    </div>
+
+    <!-- Callouts on the exhibit's parts, placed by the scene every frame (onCallouts). -->
+    <div class="booth-hero__callouts" data-stage-callouts aria-hidden="true" data-nosnippet>
+      <svg class="booth-hero__leaders" data-callout-lines></svg>
+      {Object.entries(s.parts).map(([id, name], i) => (
+        <span class="booth-callout" data-callout={id}>
+          <b>{i + 1}</b>
+          {name}
+        </span>
       ))}
     </div>
 
@@ -271,8 +293,8 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
 </section>
 
 <script>
-  import { defaultConfig, equipmentModels, type StageConfig } from "@/studio/stage/presets";
-  import type { SpotId, SpotPosition, StageController } from "@/studio/stage/scene";
+  import { CLOSE_UP, defaultConfig, equipmentModels, exhibitFeatures, type StageConfig } from "@/studio/stage/presets";
+  import type { CalloutPosition, SpotId, SpotPosition, StageController } from "@/studio/stage/scene";
   import type { ScreenCopy } from "@/studio/stage/screens";
 
   interface Spot {
@@ -348,6 +370,7 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
 
     // The theme recolours the hero copy and, while it sits over the hero, the header.
     const showConfig = (config: StageConfig) => {
+      showSteps(config.equipment);
       root.dataset.theme = config.theme;
       document.documentElement.dataset.heroTone = config.theme === "gallery" ? "light" : "dark";
       root.querySelectorAll<HTMLElement>("[data-stage-name]").forEach((el) => (el.textContent = names[config.equipment] ?? ""));
@@ -370,15 +393,80 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
     let scrollQueued = false;
     // On a phone the open panel covers the lower half, so the camera frames the exhibit up top.
     const narrow = matchMedia("(max-width: 720px)");
-    const cameraProgress = () => (narrow.matches && !form.hidden ? Math.max(progress, 1) : progress);
+    const cameraProgress = () => (narrow.matches && !form.hidden ? Math.max(progress, CLOSE_UP) : progress);
     const readScroll = () => {
       scrollQueued = false;
       const rect = root.getBoundingClientRect();
       const travel = rect.height - innerHeight;
       progress = travel > 0 ? Math.min(Math.max(-rect.top / travel, 0), 1) : 0;
-      root.style.setProperty("--p", progress.toFixed(4));
-      root.classList.toggle("is-exhibit", progress > 0.5);
+      // --p runs over the camera move onto the exhibit only (the copy fades, the card arrives);
+      // the exhibit's steps take the rest of the scroll.
+      const p = Math.min(progress / CLOSE_UP, 1);
+      root.style.setProperty("--p", p.toFixed(4));
+      root.classList.toggle("is-exhibit", p > 0.5);
       stage?.setProgress(cameraProgress());
+    };
+
+    // --- exhibit steps: the card's list and the callouts ------------------------------
+    const stepButtons = [...root.querySelectorAll<HTMLButtonElement>("[data-step-to]")];
+    const showStep = (step: number) => {
+      root.dataset.step = String(step);
+      root.classList.toggle("is-features", step >= 2);
+      stepButtons.forEach((b) => b.toggleAttribute("aria-current", Number(b.dataset.stepTo) === step));
+    };
+    // Where each step sits in the scroll (step 1 is the close-up itself).
+    const stepAt = [0, CLOSE_UP, 0.2, 0.44, 0.95].map((f, i) => (i < 2 ? f : CLOSE_UP + f * (1 - CLOSE_UP)));
+    stepButtons.forEach((button) =>
+      button.addEventListener("click", () => {
+        const rect = root.getBoundingClientRect();
+        const travel = rect.height - innerHeight;
+        scrollTo({ top: scrollY + rect.top + travel * stepAt[Number(button.dataset.stepTo)], behavior: reducedMotion ? "auto" : "smooth" });
+      }),
+    );
+    const showSteps = (equipment: string) =>
+      root.classList.toggle("has-steps", !reducedMotion && equipment in exhibitFeatures);
+    showSteps(readForm().equipment);
+
+    const calloutLayer = root.querySelector<HTMLElement>("[data-stage-callouts]")!;
+    const leaders = calloutLayer.querySelector<SVGSVGElement>("[data-callout-lines]")!;
+    const calloutEls = new Map([...calloutLayer.querySelectorAll<HTMLElement>("[data-callout]")].map((el) => [el.dataset.callout!, el]));
+    const placeCallouts = (list: CalloutPosition[] | null) => {
+      calloutLayer.classList.toggle("is-on", Boolean(list));
+      if (!list) return;
+      // Labels whose boxes overlap are pushed apart vertically (a few relaxation passes); the
+      // leader lines follow them.
+      const boxes = list.map((c) => {
+        const el = calloutEls.get(c.id);
+        return { c, w: (el?.offsetWidth ?? 0) + 6, h: (el?.offsetHeight ?? 0) + 4 };
+      });
+      for (let pass = 0; pass < 8; pass++) {
+        for (let i = 0; i < boxes.length; i++) {
+          for (let j = i + 1; j < boxes.length; j++) {
+            const a = boxes[i];
+            const b = boxes[j];
+            if (a.c.opacity < 0.05 || b.c.opacity < 0.05) continue;
+            const dx = Math.abs(a.c.lx - b.c.lx) - (a.w + b.w) / 2;
+            const dy = Math.abs(a.c.ly - b.c.ly) - (a.h + b.h) / 2;
+            if (dx >= 0 || dy >= 0) continue;
+            const push = -dy / 2 + 0.5;
+            const up = a.c.ly <= b.c.ly ? -1 : 1;
+            a.c.ly += up * push;
+            b.c.ly -= up * push;
+          }
+        }
+      }
+      let lines = "";
+      for (const c of list) {
+        const el = calloutEls.get(c.id);
+        if (!el) continue;
+        el.style.opacity = c.opacity.toFixed(3);
+        el.style.transform = `translate(${c.lx.toFixed(1)}px, ${c.ly.toFixed(1)}px) translate(-50%, -50%)`;
+        if (c.opacity > 0.01) {
+          lines += `<line x1="${c.x.toFixed(1)}" y1="${c.y.toFixed(1)}" x2="${c.lx.toFixed(1)}" y2="${c.ly.toFixed(1)}" opacity="${c.opacity.toFixed(3)}"/>`;
+          lines += `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="3" opacity="${c.opacity.toFixed(3)}"/>`;
+        }
+      }
+      leaders.innerHTML = lines;
     };
     if (!reducedMotion) {
       addEventListener(
@@ -659,6 +747,8 @@ const spots = Object.fromEntries(spotIds.map((id) => [id, { ...s.spots[id], href
           onSpots: placeSpots,
           onTabletScreen: placeTablet,
           onIntroDone: () => root.classList.add("is-live"),
+          onStep: showStep,
+          onCallouts: placeCallouts,
           onFirstFrame: () => {
             firstFrame = true;
             reveal();

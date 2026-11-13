@@ -7,6 +7,8 @@ import "@fontsource/jetbrains-mono/latin-400.css";
 import "@fontsource/jetbrains-mono/latin-500.css";
 import "@/studio/styles/studio.css";
 import Lockup from "@/studio/components/Lockup.astro";
+import MegaMenu from "@/studio/components/MegaMenu.astro";
+import { menus } from "@/studio/data/nav";
 import { analytics, brand, contactEmail, socialLinks } from "@/studio/config";
 import { devices } from "@/studio/data/devices";
 import { solutions } from "@/studio/data/solutions";
@@ -30,11 +32,12 @@ const pageDescription = description ?? t.meta.description;
 const home = localePath(lang, "/");
 const year = new Date().getFullYear();
 
-// The case study is English only, like the product pages.
+// English: Products and Solutions are dropdowns (their pages are English only); the hidden
+// Chinese copy keeps plain links to its own sections.
+const dropdowns = lang === "en" ? menus : [];
 const nav = [
-  { href: `${home}#solutions`, label: t.nav.products },
+  ...(lang === "en" ? [] : [{ href: `${home}#solutions`, label: t.nav.products }]),
   { href: `${home}#demos`, label: t.nav.demos },
-  ...(lang === "en" ? [{ href: withBase("/case-study/centrifugal-pump-set/"), label: t.nav.caseStudy }] : []),
   { href: `${home}#pricing`, label: t.nav.pricing },
   { href: `${home}#faq`, label: t.nav.faq },
 ];
@@ -89,6 +92,7 @@ const jsonLd = structuredData && JSON.stringify(structuredData).replace(/</g, "\
           <span class="sr-only">{t.nav.menu}</span>
         </button>
         <nav class="header__nav" id="site-nav" aria-label="Primary">
+          {dropdowns.map((menu) => <MegaMenu menu={menu} openLabel={t.nav.menus.open} />)}
           {nav.map((item) => <a href={item.href}>{item.label}</a>)}
           <a class="btn btn--orange btn--sm" href={`${home}#contact`}>{t.nav.cta}</a>
         </nav>
@@ -136,6 +140,71 @@ const jsonLd = structuredData && JSON.stringify(structuredData).replace(/</g, "\
       const onScroll = () => header.classList.toggle("is-scrolled", window.scrollY > 8);
       onScroll();
       window.addEventListener("scroll", onScroll, { passive: true });
+
+      // --- dropdowns (MegaMenu) ----------------------------------------------------
+      // Desktop: hover opens (with a short grace period on the way out), a click toggles, Escape,
+      // a click outside or focus leaving closes. Under the burger they are fold-out lists.
+      const burger = matchMedia("(max-width: 1040px)");
+      const hover = matchMedia("(hover: hover) and (pointer: fine)");
+      const menus = [...header.querySelectorAll<HTMLElement>("[data-menu]")];
+      let closeTimer = 0;
+      const openMenu = (menu: HTMLElement | null) => {
+        clearTimeout(closeTimer);
+        for (const m of menus) {
+          const on = m === menu;
+          m.classList.toggle("is-open", on);
+          m.querySelector("[data-menu-trigger]")!.setAttribute("aria-expanded", String(on));
+        }
+        header.classList.toggle("is-menu", Boolean(menu) && !burger.matches);
+      };
+      const showCard = (menu: HTMLElement, link: HTMLAnchorElement) => {
+        const card = menu.querySelector<HTMLAnchorElement>("[data-menu-card]");
+        if (!card) return;
+        const d = link.dataset;
+        const img = card.querySelector<HTMLImageElement>("[data-card-img]")!;
+        img.hidden = !d.cardImage;
+        if (d.cardImage) img.src = d.cardImage;
+        card.querySelectorAll<HTMLElement>("[data-card-iconbox]").forEach((box) => (box.hidden = Boolean(d.cardImage) || box.dataset.cardIconbox !== d.cardIcon));
+        card.querySelector("[data-card-eyebrow]")!.textContent = d.cardEyebrow ?? "";
+        card.querySelector("[data-card-title]")!.textContent = d.cardTitle ?? "";
+        card.querySelector("[data-card-text]")!.textContent = d.cardText ?? "";
+        card.href = link.href;
+        card.target = link.target;
+        card.rel = link.rel;
+        menu.querySelectorAll("a[data-card-title]").forEach((a) => a.classList.toggle("is-current", a === link));
+      };
+      for (const menu of menus) {
+        const trigger = menu.querySelector<HTMLButtonElement>("[data-menu-trigger]")!;
+        trigger.addEventListener("click", () => openMenu(menu.classList.contains("is-open") ? null : menu));
+        menu.addEventListener("pointerenter", () => {
+          if (hover.matches && !burger.matches) openMenu(menu);
+        });
+        menu.addEventListener("pointerleave", () => {
+          if (!hover.matches || burger.matches) return;
+          clearTimeout(closeTimer);
+          closeTimer = window.setTimeout(() => menu.classList.contains("is-open") && openMenu(null), 220);
+        });
+        menu.querySelectorAll<HTMLAnchorElement>("a[data-card-title]").forEach((link) => {
+          const show = () => showCard(menu, link);
+          link.addEventListener("pointerenter", show);
+          link.addEventListener("focus", show);
+          link.addEventListener("click", () => openMenu(null));
+        });
+        menu.addEventListener("focusout", (event) => {
+          if (!menu.contains(event.relatedTarget as Node | null) && !burger.matches) openMenu(null);
+        });
+      }
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        const open = menus.find((m) => m.classList.contains("is-open"));
+        if (!open) return;
+        openMenu(null);
+        open.querySelector<HTMLButtonElement>("[data-menu-trigger]")!.focus();
+      });
+      document.addEventListener("pointerdown", (event) => {
+        if (!burger.matches && !menus.some((m) => m.contains(event.target as Node))) openMenu(null);
+      });
+      burger.addEventListener("change", () => openMenu(null));
     </script>
   </body>
 </html>

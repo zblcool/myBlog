@@ -35,9 +35,21 @@ import { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 import { Matrix, Vector2, Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { buildBooth, lin, plinthTops, STAND, type SpotFrame, type SpotId } from "./booth";
 import { createScreens, type ScreenCopy } from "./screens";
-import { equipmentModels, type BoothStyleId, type EquipmentId, type LightingId, type StageConfig, type ThemeId } from "./presets";
+import { CLOSE_UP, equipmentModels, exhibitFeatures, type BoothStyleId, type EquipmentId, type ExhibitFeatures, type LightingId, type StageConfig, type ThemeId } from "./presets";
+import type { Material } from "@babylonjs/core/Materials/material";
 
 export type { SpotId } from "./booth";
+
+/** A callout on the exhibit: the part (1-based number), its anchor and label point on screen. */
+export interface CalloutPosition {
+  id: string;
+  n: number;
+  x: number;
+  y: number;
+  lx: number;
+  ly: number;
+  opacity: number;
+}
 
 export interface SpotPosition {
   id: SpotId;
@@ -68,6 +80,13 @@ export interface StageOptions {
   onSpots?(spots: SpotPosition[]): void;
   /** The opening sequence has finished. */
   onIntroDone?(): void;
+  /**
+   * The scroll step the exhibit is on: 0 the booth, 1 the close-up, then (exhibits with parts
+   * data only) 2 callouts, 3 x-ray, 4 exploded.
+   */
+  onStep?(step: number): void;
+  /** The exhibit's callouts on screen (CSS pixels) after each frame; null when none show. */
+  onCallouts?(callouts: CalloutPosition[] | null): void;
   /**
    * The first complete frame has just been drawn (every mesh and texture ready), in the same task,
    * so the page can swap its poster for the canvas on exactly this frame.
@@ -248,6 +267,8 @@ const OVERVIEW_TARGET = new Vector3(0.2, 1.55, 0.2);
 // Close to the composed view, so the (lit) poster hands over to the live scene without a jump.
 const INTRO = { alpha: REST_ALPHA - 0.16, beta: 1.24, zoom: 1.1 };
 const SWAY = { amplitude: 0.17, period: 18, resumeAfter: 2000 };
+/** Orbit (radians of alpha) added on the exhibit's scroll steps. */
+const STEP_ORBIT = { closeUp: 0.35, xray: 0.2 };
 
 // ---------------------------------------------------------------------------- easing
 
@@ -498,6 +519,7 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     offsetBlend: 1,
   };
   const desiredTarget = new Vector3();
+  let currentStep = -1;
   let introDone = reducedMotion;
   let dragging = false;
   let lastInteraction = -Infinity;
@@ -512,9 +534,31 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     const k = reducedMotion ? 1 : damp(6, dt);
 
     rig.smoothProgress = lerp(rig.smoothProgress, rig.progress, reducedMotion ? 1 : damp(8, dt));
+    const progressMoving = Math.abs(rig.smoothProgress - rig.progress) > 1e-4;
     const pointerBefore = rig.smoothPointer.x + rig.smoothPointer.y;
     Vector2.LerpToRef(rig.smoothPointer, rig.pointer, reducedMotion ? 0 : damp(3.5, dt), rig.smoothPointer);
-    const e = smooth(clamp01(rig.smoothProgress));
+    // The first part of the scroll is the camera move onto the exhibit; the rest, its steps.
+    const e = smooth(clamp01(rig.smoothProgress / CLOSE_UP));
+    const f = clamp01((rig.smoothProgress - CLOSE_UP) / (1 - CLOSE_UP));
+    const ramp = (a: number, b: number) => smooth(clamp01((f - a) / (b - a)));
+    const hasSteps = Boolean(shown && exhibitFeatures[shown.id]);
+    features.callouts = hasSteps ? ramp(0.03, 0.13) : 0;
+    features.xray = hasSteps ? ramp(0.34, 0.42) * (1 - ramp(0.76, 0.82)) : 0;
+    // The x-ray's parts in turn: each holds for a stretch, crossfading into the next.
+    const cues = (shown && featureRig(shown)?.cues) || 0;
+    for (let i = 0; i < cues; i++) {
+      const at = 0.38 + (i * 0.38) / cues;
+      const end = at + 0.38 / cues;
+      features.focus[i] = hasSteps ? (i === 0 ? 1 : ramp(at - 0.03, at + 0.03)) * (i === cues - 1 ? 1 : 1 - ramp(end - 0.03, end + 0.03)) : 0;
+    }
+    features.focus.length = cues;
+    features.explode = hasSteps ? ramp(0.78, 0.9) : 0;
+    applyFeatures();
+    const step = rig.smoothProgress < CLOSE_UP * 0.6 ? 0 : !hasSteps || f < 0.03 ? 1 : f < 0.34 ? 2 : f < 0.78 ? 3 : 4;
+    if (step !== currentStep) {
+      currentStep = step;
+      options.onStep?.(step);
+    }
 
     let radius: number;
     let fx: number;
@@ -534,7 +578,17 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
       const overview = Math.max(needW / 2 / tanH, needH / 2 / tanV);
       const product = Math.max(rig.productSpan / Math.min(tanV, tanH), 2.2) * (wide ? 1.55 : 1.35);
       Vector3.LerpToRef(OVERVIEW_TARGET, rig.productTarget, e, desiredTarget);
-      radius = Math.exp(lerp(Math.log(overview), Math.log(product), e)) * rig.zoom * rig.introZoom;
+      // X-ray: in on the highlighted parts. Exploded: the parts spread and lift, so back off and rise.
+      const xrayFocus = shown && features.xray > 0 ? xrayTarget(shown) : null;
+      if (xrayFocus) Vector3.LerpToRef(desiredTarget, xrayFocus, features.xray * 0.75, desiredTarget);
+      desiredTarget.y += (shown ? shown.radius * 0.2 : 0) * features.explode;
+      radius =
+        Math.exp(lerp(Math.log(overview), Math.log(product), e)) *
+        rig.zoom *
+        rig.introZoom *
+        lerp(1, 0.66, xrayFocus ? features.xray : 0) *
+        // A tall screen is narrow for the spread-out parts: back off further.
+        lerp(1, wide ? 1.42 : 1.75, features.explode);
       fx = wide ? lerp(0.215, 0.2, e) : 0;
       // Tall screens: booth below the headline, then the exhibit above the exhibit card.
       fy = wide ? lerp(0, -0.02, e) : lerp(-0.11, 0.21, e);
@@ -548,7 +602,12 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     rig.offsetBlend = orbiting || reducedMotion ? 0 : lerp(rig.offsetBlend, 1, damp(2.5, dt));
     // The pointer leans the view, less in a close-up and not at all over the live tablet.
     const lean = focusedId === "tablet" ? 0 : rig.focus ? 0.35 : 1;
-    const offAlpha = (Math.sin(rig.phase) * SWAY.amplitude * rig.sway + rig.smoothPointer.x * 0.13 * lean) * rig.offsetBlend;
+    // Up close the same angle swings the view far across the stand: sway less on the exhibit.
+    const swayReach = lerp(1, 0.3, e);
+    // On the exhibit the view swings round, clear of the counter, more so for the x-ray of the
+    // pump end (the explainer's own close-ups look from that side too).
+    const stepOrbit = STEP_ORBIT.closeUp * e + STEP_ORBIT.xray * features.xray;
+    const offAlpha = (Math.sin(rig.phase) * SWAY.amplitude * swayReach * rig.sway + rig.smoothPointer.x * 0.13 * lean + stepOrbit) * rig.offsetBlend;
     const offBeta = rig.smoothPointer.y * 0.05 * lean * rig.offsetBlend;
     let baseAlpha = camera.alpha - rig.applied.alpha;
     let baseBeta = camera.beta - rig.applied.beta;
@@ -573,7 +632,7 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     o.y = lerp(o.y, oy, k);
     const settling = Math.abs(camera.radius + t.x + t.y + t.z + o.x + o.y - before) > 1e-4;
     const pointerMoving = Math.abs(rig.smoothPointer.x + rig.smoothPointer.y - pointerBefore) > 1e-4;
-    if (settling || pointerMoving || (orbiting && !idle)) return 2;
+    if (settling || pointerMoving || progressMoving || (orbiting && !idle)) return 2;
     return rig.sway > 0.001 ? 1 : 0;
   };
 
@@ -646,6 +705,7 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
   contact.isPickable = false;
 
   interface Mounted {
+    id: EquipmentId;
     node: TransformNode;
     meshes: AbstractMesh[];
     height: number;
@@ -763,7 +823,7 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
         rimLit.push(mesh);
         productLit.push(mesh);
       }
-      return { node, meshes, height: ext.y * s, radius: (ext.length() * s) / 2, footprint: { x: ext.x * s, z: ext.z * s } };
+      return { id, node, meshes, height: ext.y * s, radius: (ext.length() * s) / 2, footprint: { x: ext.x * s, z: ext.z * s } };
     });
     mounted.set(id, pending);
     pending.catch(() => mounted.delete(id));
@@ -811,7 +871,140 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
     } else {
       setVisibility(next, 1);
     }
+    featuresDirty = true;
     invalidate();
+  };
+
+  // --- scroll steps: callouts, x-ray, exploded -------------------------------------
+  // The explainer's own features, run by the scroll instead of buttons (studio/stage/presets.ts,
+  // exhibitFeatures). X-ray: see-through meshes at 12% with the inner parts solid and tinted, as
+  // the explainer's DisplayController. Exploded: whole parts moved along their own directions, as
+  // its ExplodeController, plus a lift so the baseplate clears the plinth.
+  const ACCENT = Color3.FromHexString("#f2a250");
+  // The explainer ghosts at 0.12 on a light floor; on the dark stand a little more reads better.
+  const GHOST = 0.2;
+  interface FeatureRig {
+    data: ExhibitFeatures;
+    /** cue: the part's turn in the x-ray (-1: none). */
+    parts: { id: string; meshes: AbstractMesh[]; callout: Vector3; cue: number }[];
+    offsets: { mesh: AbstractMesh; base: Vector3; local: Vector3 }[];
+    solid: Set<AbstractMesh>;
+    materials: Map<Material, number | null>;
+    /** The x-ray's parts, in turn: their meshes and middles, assembled. */
+    cueMeshes: Set<AbstractMesh>[];
+    cueCenters: Vector3[];
+    cues: number;
+  }
+  const featureRigs = new Map<Mounted, FeatureRig | null>();
+  const featureRig = (exhibit: Mounted): FeatureRig | null => {
+    if (featureRigs.has(exhibit)) return featureRigs.get(exhibit)!;
+    const data = exhibitFeatures[exhibit.id];
+    let built: FeatureRig | null = null;
+    if (data) {
+      exhibit.node.computeWorldMatrix(true);
+      const nodeWorld = exhibit.node.getWorldMatrix();
+      const toWorld = (v: [number, number, number]) => Vector3.TransformNormal(Vector3.FromArray(v), nodeWorld).normalize();
+      const r = exhibit.radius;
+      const lift = new Vector3(0, 0.34 * r, 0);
+      const of = (prefixes: string[]) => exhibit.meshes.filter((mesh) => prefixes.some((p) => mesh.name.startsWith(p)));
+      const deltas = new Map<AbstractMesh, Vector3>(exhibit.meshes.map((mesh) => [mesh, lift.clone()]));
+      const parts = data.parts.map((part) => {
+        const meshes = of(part.nodes);
+        const delta = toWorld(part.explode).scale(part.distance * r).addInPlace(lift);
+        for (const mesh of meshes) deltas.set(mesh, delta);
+        return { id: part.id, meshes, callout: toWorld(part.callout), cue: data.highlight.indexOf(part.id) };
+      });
+      const offsets = [...deltas].map(([mesh, delta]) => {
+        const parent = mesh.parent as TransformNode | null;
+        parent?.computeWorldMatrix(true);
+        const inv = parent ? parent.getWorldMatrix().clone().invert() : Matrix.Identity();
+        return { mesh, base: mesh.position.clone(), local: Vector3.TransformNormal(delta, inv) };
+      });
+      const cued = data.highlight.map((id) => parts.find((p) => p.id === id)!).filter((p) => p && p.meshes.length);
+      const cueCenters = cued.map((part) => {
+        const lo = new Vector3(Infinity, Infinity, Infinity);
+        const hi = new Vector3(-Infinity, -Infinity, -Infinity);
+        for (const mesh of part.meshes) {
+          mesh.computeWorldMatrix(true);
+          const box = mesh.getBoundingInfo().boundingBox;
+          lo.minimizeInPlace(box.minimumWorld);
+          hi.maximizeInPlace(box.maximumWorld);
+        }
+        return lo.add(hi).scaleInPlace(0.5);
+      });
+      for (const part of parts) part.cue = cued.indexOf(part as (typeof cued)[number]);
+      const materials = new Map<Material, number | null>();
+      for (const mesh of exhibit.meshes) if (mesh.material) materials.set(mesh.material, mesh.material.transparencyMode);
+      built = {
+        data,
+        parts,
+        offsets,
+        solid: new Set(of(data.solid)),
+        materials,
+        cueMeshes: cued.map((p) => new Set(p.meshes)),
+        cueCenters,
+        cues: cued.length,
+      };
+    }
+    featureRigs.set(exhibit, built);
+    return built;
+  };
+
+  /** The amounts the scroll asks for (0–1) and what is applied to which exhibit. */
+  const features = { callouts: 0, xray: 0, explode: 0, focus: [] as number[] };
+  const applied = { exhibit: null as Mounted | null, xray: -1, explode: -1, focus: "" };
+  /** Where the x-ray looks: between the parts in turn, by how far each is shown. */
+  const xrayTarget = (exhibit: Mounted): Vector3 | null => {
+    const rig = featureRig(exhibit);
+    if (!rig?.cues) return null;
+    const at = Vector3.Zero();
+    let sum = 0;
+    rig.cueCenters.forEach((c, i) => {
+      const w = features.focus[i] ?? 0;
+      at.addInPlace(c.scale(w));
+      sum += w;
+    });
+    return sum > 0 ? at.scaleInPlace(1 / sum) : rig.cueCenters[0];
+  };
+  let featuresDirty = true;
+  const applyTo = (exhibit: Mounted, xray: number, explode: number, focus: number[] = []) => {
+    const rig = featureRig(exhibit);
+    if (!rig) return;
+    for (const o of rig.offsets) o.mesh.position.copyFrom(o.base).addInPlace(o.local.scale(explode));
+    const ghost = xray > 0.001;
+    // glTF materials force OPAQUE, which ignores visibility; automatic blending while see-through.
+    rig.materials.forEach((mode, material) => (material.transparencyMode = ghost ? null : mode));
+    for (const mesh of exhibit.meshes) {
+      // The part in turn comes back solid and tinted; the others stay see-through.
+      const cue = rig.cueMeshes.findIndex((set) => set.has(mesh));
+      const shownAmount = cue < 0 ? 0 : (focus[cue] ?? 0);
+      mesh.visibility = rig.solid.has(mesh) ? 1 : lerp(1, GHOST, xray * (1 - shownAmount));
+      const tint = xray * shownAmount;
+      mesh.renderOverlay = tint > 0.01;
+      if (tint > 0.01) {
+        mesh.overlayColor = ACCENT;
+        mesh.overlayAlpha = 0.38 * tint;
+      }
+    }
+  };
+  const applyFeatures = () => {
+    // The equipment switch fades visibility itself; take over again once it is done.
+    if (!shown || tweens.has("equipment")) return;
+    if (applied.exhibit && applied.exhibit !== shown) {
+      applyTo(applied.exhibit, 0, 0);
+      featuresDirty = true;
+    }
+    const { xray, explode } = features;
+    const focus = features.focus.map((w) => w.toFixed(4)).join();
+    if (!featuresDirty && Math.abs(xray - applied.xray) < 1e-4 && Math.abs(explode - applied.explode) < 1e-4 && focus === applied.focus) return;
+    const moved = Math.abs(explode - applied.explode) > 1e-4;
+    applyTo(shown, xray, explode, features.focus);
+    applied.focus = focus;
+    applied.exhibit = shown;
+    applied.xray = xray;
+    applied.explode = explode;
+    featuresDirty = false;
+    if (moved) refreshShadows();
   };
 
   // --- looks ---------------------------------------------------------------------
@@ -953,7 +1146,51 @@ export async function createStage(canvas: HTMLCanvasElement, initial: StageConfi
 
   // --- loop & lifecycle ---------------------------------------------------------
   const tmp = new Vector3();
+  const boxMin = new Vector3();
+  const boxMax = new Vector3();
+  const labelAt = new Vector3();
+  let calloutsShown = false;
+  const reportCallouts = () => {
+    if (!options.onCallouts) return;
+    const rig = shown && features.callouts > 0.01 ? featureRig(shown) : null;
+    if (!rig || !shown) {
+      if (calloutsShown) options.onCallouts(null);
+      calloutsShown = false;
+      return;
+    }
+    const width = engine.getRenderWidth();
+    const height = engine.getRenderHeight();
+    const scale = canvas.clientWidth / width;
+    const viewport = camera.viewport.toGlobal(width, height);
+    const transform = scene.getTransformMatrix();
+    const reach = shown.radius * 0.38;
+    calloutsShown = true;
+    options.onCallouts(
+      rig.parts.map((part, i) => {
+        // Anchor: the middle of the part as it is now (it moves when exploded).
+        boxMin.setAll(Infinity);
+        boxMax.setAll(-Infinity);
+        for (const mesh of part.meshes) {
+          const box = mesh.getBoundingInfo().boundingBox;
+          boxMin.minimizeInPlace(box.minimumWorld);
+          boxMax.maximizeInPlace(box.maximumWorld);
+        }
+        const center = boxMin.add(boxMax).scaleInPlace(0.5);
+        center.addToRef(part.callout.scale(reach), labelAt);
+        Vector3.ProjectToRef(center, Matrix.IdentityReadOnly, transform, viewport, tmp);
+        const x = tmp.x * scale;
+        const y = tmp.y * scale;
+        const front = tmp.z > 0 && tmp.z < 1;
+        Vector3.ProjectToRef(labelAt, Matrix.IdentityReadOnly, transform, viewport, tmp);
+        // In x-ray only the part in turn keeps its callout.
+        const weight = 1 - features.xray * (1 - (part.cue < 0 ? 0 : (features.focus[part.cue] ?? 0)));
+        return { id: part.id, n: i + 1, x, y, lx: tmp.x * scale, ly: tmp.y * scale, opacity: front ? features.callouts * weight : 0 };
+      }),
+    );
+  };
+
   const reportSpots = () => {
+    reportCallouts();
     if (!options.onSpots && !options.onTabletScreen) return;
     const width = engine.getRenderWidth();
     const height = engine.getRenderHeight();
